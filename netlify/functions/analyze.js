@@ -21,8 +21,8 @@ exports.handler = async function(event, context) {
             };
         }
 
-        // 4. Hubungi Google Gemini API dari sisi Server (Menggunakan model terbaru)
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+        // 4. Hubungi Google Gemini API dari sisi Server (MENGGUNAKAN FLASH-LITE AGAR LIMIT LEBIH LONGGAR)
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
