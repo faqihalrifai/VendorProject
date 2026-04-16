@@ -255,9 +255,6 @@
         // Inisialisasi Icons
         lucide.createIcons();
 
-        // Environment Variable (Sesuai instruksi sistem)
-        const apiKey = ""; 
-
         // DOM Elements
         const uploadZone = document.getElementById('upload-zone');
         const fileInput = document.getElementById('file-input');
@@ -397,72 +394,27 @@
             analyzeWithGemini(dataString);
         }
 
-        // --- API Integration (Gemini) ---
+        // --- API Integration (Netlify Function) ---
         async function analyzeWithGemini(dataString) {
-            if (!apiKey) {
-                showNotification("API Key tidak tersedia di environment ini.", "error");
-                hideLoading();
-                return;
-            }
-
             // Implementasi Exponential Backoff
             const maxRetries = 5;
             const delays = [1000, 2000, 4000, 8000, 16000];
 
             for (let i = 0; i < maxRetries; i++) {
                 try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    // SEKARANG KITA MEMANGGIL NETLIFY FUNCTION KITA SENDIRI, BUKAN GOOGLE LANGSUNG
+                    const response = await fetch('/.netlify/functions/analyze', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{
-                                parts: [{ text: `Analisa dataset berikut dan berikan insight strategis bisnis. Data: ${dataString}` }]
-                            }],
-                            systemInstruction: {
-                                parts: [{ text: `Kamu adalah AI Data Strategist kelas dunia. Tugasmu adalah membaca sampel data yang diberikan, memahami konteksnya (apakah ini data penjualan, HR, operasional, dll), dan memberikan analisa mendalam. 
-                                
-MANDATORI: Kamu WAJIB merespon HANYA dengan format JSON yang valid mengikuti schema berikut, tanpa markdown, tanpa teks tambahan apapun di luar JSON.
-
-Schema JSON:
-{
-  "scorecards": [
-    {"title": "Nama Metrik 1 (Singkat)", "value": "Angka/Nilai", "trend": "contoh: +5% (Gunakan + untuk positif, - untuk negatif)"},
-    {"title": "Nama Metrik 2", "value": "Angka/Nilai", "trend": "contoh: -2%"},
-    {"title": "Nama Metrik 3", "value": "Angka/Nilai", "trend": "contoh: Stabil"}
-  ],
-  "chart": {
-    "title": "Judul Grafik (Sesuai konteks data)",
-    "labels": ["Label1", "Label2", "Label3", "Label4", "Label5"],
-    "data": [10, 20, 15, 30, 25],
-    "datasetLabel": "Keterangan Data"
-  },
-  "insights": [
-    "Insight 1 yang sangat tajam dan deskriptif berdasarkan data.",
-    "Insight 2 yang menunjukkan korelasi tersembunyi.",
-    "Insight 3 mengenai anomali atau peluang emas."
-  ],
-  "futurePlan": [
-    {"focus": "Area Fokus 1", "action": "Tindakan spesifik yang harus dilakukan besok."},
-    {"focus": "Area Fokus 2", "action": "Strategi jangka panjang."},
-    {"focus": "Area Fokus 3", "action": "Mitigasi risiko yang ditemukan."}
-  ]
-}
-
-Aturan tambahan: 
-- Analisa harus masuk akal berdasarkan data yang dikirim.
-- Jika datanya kacau, buat estimasi cerdas.
-- Bahasa harus Profesional, Bahasa Indonesia, tanpa basa-basi.` }]
-                            },
-                            generationConfig: {
-                                responseMimeType: "application/json"
-                            }
-                        })
+                        body: JSON.stringify({ data: dataString })
                     });
 
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    if (!response.ok) {
+                        const errText = await response.text();
+                        throw new Error(`HTTP error! status: ${response.status}, message: ${errText}`);
+                    }
                     
-                    const result = await response.json();
-                    const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                    const textResponse = await response.text();
                     
                     if (!textResponse) throw new Error("Format respons API tidak sesuai.");
 
@@ -472,9 +424,9 @@ Aturan tambahan:
 
                 } catch (error) {
                     if (i === maxRetries - 1) {
-                        showNotification("Gagal memproses data setelah beberapa percobaan. Pastikan file valid atau coba lagi nanti.", "error");
+                        showNotification("Gagal memproses data. Pastikan file valid atau coba lagi nanti.", "error");
                         hideLoading();
-                        console.error(error);
+                        console.error("Error Function:", error);
                     } else {
                         // Tunggu sebelum retry (Backoff)
                         await new Promise(resolve => setTimeout(resolve, delays[i]));
