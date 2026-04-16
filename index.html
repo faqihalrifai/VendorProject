@@ -14,14 +14,17 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- File Parsers (PapaParse for CSV, SheetJS for Excel) -->
+    <!-- File Parsers -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
+    <!-- html2pdf for Exporting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Tailwind Config for Custom Colors (Pure Blue Professional Theme) -->
+    <!-- Tailwind Config for Custom Colors -->
     <script>
         tailwind.config = {
             theme: {
@@ -39,8 +42,8 @@
                             800: '#075985',
                             900: '#0c4a6e', // Deep Navy Blue
                         },
-                        positive: '#0ea5e9', // Blue variant for positive trends to keep monochromatic feel
-                        negative: '#e11d48'  // Keep red strictly for actual negative/alert data
+                        positive: '#0ea5e9', 
+                        negative: '#e11d48'  
                     },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -76,7 +79,7 @@
             box-shadow: 0 15px 35px -10px rgba(12, 74, 110, 0.15);
         }
 
-        /* Drag & Drop Animations */
+        /* Upload Area Effects */
         .drag-active {
             border-color: #0284c7 !important;
             background-color: #e0f2fe !important;
@@ -89,12 +92,12 @@
         }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #bae6fd; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
 
-        /* Pulse Animation for Upload Icon */
+        /* Animations */
         @keyframes subtle-pulse {
             0% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(2, 132, 199, 0); }
@@ -102,6 +105,39 @@
         }
         .upload-pulse:hover {
             animation: subtle-pulse 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        .skeleton {
+            background: #e0f2fe;
+            background-image: linear-gradient(to right, #e0f2fe 0%, #bae6fd 20%, #e0f2fe 40%, #e0f2fe 100%);
+            background-repeat: no-repeat;
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite linear forwards;
+        }
+
+        /* Modals and Typewriter */
+        .modal-overlay {
+            background: rgba(12, 74, 110, 0.6);
+            backdrop-filter: blur(4px);
+        }
+
+        .typewriter-cursor::after {
+            content: '|';
+            animation: blink 1s step-start infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+        
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -115,21 +151,26 @@
                     <div class="bg-brand-600 p-2 rounded-lg shadow-md shadow-brand-500/20">
                         <i data-lucide="layers" class="text-white w-5 h-5"></i>
                     </div>
-                    <span class="font-extrabold text-2xl tracking-tight text-brand-900">Dazer.</span>
+                    <span class="font-extrabold text-2xl tracking-tight text-brand-900 cursor-pointer" onclick="resetApp()">Dazer.</span>
                 </div>
-                <div class="flex items-center gap-2 bg-brand-50 px-4 py-1.5 rounded-full border border-brand-200 shadow-sm">
-                    <span class="flex h-2.5 w-2.5 relative">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
-                    </span>
-                    <span class="text-xs font-bold text-brand-700 uppercase tracking-widest">Sistem Aktif</span>
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleHistoryModal()" class="text-sm font-semibold flex items-center gap-2 text-brand-700 hover:text-brand-900 transition-colors">
+                        <i data-lucide="history" class="w-4 h-4"></i> Riwayat
+                    </button>
+                    <div class="flex items-center gap-2 bg-brand-50 px-4 py-1.5 rounded-full border border-brand-200 shadow-sm">
+                        <span class="flex h-2.5 w-2.5 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
+                        </span>
+                        <span class="text-xs font-bold text-brand-700 uppercase tracking-widest hidden sm:inline-block">Sistem Aktif</span>
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col">
         
         <!-- Header Section -->
         <div class="text-center max-w-3xl mx-auto mb-14" id="hero-section">
@@ -152,7 +193,7 @@
                 </div>
                 <div>
                     <p class="text-xl font-bold text-brand-900">Tarik & Lepas File Anda di Sini</p>
-                    <p class="text-sm text-brand-600/70 mt-1 font-medium">Mendukung format CSV, XLSX, XLS, atau TXT.</p>
+                    <p class="text-sm text-brand-600/70 mt-1 font-medium">Mendukung format CSV, XLSX, XLS, atau TXT (Maks 5MB).</p>
                 </div>
                 <button onclick="document.getElementById('file-input').click(); event.stopPropagation();" class="mt-4 bg-brand-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg shadow-brand-500/30 hover:bg-brand-700 hover:-translate-y-0.5 active:translate-y-0 pointer-events-auto transition-all-custom">
                     Pilih File Manual
@@ -160,305 +201,457 @@
             </div>
         </div>
 
-        <!-- Loading State -->
-        <div id="loading-state" class="hidden max-w-2xl mx-auto text-center py-20">
-            <div class="inline-block relative w-20 h-20 mb-6">
-                <div class="absolute top-0 left-0 w-full h-full border-4 border-brand-100 rounded-full"></div>
-                <div class="absolute top-0 left-0 w-full h-full border-4 border-brand-600 rounded-full border-t-transparent animate-spin"></div>
-                <i data-lucide="cpu" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-brand-600 w-6 h-6 animate-pulse"></i>
+        <!-- Setup Screen (Preview & Intent) -->
+        <div id="setup-screen" class="hidden w-full max-w-4xl mx-auto glass-card p-8 animate-[fadeInUp_0.4s_ease-out]">
+            <div class="flex items-center justify-between border-b border-brand-200 pb-5 mb-6">
+                <div class="flex items-center gap-4">
+                    <div class="bg-emerald-100 p-2.5 rounded-full text-emerald-600">
+                        <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-extrabold text-brand-900" id="file-name-display">Dataset.csv</h2>
+                        <p class="text-brand-600 text-sm font-medium" id="file-size-display">Diunggah: 1.2 MB</p>
+                    </div>
+                </div>
+                <button onclick="resetApp()" class="text-sm font-bold text-brand-500 hover:text-brand-700">Batalkan</button>
             </div>
-            <h3 class="text-2xl font-bold text-brand-900" id="loading-title">Menganalisis Dataset...</h3>
-            <p class="text-brand-600 mt-2 font-medium" id="loading-subtitle">Mengekstraksi pola dan menyusun wawasan strategis.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Data Preview -->
+                <div class="flex flex-col h-full">
+                    <h3 class="font-bold text-brand-900 mb-3 flex items-center gap-2">
+                        <i data-lucide="table" class="w-4 h-4 text-brand-600"></i> Pratinjau Dataset & Seleksi Kolom
+                    </h3>
+                    <div class="bg-white border border-brand-200 rounded-xl overflow-hidden flex-grow shadow-sm">
+                        <div class="overflow-x-auto max-h-60 custom-scrollbar">
+                            <table class="w-full text-left text-sm" id="preview-table">
+                                <thead class="bg-brand-50 text-brand-700 font-semibold sticky top-0 z-10" id="preview-thead">
+                                    <!-- Rendered via JS -->
+                                </thead>
+                                <tbody class="text-brand-800 divide-y divide-brand-100" id="preview-tbody">
+                                    <!-- Rendered via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <p class="text-xs text-brand-500 mt-2">*Hapus centang pada kolom yang tidak relevan untuk analisis yang lebih presisi.</p>
+                </div>
+
+                <!-- Custom Intent Setup -->
+                <div class="flex flex-col justify-between h-full">
+                    <div>
+                        <h3 class="font-bold text-brand-900 mb-3 flex items-center gap-2">
+                            <i data-lucide="target" class="w-4 h-4 text-brand-600"></i> Tujuan Analisis Spesifik (Opsional)
+                        </h3>
+                        <p class="text-sm text-brand-600 mb-4">Berikan panduan kepada AI agar wawasan yang dihasilkan lebih tajam dan sesuai dengan masalah yang sedang Anda pecahkan.</p>
+                        
+                        <textarea id="custom-intent" rows="4" class="w-full bg-white border border-brand-200 rounded-xl p-4 text-sm text-brand-900 placeholder-brand-300 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all shadow-sm" placeholder="Contoh: 'Tolong cari tahu mengapa konversi penjualan di wilayah Jakarta menurun pada kuartal 3...'"></textarea>
+                    </div>
+                    
+                    <button onclick="startAnalysis()" class="mt-6 w-full bg-brand-600 text-white px-8 py-4 rounded-xl font-bold shadow-lg shadow-brand-500/30 hover:bg-brand-700 hover:-translate-y-0.5 active:translate-y-0 transition-all-custom flex items-center justify-center gap-2">
+                        <i data-lucide="cpu" class="w-5 h-5"></i> Mulai Proses Analisis AI
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skeleton Loading State -->
+        <div id="loading-state" class="hidden w-full max-w-7xl mx-auto">
+            <div class="text-center mb-8 fade-in-up">
+                <h3 class="text-2xl font-bold text-brand-900">Mengekstraksi Intelegensi...</h3>
+                <p class="text-brand-600 font-medium">Ini biasanya memakan waktu 5-10 detik.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Scorecards skeleton -->
+                <div class="glass-card p-7 h-32 skeleton rounded-xl"></div>
+                <div class="glass-card p-7 h-32 skeleton rounded-xl"></div>
+                <div class="glass-card p-7 h-32 skeleton rounded-xl"></div>
+                
+                <!-- Main Chart Skeleton -->
+                <div class="glass-card p-8 md:col-span-2 h-[420px] skeleton rounded-xl"></div>
+                
+                <!-- Insights Skeleton -->
+                <div class="glass-card p-8 md:col-span-1 h-[420px] rounded-xl flex flex-col gap-4">
+                    <div class="w-1/2 h-6 skeleton rounded"></div>
+                    <div class="w-full h-20 skeleton rounded mt-4"></div>
+                    <div class="w-full h-20 skeleton rounded"></div>
+                    <div class="w-full h-20 skeleton rounded"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Notification Banner -->
-        <div id="notification" class="hidden max-w-2xl mx-auto mt-6 p-4 rounded-xl flex items-center gap-3 shadow-md transition-all-custom">
+        <div id="notification" class="hidden max-w-2xl mx-auto mt-6 p-4 rounded-xl flex items-center gap-3 shadow-md transition-all-custom fixed top-4 right-4 z-[100]">
             <i data-lucide="info" class="w-5 h-5 shrink-0" id="notification-icon"></i>
             <p id="notification-text" class="text-sm font-semibold"></p>
         </div>
 
         <!-- Dashboard Result (Bento Grid) -->
-        <div id="dashboard" class="hidden mt-6 transition-all-custom">
+        <div id="dashboard" class="hidden mt-2 transition-all-custom">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b border-brand-200 pb-5 gap-4">
                 <div>
-                    <h2 class="text-3xl font-extrabold text-brand-900 tracking-tight">Dasbor Analitik</h2>
-                    <p class="text-brand-600 text-sm mt-1.5 font-medium">Wawasan strategis dihasilkan secara real-time oleh Dazer AI.</p>
+                    <h2 class="text-3xl font-extrabold text-brand-900 tracking-tight">Laporan Strategis</h2>
+                    <p class="text-brand-600 text-sm mt-1.5 font-medium" id="dashboard-intent-display">Wawasan strategis dihasilkan secara real-time oleh Dazer AI.</p>
                 </div>
-                <button onclick="resetApp()" class="text-sm font-bold flex items-center gap-2 text-brand-700 hover:text-white hover:bg-brand-600 transition-all-custom bg-white px-5 py-2.5 rounded-xl border border-brand-200 shadow-sm hover:shadow-md">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Analisis Dataset Baru
-                </button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <!-- Scorecards (Top Row) -->
-                <div class="glass-card p-7 flex flex-col justify-between group" id="card-1">
-                    <div class="flex justify-between items-start">
-                        <p class="text-xs font-bold text-brand-500 uppercase tracking-widest" id="sc1-title">Indikator Utama</p>
-                        <div class="bg-brand-50 p-2.5 rounded-xl group-hover:bg-brand-600 group-hover:text-white text-brand-600 transition-colors duration-300">
-                            <i data-lucide="activity" class="w-5 h-5"></i>
-                        </div>
-                    </div>
-                    <div class="mt-6">
-                        <h3 class="text-4xl font-extrabold text-brand-900 tracking-tight" id="sc1-value">-</h3>
-                        <p class="text-sm mt-3 flex items-center gap-1.5 font-bold" id="sc1-trend">
-                            <span>-</span>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="glass-card p-7 flex flex-col justify-between group" id="card-2">
-                    <div class="flex justify-between items-start">
-                        <p class="text-xs font-bold text-brand-500 uppercase tracking-widest" id="sc2-title">Indikator Sekunder</p>
-                        <div class="bg-brand-50 p-2.5 rounded-xl group-hover:bg-brand-600 group-hover:text-white text-brand-600 transition-colors duration-300">
-                            <i data-lucide="target" class="w-5 h-5"></i>
-                        </div>
-                    </div>
-                    <div class="mt-6">
-                        <h3 class="text-4xl font-extrabold text-brand-900 tracking-tight" id="sc2-value">-</h3>
-                        <p class="text-sm mt-3 flex items-center gap-1.5 font-bold" id="sc2-trend">
-                            <span>-</span>
-                        </p>
-                    </div>
-                </div>
-
-                <div class="glass-card p-7 flex flex-col justify-between group" id="card-3">
-                    <div class="flex justify-between items-start">
-                        <p class="text-xs font-bold text-brand-500 uppercase tracking-widest" id="sc3-title">Indikator Tersier</p>
-                        <div class="bg-brand-50 p-2.5 rounded-xl group-hover:bg-brand-600 group-hover:text-white text-brand-600 transition-colors duration-300">
-                            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-                        </div>
-                    </div>
-                    <div class="mt-6">
-                        <h3 class="text-4xl font-extrabold text-brand-900 tracking-tight" id="sc3-value">-</h3>
-                        <p class="text-sm mt-3 flex items-center gap-1.5 font-bold" id="sc3-trend">
-                            <span>-</span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Main Chart (Spans 2 columns) -->
-                <div class="glass-card p-8 md:col-span-2 h-[420px] flex flex-col relative overflow-hidden">
-                    <div class="flex justify-between items-center mb-6 z-10">
-                        <h3 class="font-extrabold text-brand-900 text-lg flex items-center gap-2">
-                            <i data-lucide="line-chart" class="w-5 h-5 text-brand-600"></i>
-                            <span id="chart-title">Pemetaan Tren Data</span>
-                        </h3>
-                    </div>
-                    <div class="relative flex-grow w-full h-full z-10">
-                        <canvas id="mainChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Key Insights -->
-                <div class="glass-card p-8 md:col-span-1 bg-gradient-to-br from-brand-900 to-brand-800 border-none shadow-xl shadow-brand-900/20 text-white">
-                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-brand-700/50">
-                        <div class="bg-brand-700/50 p-2 rounded-lg">
-                            <i data-lucide="lightbulb" class="w-5 h-5 text-brand-200"></i>
-                        </div>
-                        <h3 class="font-bold text-lg tracking-wide">Temuan Kritis</h3>
-                    </div>
-                    <ul class="space-y-5" id="insights-list">
-                        <!-- Injected via JS -->
-                    </ul>
-                </div>
-
-                <!-- Strategic Action Plan (Spans full width) -->
-                <div class="glass-card p-8 md:col-span-3">
-                    <div class="flex items-center gap-3 mb-8">
-                        <div class="bg-brand-100 p-2.5 rounded-xl">
-                            <i data-lucide="crosshair" class="w-6 h-6 text-brand-600"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-extrabold text-brand-900 text-xl tracking-tight">Rekomendasi Tindakan</h3>
-                            <p class="text-brand-600 text-sm font-medium mt-0.5">Langkah operasional yang direkomendasikan berdasarkan hasil analisis.</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="action-plan-grid">
-                        <!-- Injected via JS -->
-                    </div>
+                <div class="flex gap-3">
+                    <button onclick="exportToPDF()" class="text-sm font-bold flex items-center gap-2 text-brand-700 hover:text-white hover:bg-brand-600 transition-all-custom bg-white px-5 py-2.5 rounded-xl border border-brand-200 shadow-sm hover:shadow-md">
+                        <i data-lucide="download" class="w-4 h-4"></i> Unduh PDF
+                    </button>
+                    <button onclick="resetApp()" class="text-sm font-bold flex items-center gap-2 text-white transition-all-custom bg-brand-600 hover:bg-brand-700 px-5 py-2.5 rounded-xl shadow-md">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Analisis Baru
+                    </button>
                 </div>
             </div>
+
+            <!-- PDF Container starts here -->
+            <div id="pdf-container" class="bg-transparent">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    
+                    <!-- Scorecards (Top Row) -->
+                    <div class="glass-card p-7 flex flex-col justify-between group fade-in-up" style="animation-delay: 0.1s;" id="card-1">
+                        <div class="flex justify-between items-start">
+                            <p class="text-xs font-bold text-brand-500 uppercase tracking-widest" id="sc1-title">-</p>
+                            <div class="bg-brand-50 p-2.5 rounded-xl text-brand-600">
+                                <i data-lucide="activity" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <h3 class="text-4xl font-extrabold text-brand-900 tracking-tight" id="sc1-value">-</h3>
+                            <p class="text-sm mt-3 flex items-center gap-1.5 font-bold" id="sc1-trend">
+                                <span>-</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-7 flex flex-col justify-between group fade-in-up" style="animation-delay: 0.2s;" id="card-2">
+                        <div class="flex justify-between items-start">
+                            <p class="text-xs font-bold text-brand-500 uppercase tracking-widest" id="sc2-title">-</p>
+                            <div class="bg-brand-50 p-2.5 rounded-xl text-brand-600">
+                                <i data-lucide="target" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <h3 class="text-4xl font-extrabold text-brand-900 tracking-tight" id="sc2-value">-</h3>
+                            <p class="text-sm mt-3 flex items-center gap-1.5 font-bold" id="sc2-trend">
+                                <span>-</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-7 flex flex-col justify-between group fade-in-up" style="animation-delay: 0.3s;" id="card-3">
+                        <div class="flex justify-between items-start">
+                            <p class="text-xs font-bold text-brand-500 uppercase tracking-widest" id="sc3-title">-</p>
+                            <div class="bg-brand-50 p-2.5 rounded-xl text-brand-600">
+                                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <h3 class="text-4xl font-extrabold text-brand-900 tracking-tight" id="sc3-value">-</h3>
+                            <p class="text-sm mt-3 flex items-center gap-1.5 font-bold" id="sc3-trend">
+                                <span>-</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Main Chart (Spans 2 columns) -->
+                    <div class="glass-card p-8 md:col-span-2 h-[420px] flex flex-col relative overflow-hidden fade-in-up" style="animation-delay: 0.4s;">
+                        <div class="flex justify-between items-center mb-6 z-10">
+                            <h3 class="font-extrabold text-brand-900 text-lg flex items-center gap-2">
+                                <i data-lucide="line-chart" class="w-5 h-5 text-brand-600"></i>
+                                <span id="chart-title">Pemetaan Tren Data</span>
+                            </h3>
+                            <!-- Dynamic Chart Selector -->
+                            <select id="chart-type-selector" onchange="changeChartType(this.value)" class="bg-brand-50 border border-brand-200 text-brand-700 text-sm font-bold rounded-lg focus:ring-brand-500 focus:border-brand-500 block px-3 py-1.5 cursor-pointer outline-none">
+                                <option value="line">Line Chart</option>
+                                <option value="bar">Bar Chart</option>
+                                <option value="doughnut">Doughnut</option>
+                            </select>
+                        </div>
+                        <div class="relative flex-grow w-full h-full z-10">
+                            <canvas id="mainChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Key Insights -->
+                    <div class="glass-card p-8 md:col-span-1 bg-gradient-to-br from-brand-900 to-brand-800 border-none shadow-xl shadow-brand-900/20 text-white fade-in-up" style="animation-delay: 0.5s;">
+                        <div class="flex items-center gap-3 mb-6 pb-4 border-b border-brand-700/50">
+                            <div class="bg-brand-700/50 p-2 rounded-lg">
+                                <i data-lucide="lightbulb" class="w-5 h-5 text-brand-200"></i>
+                            </div>
+                            <h3 class="font-bold text-lg tracking-wide">Temuan Kritis</h3>
+                        </div>
+                        <ul class="space-y-6" id="insights-list">
+                            <!-- Injected via JS with Typewriter effect -->
+                        </ul>
+                    </div>
+
+                    <!-- Strategic Action Plan (Spans full width) -->
+                    <div class="glass-card p-8 md:col-span-3 fade-in-up" style="animation-delay: 0.6s;">
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="bg-brand-100 p-2.5 rounded-xl">
+                                <i data-lucide="crosshair" class="w-6 h-6 text-brand-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-extrabold text-brand-900 text-xl tracking-tight">Rekomendasi Tindakan Eksekutif</h3>
+                                <p class="text-brand-600 text-sm font-medium mt-0.5">Langkah operasional presisi berdasarkan hasil kalkulasi mesin.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="action-plan-grid">
+                            <!-- Injected via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- End PDF Container -->
         </div>
 
     </main>
+
+    <!-- History Modal -->
+    <div id="history-modal" class="fixed inset-0 modal-overlay z-[100] hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-300" id="history-modal-content">
+            <div class="p-6 border-b border-brand-100 flex justify-between items-center bg-brand-50">
+                <h3 class="text-xl font-bold text-brand-900 flex items-center gap-2">
+                    <i data-lucide="history" class="w-5 h-5 text-brand-600"></i> Riwayat Sesi Analisis
+                </h3>
+                <button onclick="toggleHistoryModal()" class="text-brand-400 hover:text-brand-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar" id="history-list">
+                <!-- Injected via JS -->
+                <p class="text-center text-brand-500 font-medium py-8 text-sm">Belum ada riwayat analisis yang tersimpan di browser ini.</p>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="border-t border-brand-200 mt-auto py-8 bg-white/60 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-brand-600 text-sm font-semibold">
             <p>&copy; 2026 Dazer Analytics.</p>
             <p class="flex items-center gap-2 mt-3 md:mt-0 bg-brand-50 px-3 py-1.5 rounded-full border border-brand-100">
-                <i data-lucide="shield-check" class="w-4 h-4 text-brand-600"></i> Privasi Data Terjamin
+                <i data-lucide="shield-check" class="w-4 h-4 text-brand-600"></i> Transmisi Data Terenkripsi (Lokal)
             </p>
         </div>
     </footer>
 
     <!-- Application Logic -->
     <script>
-        // Inisialisasi Icons
+        // Inisialisasi
         lucide.createIcons();
 
+        // State Management
+        let globalExtractedData = [];
+        let globalHeaders = [];
+        let currentChartData = null; 
+        
         // DOM Elements
         const uploadZone = document.getElementById('upload-zone');
         const fileInput = document.getElementById('file-input');
         const loadingState = document.getElementById('loading-state');
         const dashboard = document.getElementById('dashboard');
         const heroSection = document.getElementById('hero-section');
-        const loadingTitle = document.getElementById('loading-title');
-        const loadingSubtitle = document.getElementById('loading-subtitle');
+        const setupScreen = document.getElementById('setup-screen');
         const notification = document.getElementById('notification');
+        const historyModal = document.getElementById('history-modal');
+        const historyModalContent = document.getElementById('history-modal-content');
         
         let chartInstance = null;
 
-        // --- Event Listeners for Drag & Drop ---
+        // --- Drag & Drop Event Listeners ---
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             uploadZone.addEventListener(eventName, preventDefaults, false);
         });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            uploadZone.addEventListener(eventName, () => uploadZone.classList.add('drag-active'), false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            uploadZone.addEventListener(eventName, () => uploadZone.classList.remove('drag-active'), false);
-        });
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        ['dragenter', 'dragover'].forEach(eventName => { uploadZone.addEventListener(eventName, () => uploadZone.classList.add('drag-active'), false); });
+        ['dragleave', 'drop'].forEach(eventName => { uploadZone.addEventListener(eventName, () => uploadZone.classList.remove('drag-active'), false); });
 
         uploadZone.addEventListener('drop', handleDrop, false);
         fileInput.addEventListener('change', handleFileSelect, false);
 
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            if(files.length) handleFiles(files[0]);
-        }
+        function handleDrop(e) { if(e.dataTransfer.files.length) handleFiles(e.dataTransfer.files[0]); }
+        function handleFileSelect(e) { if(e.target.files.length) handleFiles(e.target.files[0]); }
 
-        function handleFileSelect(e) {
-            if(e.target.files.length) handleFiles(e.target.files[0]);
-        }
-
-        // --- File Processing Logic ---
+        // --- 1. File Validation & Parsing ---
         function handleFiles(file) {
             resetAppUI();
             
-            const validTypes = [
-                'text/csv', 
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 
-                'application/vnd.ms-excel',
-                'text/plain'
-            ];
-            
+            // Limit 5MB
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification("Ukuran file terlalu besar. Maksimal 5MB.", "error");
+                return;
+            }
+
+            const validTypes = ['text/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/plain'];
             const fileExtension = file.name.split('.').pop().toLowerCase();
             const isValidExt = ['csv', 'xlsx', 'xls', 'txt'].includes(fileExtension);
 
             if (!validTypes.includes(file.type) && !isValidExt) {
-                showNotification("Format file tidak didukung. Pastikan menggunakan ekstensi CSV, XLSX, XLS, atau TXT.", "error");
+                showNotification("Format file tidak didukung. Harap gunakan CSV atau Excel.", "error");
                 return;
             }
 
-            showLoading("Memproses Dataset...", `Mengekstraksi matriks dari dokumen: ${file.name}`);
+            document.getElementById('file-name-display').innerText = file.name;
+            document.getElementById('file-size-display').innerText = `Ukuran: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
 
-            if (fileExtension === 'csv') {
-                parseCSV(file);
-            } else if (fileExtension === 'xlsx' || fileExtension === 'xls') {
-                parseExcel(file);
+            if (fileExtension === 'csv' || fileExtension === 'txt') {
+                Papa.parse(file, {
+                    skipEmptyLines: true,
+                    worker: true, // Gunakan worker bawaan PapaParse untuk efisiensi
+                    complete: function(results) {
+                        prepareSetupScreen(results.data);
+                    },
+                    error: function() { showNotification("Gagal membaca struktur CSV.", "error"); }
+                });
             } else {
-                parseText(file);
+                // SheetJS pembacaan asinkron
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const json = XLSX.utils.sheet_to_json(worksheet, {header: 1, defval: ""});
+                        prepareSetupScreen(json);
+                    } catch(err) {
+                        showNotification("Dokumen Excel rusak atau terenkripsi.", "error");
+                    }
+                };
+                reader.readAsArrayBuffer(file);
             }
         }
 
-        function parseCSV(file) {
-            Papa.parse(file, {
-                complete: function(results) {
-                    processExtractedData(results.data);
-                },
-                error: function(err) {
-                    showNotification("Gagal membaca struktur CSV.", "error");
-                    hideLoading();
-                }
-            });
-        }
-
-        function parseExcel(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const json = XLSX.utils.sheet_to_json(worksheet, {header: 1});
-                    processExtractedData(json);
-                } catch(err) {
-                    showNotification("Gagal mengurai file Excel. Pastikan integritas dokumen terjaga.", "error");
-                    hideLoading();
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function parseText(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const rows = text.split('\n').map(row => row.split('\t')); 
-                processExtractedData(rows);
-            };
-            reader.readAsText(file);
-        }
-
-        // --- Data Preparation for AI ---
-        function processExtractedData(dataArray) {
-            if (!dataArray || dataArray.length === 0) {
-                showNotification("Dokumen kosong atau tidak memiliki data yang valid.", "error");
-                hideLoading();
+        // --- 2. Data Preview & Setup Screen ---
+        function prepareSetupScreen(dataArray) {
+            if (!dataArray || dataArray.length < 2) {
+                showNotification("Dokumen kosong atau data tidak cukup.", "error");
                 return;
             }
 
-            const maxRows = 100; 
-            const sampleData = dataArray.slice(0, maxRows);
-            const dataString = JSON.stringify(sampleData);
+            globalExtractedData = dataArray;
+            globalHeaders = dataArray[0];
 
-            updateLoadingState("Menyusun Wawasan...", "Menghubungkan data dengan mesin intelegensi Dazer.");
-            analyzeWithGemini(dataString);
+            // Render Preview Table & Checkboxes
+            const thead = document.getElementById('preview-thead');
+            const tbody = document.getElementById('preview-tbody');
+            
+            // Generate Headers with Checkboxes
+            let headerHTML = '<tr>';
+            globalHeaders.forEach((col, idx) => {
+                const safeCol = col ? col.toString().trim() : `Kolom ${idx+1}`;
+                headerHTML += `
+                    <th class="px-4 py-3 whitespace-nowrap">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" checked class="col-selector w-4 h-4 text-brand-600 border-brand-300 rounded focus:ring-brand-500" data-idx="${idx}">
+                            <span>${safeCol}</span>
+                        </label>
+                    </th>`;
+            });
+            headerHTML += '</tr>';
+            thead.innerHTML = headerHTML;
+
+            // Generate Top 5 Rows
+            let bodyHTML = '';
+            const previewLimit = Math.min(6, dataArray.length); // Row 1-5 (Row 0 is header)
+            for(let i = 1; i < previewLimit; i++) {
+                bodyHTML += '<tr class="hover:bg-brand-50/50 transition-colors">';
+                globalHeaders.forEach((_, idx) => {
+                    const cellVal = dataArray[i][idx] !== undefined ? dataArray[i][idx] : '';
+                    const displayVal = cellVal.toString().length > 30 ? cellVal.toString().substring(0,30)+'...' : cellVal;
+                    bodyHTML += `<td class="px-4 py-2 whitespace-nowrap">${displayVal}</td>`;
+                });
+                bodyHTML += '</tr>';
+            }
+            tbody.innerHTML = bodyHTML;
+
+            uploadZone.classList.add('hidden');
+            heroSection.classList.add('hidden');
+            setupScreen.classList.remove('hidden');
         }
 
-        // --- API Integration (Netlify Function) ---
-        async function analyzeWithGemini(dataString) {
+        // --- 3. Smart Sampling & Start Analysis ---
+        function getRandomSample(arr, n) {
+            if (n >= arr.length) return arr;
+            const result = [];
+            const indices = new Set();
+            while(indices.size < n) {
+                const randomIdx = Math.floor(Math.random() * arr.length);
+                if(!indices.has(randomIdx)) {
+                    indices.add(randomIdx);
+                    result.push(arr[randomIdx]);
+                }
+            }
+            return result;
+        }
+
+        function startAnalysis() {
+            // Dapatkan kolom yang diaktifkan
+            const checkboxes = document.querySelectorAll('.col-selector');
+            const activeIndices = [];
+            checkboxes.forEach(cb => {
+                if(cb.checked) activeIndices.push(parseInt(cb.getAttribute('data-idx')));
+            });
+
+            if(activeIndices.length === 0) {
+                showNotification("Pilih setidaknya satu kolom untuk dianalisis.", "error");
+                return;
+            }
+
+            // Filter data berdasarkan kolom
+            const filteredData = globalExtractedData.map(row => {
+                return activeIndices.map(idx => row[idx]);
+            });
+
+            // Ekstrak Header dan Data Body
+            const headers = filteredData[0];
+            const bodyData = filteredData.slice(1);
+
+            // Smart Sampling: Ambil max 100 baris acak agar komprehensif tanpa over-token
+            const sampledBody = getRandomSample(bodyData, 100);
+            
+            // Gabungkan kembali
+            const finalData = [headers, ...sampledBody];
+            const dataString = JSON.stringify(finalData);
+
+            const intentInput = document.getElementById('custom-intent').value.trim();
+            const intentParam = intentInput ? `Tujuan Utama: "${intentInput}". ` : "";
+
+            setupScreen.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+
+            analyzeWithGemini(dataString, intentParam);
+        }
+
+        // --- 4. API Core (Netlify Call) ---
+        async function analyzeWithGemini(dataString, intentParam) {
             const maxRetries = 5;
             const delays = [1000, 2000, 4000, 8000, 16000];
 
             for (let i = 0; i < maxRetries; i++) {
                 try {
-                    // SEKARANG KITA MEMANGGIL NETLIFY FUNCTION KITA SENDIRI, BUKAN GOOGLE LANGSUNG
                     const response = await fetch('/.netlify/functions/analyze', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ data: dataString })
+                        // Sertakan Intent di payload data
+                        body: JSON.stringify({ data: intentParam + dataString })
                     });
 
-                    if (!response.ok) {
-                        const errText = await response.text();
-                        throw new Error(`HTTP error! status: ${response.status}, message: ${errText}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                     
                     const textResponse = await response.text();
-                    
-                    if (!textResponse) throw new Error("Anomali respons API terdeteksi.");
-
                     const parsedJSON = JSON.parse(textResponse);
-                    renderDashboard(parsedJSON);
+                    
+                    // Simpan ke local storage
+                    saveToHistory(parsedJSON, intentParam || "Analisis Umum");
+
+                    renderDashboard(parsedJSON, intentParam);
                     return; 
 
                 } catch (error) {
                     if (i === maxRetries - 1) {
-                        showNotification("Kesalahan koneksi ke server pusat. Silakan coba beberapa saat lagi.", "error");
-                        hideLoading();
-                        console.error("Engine Error:", error);
+                        showNotification("Koneksi gagal atau Kuota API habis.", "error");
+                        resetApp();
+                        console.error(error);
                     } else {
                         await new Promise(resolve => setTimeout(resolve, delays[i]));
                     }
@@ -466,175 +659,218 @@
             }
         }
 
-        // --- UI Rendering Logic ---
-        function renderDashboard(data) {
-            hideLoading();
-            heroSection.classList.add('hidden');
-            uploadZone.classList.add('hidden');
+        // --- 5. Rendering & Effects ---
+        function renderDashboard(data, intentText) {
+            loadingState.classList.add('hidden');
             dashboard.classList.remove('hidden');
+            currentChartData = data.chart; // Store for redrawing
 
-            // 1. Render Scorecards
+            if(intentText) {
+                document.getElementById('dashboard-intent-display').innerText = `Fokus: ${intentText.replace('Tujuan Utama: "', '').replace('". ', '')}`;
+            }
+
+            // 1. Scorecards
             if (data.scorecards && data.scorecards.length >= 3) {
                 for (let i = 1; i <= 3; i++) {
                     const sc = data.scorecards[i-1];
                     document.getElementById(`sc${i}-title`).innerText = sc.title;
                     document.getElementById(`sc${i}-value`).innerText = sc.value;
-                    
                     const trendEl = document.getElementById(`sc${i}-trend`);
                     const isPositive = sc.trend.includes('+');
                     const isNegative = sc.trend.includes('-');
-                    
-                    // Gunakan warna biru cerah (positive) atau merah (negative), atau biru pudar (netral)
-                    trendEl.className = 'text-sm mt-3 flex items-center gap-1.5 font-bold ' + 
-                                       (isPositive ? 'text-positive' : isNegative ? 'text-negative' : 'text-brand-400');
-                    
-                    let iconHtml = '';
-                    if (isPositive) iconHtml = '<i data-lucide="trending-up" class="w-5 h-5"></i>';
-                    else if (isNegative) iconHtml = '<i data-lucide="trending-down" class="w-5 h-5"></i>';
-                    else iconHtml = '<i data-lucide="minus" class="w-5 h-5"></i>';
-
-                    trendEl.innerHTML = `${iconHtml} <span>${sc.trend}</span>`;
+                    trendEl.className = 'text-sm mt-3 flex items-center gap-1.5 font-bold ' + (isPositive ? 'text-positive' : isNegative ? 'text-negative' : 'text-brand-400');
+                    trendEl.innerHTML = (isPositive ? '<i data-lucide="trending-up" class="w-5 h-5"></i>' : isNegative ? '<i data-lucide="trending-down" class="w-5 h-5"></i>' : '<i data-lucide="minus" class="w-5 h-5"></i>') + `<span>${sc.trend}</span>`;
                 }
             }
 
-            // 2. Render Insights (Deep Blue Theme Version)
+            // 2. Typewriter Insights
             const insightsList = document.getElementById('insights-list');
             insightsList.innerHTML = '';
             if (data.insights) {
                 data.insights.forEach((insight, idx) => {
-                    insightsList.innerHTML += `
-                        <li class="flex gap-4 items-start group">
-                            <span class="font-extrabold text-xs text-brand-900 bg-brand-200 rounded-md w-7 h-7 flex items-center justify-center shrink-0 mt-0.5 shadow-sm group-hover:bg-white transition-colors duration-300">${idx+1}</span>
-                            <span class="text-sm font-medium text-brand-100 leading-relaxed group-hover:text-white transition-colors duration-300">${insight}</span>
-                        </li>
+                    const li = document.createElement('li');
+                    li.className = "flex gap-4 items-start group";
+                    li.innerHTML = `
+                        <span class="font-extrabold text-xs text-brand-900 bg-brand-200 rounded-md w-7 h-7 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">${idx+1}</span>
+                        <span class="text-sm font-medium text-brand-100 leading-relaxed typewriter-target" id="insight-text-${idx}"></span>
                     `;
+                    insightsList.appendChild(li);
+                    
+                    // Staggered typewriter
+                    setTimeout(() => {
+                        typeWriterEffect(document.getElementById(`insight-text-${idx}`), insight, 20);
+                    }, idx * 800); // 800ms delay per poin
                 });
             }
 
-            // 3. Render Future Plan
+            // 3. Staggered Action Plan
             const planGrid = document.getElementById('action-plan-grid');
             planGrid.innerHTML = '';
             if (data.futurePlan) {
-                data.futurePlan.forEach(plan => {
+                data.futurePlan.forEach((plan, idx) => {
+                    const delay = (idx * 0.2) + 0.6; // Delay based on CSS animation
                     planGrid.innerHTML += `
-                        <div class="bg-white border border-brand-100 rounded-2xl p-7 shadow-sm hover:shadow-xl hover:shadow-brand-500/10 hover:border-brand-300 transition-all-custom relative overflow-hidden group">
-                            <div class="absolute top-0 left-0 w-1.5 h-full bg-brand-500 group-hover:w-full group-hover:opacity-5 transition-all duration-500"></div>
-                            <div class="bg-brand-50 text-brand-700 text-xs font-bold px-3 py-1.5 rounded-lg inline-block mb-4 border border-brand-200 uppercase tracking-widest relative z-10">
-                                ${plan.focus}
-                            </div>
-                            <p class="text-sm text-brand-900 font-semibold leading-relaxed relative z-10">${plan.action}</p>
+                        <div class="bg-white border border-brand-100 rounded-2xl p-7 shadow-sm hover:shadow-xl transition-all-custom relative overflow-hidden fade-in-up" style="animation-delay: ${delay}s">
+                            <div class="bg-brand-50 text-brand-700 text-xs font-bold px-3 py-1.5 rounded-lg inline-block mb-4 border border-brand-200 uppercase tracking-widest">${plan.focus}</div>
+                            <p class="text-sm text-brand-900 font-semibold leading-relaxed">${plan.action}</p>
                         </div>
                     `;
                 });
             }
 
-            // 4. Render Chart
+            // 4. Chart
             if (data.chart) {
                 document.getElementById('chart-title').innerText = data.chart.title;
-                renderChart(data.chart.labels, data.chart.data, data.chart.datasetLabel);
+                document.getElementById('chart-type-selector').value = 'line'; // Reset to default
+                renderChart(data.chart.labels, data.chart.data, data.chart.datasetLabel, 'line');
             }
 
             lucide.createIcons();
         }
 
-        function renderChart(labels, dataPoints, datasetLabel) {
+        // --- Chart & Export Features ---
+        function changeChartType(type) {
+            if(!currentChartData) return;
+            renderChart(currentChartData.labels, currentChartData.data, currentChartData.datasetLabel, type);
+        }
+
+        function renderChart(labels, dataPoints, datasetLabel, type = 'line') {
             const ctx = document.getElementById('mainChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            const isPieOrDoughnut = type === 'pie' || type === 'doughnut';
             
-            if (chartInstance) {
-                chartInstance.destroy();
+            // Colors
+            const gradient = ctx.createLinearGradient(0, 0, 0, 350);
+            gradient.addColorStop(0, 'rgba(2, 132, 199, 0.3)'); 
+            gradient.addColorStop(1, 'rgba(2, 132, 199, 0.0)');
+            
+            const palette = ['#0284c7', '#38bdf8', '#0ea5e9', '#0369a1', '#bae6fd', '#075985'];
+
+            let options = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: isPieOrDoughnut, position: 'right', labels: {font: {family:'Inter', size:12}} },
+                    tooltip: {
+                        backgroundColor: '#0c4a6e', padding: 14,
+                        titleFont: { family: 'Inter', size: 13, weight: 'bold' },
+                        bodyFont: { family: 'Inter', size: 14 },
+                        cornerRadius: 12
+                    }
+                }
+            };
+
+            if(!isPieOrDoughnut) {
+                options.scales = {
+                    y: { beginAtZero: true, grid: { color: '#e0f2fe', borderDash: [5, 5] }, ticks: { font: { family: 'Inter', size: 12 }, color: '#0369a1' } },
+                    x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 12 }, color: '#0369a1' } }
+                };
             }
 
-            // High-End Blue Gradient
-            const gradient = ctx.createLinearGradient(0, 0, 0, 350);
-            gradient.addColorStop(0, 'rgba(2, 132, 199, 0.3)'); // brand-600 with opacity
-            gradient.addColorStop(1, 'rgba(2, 132, 199, 0.0)');
-
             chartInstance = new Chart(ctx, {
-                type: 'line',
+                type: type,
                 data: {
                     labels: labels,
                     datasets: [{
                         label: datasetLabel,
                         data: dataPoints,
-                        borderColor: '#0284c7', // brand-600
-                        backgroundColor: gradient,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#0284c7',
-                        pointBorderWidth: 2,
-                        pointRadius: 4,
-                        pointHoverRadius: 7,
-                        pointHoverBackgroundColor: '#0284c7',
-                        pointHoverBorderColor: '#ffffff',
+                        borderColor: isPieOrDoughnut ? '#ffffff' : '#0284c7',
+                        backgroundColor: isPieOrDoughnut ? palette : (type === 'bar' ? '#0ea5e9' : gradient),
+                        borderWidth: isPieOrDoughnut ? 2 : 3,
                         fill: true,
-                        tension: 0.4 // Smooth elegant curve
+                        tension: 0.4 
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0c4a6e', // brand-900
-                            padding: 14,
-                            titleFont: { family: 'Inter', size: 13, weight: 'bold' },
-                            bodyFont: { family: 'Inter', size: 14, weight: 'normal' },
-                            displayColors: false,
-                            cornerRadius: 12,
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderWidth: 1
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: '#e0f2fe', // brand-100
-                                drawBorder: false,
-                                borderDash: [5, 5]
-                            },
-                            ticks: {
-                                font: { family: 'Inter', size: 12, weight: '600' },
-                                color: '#0369a1', // brand-700
-                                padding: 12
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false,
-                                drawBorder: false,
-                            },
-                            ticks: {
-                                font: { family: 'Inter', size: 12, weight: '600' },
-                                color: '#0369a1', // brand-700
-                                padding: 12
-                            }
-                        }
-                    },
-                    interaction: {
-                        intersect: false,
-                        mode: 'index',
-                    },
-                }
+                options: options
             });
         }
 
+        function exportToPDF() {
+            showNotification("Menyiapkan PDF...", "success");
+            const element = document.getElementById('pdf-container');
+            const opt = {
+                margin:       [0.5, 0.5, 0.5, 0.5],
+                filename:     `Dazer-Report-${new Date().getTime()}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+
+        // --- LocalStorage History Logic ---
+        function saveToHistory(dataJSON, intent) {
+            const history = JSON.parse(localStorage.getItem('dazer_history') || '[]');
+            const record = {
+                id: Date.now(),
+                date: new Date().toLocaleString('id-ID'),
+                intent: intent,
+                data: dataJSON
+            };
+            history.unshift(record); // Add to beginning
+            if(history.length > 10) history.pop(); // Keep only last 10
+            localStorage.setItem('dazer_history', JSON.stringify(history));
+            renderHistoryList();
+        }
+
+        function renderHistoryList() {
+            const listContainer = document.getElementById('history-list');
+            const history = JSON.parse(localStorage.getItem('dazer_history') || '[]');
+            
+            if(history.length === 0) return;
+            
+            listContainer.innerHTML = '';
+            history.forEach(item => {
+                const intentDisplay = item.intent === "Analisis Umum" ? "Analisis Umum" : item.intent.substring(0, 40) + '...';
+                listContainer.innerHTML += `
+                    <div class="mb-3 p-4 bg-white border border-brand-100 rounded-xl hover:border-brand-300 hover:shadow-md transition-all cursor-pointer group" onclick='loadFromHistory(${JSON.stringify(item.data)}, "${item.intent}")'>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-brand-500">${item.date}</span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-brand-300 group-hover:text-brand-600 transition-colors"></i>
+                        </div>
+                        <p class="text-sm font-semibold text-brand-900">${intentDisplay}</p>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function loadFromHistory(data, intent) {
+            toggleHistoryModal();
+            resetAppUI();
+            renderDashboard(data, intent);
+        }
+
+        function toggleHistoryModal() {
+            renderHistoryList();
+            if (historyModal.classList.contains('hidden')) {
+                historyModal.classList.remove('hidden');
+                // Trigger reflow for animation
+                void historyModal.offsetWidth;
+                historyModal.classList.remove('opacity-0');
+                historyModalContent.classList.remove('scale-95');
+            } else {
+                historyModal.classList.add('opacity-0');
+                historyModalContent.classList.add('scale-95');
+                setTimeout(() => historyModal.classList.add('hidden'), 300);
+            }
+        }
+
         // --- Utilities ---
-        function showLoading(title, subtitle) {
-            uploadZone.classList.add('hidden');
-            loadingState.classList.remove('hidden');
-            loadingTitle.innerText = title;
-            loadingSubtitle.innerText = subtitle;
-        }
-
-        function updateLoadingState(title, subtitle) {
-            loadingTitle.innerText = title;
-            loadingSubtitle.innerText = subtitle;
-        }
-
-        function hideLoading() {
-            loadingState.classList.add('hidden');
+        function typeWriterEffect(element, text, speed) {
+            let i = 0;
+            element.classList.add('typewriter-cursor');
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                } else {
+                    element.classList.remove('typewriter-cursor'); // Remove cursor when done
+                }
+            }
+            type();
         }
 
         function showNotification(message, type = 'error') {
@@ -642,22 +878,23 @@
             document.getElementById('notification-text').innerText = message;
             
             if (type === 'error') {
-                notification.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
-                notification.classList.remove('bg-brand-50', 'text-brand-700', 'border-brand-200');
+                notification.className = "hidden max-w-2xl mx-auto mt-6 p-4 rounded-xl flex items-center gap-3 shadow-md transition-all-custom fixed top-4 right-4 z-[100] bg-red-50 text-red-700 border border-red-200";
                 document.getElementById('notification-icon').setAttribute('data-lucide', 'alert-triangle');
             } else {
-                notification.classList.add('bg-brand-50', 'text-brand-700', 'border', 'border-brand-200');
-                notification.classList.remove('bg-red-50', 'text-red-700', 'border-red-200');
+                notification.className = "hidden max-w-2xl mx-auto mt-6 p-4 rounded-xl flex items-center gap-3 shadow-md transition-all-custom fixed top-4 right-4 z-[100] bg-emerald-50 text-emerald-700 border border-emerald-200";
                 document.getElementById('notification-icon').setAttribute('data-lucide', 'check-circle');
             }
             lucide.createIcons();
             
-            setTimeout(() => { notification.classList.add('hidden'); }, 5000);
+            setTimeout(() => { notification.classList.add('hidden'); }, 4000);
         }
 
         function resetAppUI() {
             notification.classList.add('hidden');
             dashboard.classList.add('hidden');
+            setupScreen.classList.add('hidden');
+            loadingState.classList.add('hidden');
+            document.getElementById('custom-intent').value = '';
         }
 
         function resetApp() {
