@@ -70,8 +70,19 @@ Aturan tambahan:
             })
         });
 
+        // Tangkap jika Google memberikan kode error khusus seperti 429 (Too Many Requests)
         if (!response.ok) {
-            throw new Error(`Google API responded with status ${response.status}`);
+            const errorDetail = await response.text();
+            console.error(`Google API Error (${response.status}):`, errorDetail);
+            
+            return {
+                statusCode: response.status, // Mengembalikan status asli (misal 429) ke HTML
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    error: `API Google merespon dengan status ${response.status}`, 
+                    details: errorDetail 
+                })
+            };
         }
 
         const result = await response.json();
@@ -88,7 +99,7 @@ Aturan tambahan:
         console.error("Function Error:", error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Gagal memproses data di server.' })
+            body: JSON.stringify({ error: 'Gagal memproses data di server internal.' })
         };
     }
 };
