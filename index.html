@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dazer | Intelegensi Data Strategis</title>
+    <title>Dazer | Analitik Data Strategis</title>
     
     <!-- SEO & Meta -->
     <meta name="description" content="Dazer: Platform AI untuk ekstraksi wawasan dan perencanaan strategis otomatis dari dataset Anda.">
@@ -21,27 +21,26 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Tailwind Config for Custom Colors (Professional Blue Theme) -->
+    <!-- Tailwind Config for Custom Colors (Pure Blue Professional Theme) -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb', // Primary Blue
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a', // Deep Blue
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7', // Primary Brand Blue
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e', // Deep Navy Blue
                         },
-                        accent: {
-                            500: '#10b981', // Emerald strictly for positive data trends
-                        }
+                        positive: '#0ea5e9', // Blue variant for positive trends to keep monochromatic feel
+                        negative: '#e11d48'  // Keep red strictly for actual negative/alert data
                     },
                     fontFamily: {
                         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -57,24 +56,32 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f4f7fc;
-            background-image: radial-gradient(circle at 50% 0%, #ffffff 0%, transparent 75%);
+            background-color: #f0f9ff;
+            background-image: radial-gradient(circle at top center, #ffffff 0%, transparent 80%);
+            background-attachment: fixed;
         }
 
-        /* Elevated Glassmorphism for High-End SaaS Look */
+        /* Premium Glass Card */
         .glass-card {
-            background: #ffffff;
-            border: 1px solid rgba(37, 99, 235, 0.1);
-            box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.05), 0 8px 10px -6px rgba(30, 58, 138, 0.01);
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(2, 132, 199, 0.15);
+            box-shadow: 0 10px 30px -10px rgba(12, 74, 110, 0.1);
             border-radius: 1.25rem;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(2, 132, 199, 0.3);
+            box-shadow: 0 15px 35px -10px rgba(12, 74, 110, 0.15);
         }
 
         /* Drag & Drop Animations */
         .drag-active {
-            border-color: #2563eb !important;
-            background-color: #eff6ff !important;
-            transform: scale(1.01);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            border-color: #0284c7 !important;
+            background-color: #e0f2fe !important;
+            transform: scale(1.02);
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.1);
         }
         
         .transition-all-custom {
@@ -84,28 +91,38 @@
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #bfdbfe; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #60a5fa; }
+        ::-webkit-scrollbar-thumb { background: #bae6fd; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #38bdf8; }
+
+        /* Pulse Animation for Upload Icon */
+        @keyframes subtle-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(2, 132, 199, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
+        }
+        .upload-pulse:hover {
+            animation: subtle-pulse 2s infinite;
+        }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="text-brand-900 antialiased min-h-screen flex flex-col selection:bg-brand-200 selection:text-brand-900">
 
     <!-- Navbar -->
-    <nav class="w-full bg-white/80 backdrop-blur-md border-b border-brand-100 sticky top-0 z-50">
+    <nav class="w-full bg-white/90 backdrop-blur-md border-b border-brand-100 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2.5">
-                    <div class="bg-gradient-to-br from-brand-600 to-brand-800 p-2 rounded-xl shadow-sm">
-                        <i data-lucide="hexagon" class="text-white w-5 h-5 fill-white/20"></i>
+                <div class="flex items-center gap-3">
+                    <div class="bg-brand-600 p-2 rounded-lg shadow-md shadow-brand-500/20">
+                        <i data-lucide="layers" class="text-white w-5 h-5"></i>
                     </div>
-                    <span class="font-extrabold text-xl tracking-tight text-brand-900">Dazer</span>
+                    <span class="font-extrabold text-2xl tracking-tight text-brand-900">Dazer.</span>
                 </div>
-                <div class="flex items-center gap-2 bg-brand-50 px-3 py-1.5 rounded-full border border-brand-100">
+                <div class="flex items-center gap-2 bg-brand-50 px-4 py-1.5 rounded-full border border-brand-200 shadow-sm">
                     <span class="flex h-2.5 w-2.5 relative">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-500 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-600"></span>
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
                     </span>
-                    <span class="text-xs font-semibold text-brand-800 uppercase tracking-wider">Engine Ready</span>
+                    <span class="text-xs font-bold text-brand-700 uppercase tracking-widest">Sistem Aktif</span>
                 </div>
             </div>
         </div>
@@ -116,97 +133,104 @@
         
         <!-- Header Section -->
         <div class="text-center max-w-3xl mx-auto mb-14" id="hero-section">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-5 leading-tight">
-                Transformasi Data Menjadi <br/>
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400">Keputusan Strategis.</span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-brand-900 tracking-tight mb-5 leading-tight">
+                Ubah Data Menjadi <br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-brand-700">Keputusan Strategis.</span>
             </h1>
-            <p class="text-lg text-slate-600 font-medium mb-8">
-                Platform intelegensi bertenaga AI. Unggah dataset Anda dan dapatkan wawasan operasional serta peta jalan eksekusi dalam hitungan detik.
+            <p class="text-lg text-brand-800/70 font-medium mb-8">
+                Analisis dataset Anda secara otomatis. Temukan pola tersembunyi dan dapatkan peta jalan eksekusi yang presisi dalam hitungan detik.
             </p>
         </div>
 
         <!-- Upload Zone -->
-        <div id="upload-zone" class="max-w-2xl mx-auto bg-white border-2 border-dashed border-brand-300 rounded-2xl p-14 text-center cursor-pointer transition-all-custom hover:border-brand-500 hover:shadow-lg relative overflow-hidden group">
+        <div id="upload-zone" onclick="document.getElementById('file-input').click()" class="max-w-2xl mx-auto bg-white border-2 border-dashed border-brand-300 rounded-2xl p-14 text-center cursor-pointer transition-all-custom hover:border-brand-500 hover:shadow-xl hover:shadow-brand-500/10 relative overflow-hidden group">
             <input type="file" id="file-input" class="hidden" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, text/plain">
             
             <div class="flex flex-col items-center justify-center space-y-5 pointer-events-none">
-                <div class="bg-brand-50 p-4 rounded-2xl text-brand-600 group-hover:scale-110 group-hover:bg-brand-100 transition-all-custom duration-300">
-                    <i data-lucide="folder-up" class="w-12 h-12 stroke-[1.5]"></i>
+                <div class="bg-brand-50 p-5 rounded-full text-brand-600 group-hover:bg-brand-100 group-hover:text-brand-700 transition-all-custom duration-300 upload-pulse">
+                    <i data-lucide="file-up" class="w-12 h-12 stroke-[2]"></i>
                 </div>
                 <div>
-                    <p class="text-xl font-bold text-slate-900">Letakkan Dokumen di Sini</p>
-                    <p class="text-sm text-slate-500 mt-1 font-medium">Format yang didukung: CSV, XLSX, XLS, TXT.</p>
+                    <p class="text-xl font-bold text-brand-900">Tarik & Lepas File Anda di Sini</p>
+                    <p class="text-sm text-brand-600/70 mt-1 font-medium">Mendukung format CSV, XLSX, XLS, atau TXT.</p>
                 </div>
-                <button class="mt-2 bg-slate-900 text-white px-8 py-2.5 rounded-xl font-semibold shadow-md hover:bg-brand-600 hover:shadow-brand-500/30 pointer-events-auto transition-all-custom">
-                    Pilih File Direktori
+                <button onclick="document.getElementById('file-input').click(); event.stopPropagation();" class="mt-4 bg-brand-600 text-white px-8 py-3 rounded-xl font-semibold shadow-lg shadow-brand-500/30 hover:bg-brand-700 hover:-translate-y-0.5 active:translate-y-0 pointer-events-auto transition-all-custom">
+                    Pilih File Manual
                 </button>
             </div>
         </div>
 
         <!-- Loading State -->
         <div id="loading-state" class="hidden max-w-2xl mx-auto text-center py-20">
-            <div class="inline-block relative w-16 h-16 mb-4">
+            <div class="inline-block relative w-20 h-20 mb-6">
                 <div class="absolute top-0 left-0 w-full h-full border-4 border-brand-100 rounded-full"></div>
                 <div class="absolute top-0 left-0 w-full h-full border-4 border-brand-600 rounded-full border-t-transparent animate-spin"></div>
+                <i data-lucide="cpu" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-brand-600 w-6 h-6 animate-pulse"></i>
             </div>
-            <h3 class="text-xl font-bold text-slate-900" id="loading-title">Memproses Parameter...</h3>
-            <p class="text-slate-500 mt-2 font-medium" id="loading-subtitle">Menyusun matriks data internal.</p>
+            <h3 class="text-2xl font-bold text-brand-900" id="loading-title">Menganalisis Dataset...</h3>
+            <p class="text-brand-600 mt-2 font-medium" id="loading-subtitle">Mengekstraksi pola dan menyusun wawasan strategis.</p>
         </div>
 
         <!-- Notification Banner -->
-        <div id="notification" class="hidden max-w-2xl mx-auto mt-6 p-4 rounded-xl flex items-center gap-3 shadow-sm">
+        <div id="notification" class="hidden max-w-2xl mx-auto mt-6 p-4 rounded-xl flex items-center gap-3 shadow-md transition-all-custom">
             <i data-lucide="info" class="w-5 h-5 shrink-0" id="notification-icon"></i>
             <p id="notification-text" class="text-sm font-semibold"></p>
         </div>
 
         <!-- Dashboard Result (Bento Grid) -->
         <div id="dashboard" class="hidden mt-6 transition-all-custom">
-            <div class="flex justify-between items-end mb-8 border-b border-slate-200 pb-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b border-brand-200 pb-5 gap-4">
                 <div>
-                    <h2 class="text-2xl font-extrabold text-slate-900">Dasbor Eksekutif</h2>
-                    <p class="text-slate-500 text-sm mt-1 font-medium">Laporan analitik dihasilkan secara otomatis oleh Dazer Engine.</p>
+                    <h2 class="text-3xl font-extrabold text-brand-900 tracking-tight">Dasbor Analitik</h2>
+                    <p class="text-brand-600 text-sm mt-1.5 font-medium">Wawasan strategis dihasilkan secara real-time oleh Dazer AI.</p>
                 </div>
-                <button onclick="resetApp()" class="text-sm font-semibold flex items-center gap-2 text-slate-500 hover:text-brand-600 transition-colors bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm hover:border-brand-300">
-                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Analisis Ulang
+                <button onclick="resetApp()" class="text-sm font-bold flex items-center gap-2 text-brand-700 hover:text-white hover:bg-brand-600 transition-all-custom bg-white px-5 py-2.5 rounded-xl border border-brand-200 shadow-sm hover:shadow-md">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i> Analisis Dataset Baru
                 </button>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 
                 <!-- Scorecards (Top Row) -->
-                <div class="glass-card p-6 flex flex-col justify-between" id="card-1">
+                <div class="glass-card p-7 flex flex-col justify-between group" id="card-1">
                     <div class="flex justify-between items-start">
-                        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" id="sc1-title">Indikator 1</p>
-                        <div class="bg-brand-50 p-2 rounded-lg"><i data-lucide="trending-up" class="w-4 h-4 text-brand-600"></i></div>
+                        <p class="text-xs font-bold text-brand-500 uppercase tracking-widest" id="sc1-title">Indikator Utama</p>
+                        <div class="bg-brand-50 p-2.5 rounded-xl group-hover:bg-brand-600 group-hover:text-white text-brand-600 transition-colors duration-300">
+                            <i data-lucide="activity" class="w-5 h-5"></i>
+                        </div>
                     </div>
-                    <div class="mt-5">
-                        <h3 class="text-4xl font-extrabold text-slate-900 tracking-tight" id="sc1-value">-</h3>
+                    <div class="mt-6">
+                        <h3 class="text-4xl font-extrabold text-brand-900 tracking-tight" id="sc1-value">-</h3>
                         <p class="text-sm mt-3 flex items-center gap-1.5 font-bold" id="sc1-trend">
                             <span>-</span>
                         </p>
                     </div>
                 </div>
 
-                <div class="glass-card p-6 flex flex-col justify-between" id="card-2">
+                <div class="glass-card p-7 flex flex-col justify-between group" id="card-2">
                     <div class="flex justify-between items-start">
-                        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" id="sc2-title">Indikator 2</p>
-                        <div class="bg-brand-50 p-2 rounded-lg"><i data-lucide="bar-chart" class="w-4 h-4 text-brand-600"></i></div>
+                        <p class="text-xs font-bold text-brand-500 uppercase tracking-widest" id="sc2-title">Indikator Sekunder</p>
+                        <div class="bg-brand-50 p-2.5 rounded-xl group-hover:bg-brand-600 group-hover:text-white text-brand-600 transition-colors duration-300">
+                            <i data-lucide="target" class="w-5 h-5"></i>
+                        </div>
                     </div>
-                    <div class="mt-5">
-                        <h3 class="text-4xl font-extrabold text-slate-900 tracking-tight" id="sc2-value">-</h3>
+                    <div class="mt-6">
+                        <h3 class="text-4xl font-extrabold text-brand-900 tracking-tight" id="sc2-value">-</h3>
                         <p class="text-sm mt-3 flex items-center gap-1.5 font-bold" id="sc2-trend">
                             <span>-</span>
                         </p>
                     </div>
                 </div>
 
-                <div class="glass-card p-6 flex flex-col justify-between" id="card-3">
+                <div class="glass-card p-7 flex flex-col justify-between group" id="card-3">
                     <div class="flex justify-between items-start">
-                        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide" id="sc3-title">Indikator 3</p>
-                        <div class="bg-brand-50 p-2 rounded-lg"><i data-lucide="pie-chart" class="w-4 h-4 text-brand-600"></i></div>
+                        <p class="text-xs font-bold text-brand-500 uppercase tracking-widest" id="sc3-title">Indikator Tersier</p>
+                        <div class="bg-brand-50 p-2.5 rounded-xl group-hover:bg-brand-600 group-hover:text-white text-brand-600 transition-colors duration-300">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                        </div>
                     </div>
-                    <div class="mt-5">
-                        <h3 class="text-4xl font-extrabold text-slate-900 tracking-tight" id="sc3-value">-</h3>
+                    <div class="mt-6">
+                        <h3 class="text-4xl font-extrabold text-brand-900 tracking-tight" id="sc3-value">-</h3>
                         <p class="text-sm mt-3 flex items-center gap-1.5 font-bold" id="sc3-trend">
                             <span>-</span>
                         </p>
@@ -214,9 +238,12 @@
                 </div>
 
                 <!-- Main Chart (Spans 2 columns) -->
-                <div class="glass-card p-7 md:col-span-2 h-96 flex flex-col relative overflow-hidden">
+                <div class="glass-card p-8 md:col-span-2 h-[420px] flex flex-col relative overflow-hidden">
                     <div class="flex justify-between items-center mb-6 z-10">
-                        <h3 class="font-bold text-slate-900 text-lg" id="chart-title">Pemetaan Tren Historis</h3>
+                        <h3 class="font-extrabold text-brand-900 text-lg flex items-center gap-2">
+                            <i data-lucide="line-chart" class="w-5 h-5 text-brand-600"></i>
+                            <span id="chart-title">Pemetaan Tren Data</span>
+                        </h3>
                     </div>
                     <div class="relative flex-grow w-full h-full z-10">
                         <canvas id="mainChart"></canvas>
@@ -224,12 +251,14 @@
                 </div>
 
                 <!-- Key Insights -->
-                <div class="glass-card p-7 md:col-span-1 bg-gradient-to-b from-brand-900 to-slate-900 border-none">
-                    <div class="flex items-center gap-2.5 mb-6 pb-4 border-b border-white/10">
-                        <i data-lucide="zap" class="w-5 h-5 text-brand-400"></i>
-                        <h3 class="font-bold text-white text-lg">Wawasan Kritis</h3>
+                <div class="glass-card p-8 md:col-span-1 bg-gradient-to-br from-brand-900 to-brand-800 border-none shadow-xl shadow-brand-900/20 text-white">
+                    <div class="flex items-center gap-3 mb-6 pb-4 border-b border-brand-700/50">
+                        <div class="bg-brand-700/50 p-2 rounded-lg">
+                            <i data-lucide="lightbulb" class="w-5 h-5 text-brand-200"></i>
+                        </div>
+                        <h3 class="font-bold text-lg tracking-wide">Temuan Kritis</h3>
                     </div>
-                    <ul class="space-y-4" id="insights-list">
+                    <ul class="space-y-5" id="insights-list">
                         <!-- Injected via JS -->
                     </ul>
                 </div>
@@ -237,15 +266,15 @@
                 <!-- Strategic Action Plan (Spans full width) -->
                 <div class="glass-card p-8 md:col-span-3">
                     <div class="flex items-center gap-3 mb-8">
-                        <div class="bg-brand-100 p-2 rounded-lg">
-                            <i data-lucide="compass" class="w-5 h-5 text-brand-600"></i>
+                        <div class="bg-brand-100 p-2.5 rounded-xl">
+                            <i data-lucide="crosshair" class="w-6 h-6 text-brand-600"></i>
                         </div>
                         <div>
-                            <h3 class="font-extrabold text-slate-900 text-xl">Peta Jalan Eksekusi</h3>
-                            <p class="text-slate-500 text-sm font-medium">Rekomendasi taktis berdasarkan komputasi AI.</p>
+                            <h3 class="font-extrabold text-brand-900 text-xl tracking-tight">Rekomendasi Tindakan</h3>
+                            <p class="text-brand-600 text-sm font-medium mt-0.5">Langkah operasional yang direkomendasikan berdasarkan hasil analisis.</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="action-plan-grid">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="action-plan-grid">
                         <!-- Injected via JS -->
                     </div>
                 </div>
@@ -255,10 +284,12 @@
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-200 mt-auto py-8 bg-white/50 backdrop-blur-sm">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-slate-500 text-sm font-medium">
+    <footer class="border-t border-brand-200 mt-auto py-8 bg-white/60 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-brand-600 text-sm font-semibold">
             <p>&copy; 2026 Dazer Analytics.</p>
-            <p class="flex items-center gap-1.5 mt-2 md:mt-0"><i data-lucide="shield-check" class="w-4 h-4 text-brand-500"></i> Privasi Data Terjamin.</p>
+            <p class="flex items-center gap-2 mt-3 md:mt-0 bg-brand-50 px-3 py-1.5 rounded-full border border-brand-100">
+                <i data-lucide="shield-check" class="w-4 h-4 text-brand-600"></i> Privasi Data Terjamin
+            </p>
         </div>
     </footer>
 
@@ -325,11 +356,11 @@
             const isValidExt = ['csv', 'xlsx', 'xls', 'txt'].includes(fileExtension);
 
             if (!validTypes.includes(file.type) && !isValidExt) {
-                showNotification("Format file tidak didukung. Mohon gunakan ekstensi CSV, XLSX, atau TXT.", "error");
+                showNotification("Format file tidak didukung. Pastikan menggunakan ekstensi CSV, XLSX, XLS, atau TXT.", "error");
                 return;
             }
 
-            showLoading("Memproses Algoritma...", `Menganalisis matriks dari dokumen: ${file.name}`);
+            showLoading("Memproses Dataset...", `Mengekstraksi matriks dari dokumen: ${file.name}`);
 
             if (fileExtension === 'csv') {
                 parseCSV(file);
@@ -346,7 +377,7 @@
                     processExtractedData(results.data);
                 },
                 error: function(err) {
-                    showNotification("Gagal memecah format CSV.", "error");
+                    showNotification("Gagal membaca struktur CSV.", "error");
                     hideLoading();
                 }
             });
@@ -383,7 +414,7 @@
         // --- Data Preparation for AI ---
         function processExtractedData(dataArray) {
             if (!dataArray || dataArray.length === 0) {
-                showNotification("Dokumen kosong atau gagal diidentifikasi.", "error");
+                showNotification("Dokumen kosong atau tidak memiliki data yang valid.", "error");
                 hideLoading();
                 return;
             }
@@ -392,7 +423,7 @@
             const sampleData = dataArray.slice(0, maxRows);
             const dataString = JSON.stringify(sampleData);
 
-            updateLoadingState("Koneksi Dazer Engine...", "Menghasilkan ekstraksi insight dan taktik bisnis.");
+            updateLoadingState("Menyusun Wawasan...", "Menghubungkan data dengan mesin intelegensi Dazer.");
             analyzeWithGemini(dataString);
         }
 
@@ -403,6 +434,7 @@
 
             for (let i = 0; i < maxRetries; i++) {
                 try {
+                    // SEKARANG KITA MEMANGGIL NETLIFY FUNCTION KITA SENDIRI, BUKAN GOOGLE LANGSUNG
                     const response = await fetch('/.netlify/functions/analyze', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -424,7 +456,7 @@
 
                 } catch (error) {
                     if (i === maxRetries - 1) {
-                        showNotification("Kesalahan komputasi server. Harap coba beberapa saat lagi.", "error");
+                        showNotification("Kesalahan koneksi ke server pusat. Silakan coba beberapa saat lagi.", "error");
                         hideLoading();
                         console.error("Engine Error:", error);
                     } else {
@@ -452,27 +484,28 @@
                     const isPositive = sc.trend.includes('+');
                     const isNegative = sc.trend.includes('-');
                     
+                    // Gunakan warna biru cerah (positive) atau merah (negative), atau biru pudar (netral)
                     trendEl.className = 'text-sm mt-3 flex items-center gap-1.5 font-bold ' + 
-                                       (isPositive ? 'text-accent-500' : isNegative ? 'text-red-500' : 'text-slate-400');
+                                       (isPositive ? 'text-positive' : isNegative ? 'text-negative' : 'text-brand-400');
                     
                     let iconHtml = '';
-                    if (isPositive) iconHtml = '<i data-lucide="arrow-up-right" class="w-4 h-4"></i>';
-                    else if (isNegative) iconHtml = '<i data-lucide="arrow-down-right" class="w-4 h-4"></i>';
-                    else iconHtml = '<i data-lucide="minus" class="w-4 h-4"></i>';
+                    if (isPositive) iconHtml = '<i data-lucide="trending-up" class="w-5 h-5"></i>';
+                    else if (isNegative) iconHtml = '<i data-lucide="trending-down" class="w-5 h-5"></i>';
+                    else iconHtml = '<i data-lucide="minus" class="w-5 h-5"></i>';
 
                     trendEl.innerHTML = `${iconHtml} <span>${sc.trend}</span>`;
                 }
             }
 
-            // 2. Render Insights (Dark Theme Version)
+            // 2. Render Insights (Deep Blue Theme Version)
             const insightsList = document.getElementById('insights-list');
             insightsList.innerHTML = '';
             if (data.insights) {
                 data.insights.forEach((insight, idx) => {
                     insightsList.innerHTML += `
                         <li class="flex gap-4 items-start group">
-                            <span class="font-extrabold text-xs text-brand-900 bg-brand-400 rounded w-6 h-6 flex items-center justify-center shrink-0 mt-0.5 shadow-sm">${idx+1}</span>
-                            <span class="text-sm font-medium text-slate-300 leading-relaxed group-hover:text-white transition-colors">${insight}</span>
+                            <span class="font-extrabold text-xs text-brand-900 bg-brand-200 rounded-md w-7 h-7 flex items-center justify-center shrink-0 mt-0.5 shadow-sm group-hover:bg-white transition-colors duration-300">${idx+1}</span>
+                            <span class="text-sm font-medium text-brand-100 leading-relaxed group-hover:text-white transition-colors duration-300">${insight}</span>
                         </li>
                     `;
                 });
@@ -484,12 +517,12 @@
             if (data.futurePlan) {
                 data.futurePlan.forEach(plan => {
                     planGrid.innerHTML += `
-                        <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-brand-300 transition-all-custom relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-1 h-full bg-brand-500"></div>
-                            <div class="bg-brand-50 text-brand-700 text-xs font-bold px-2.5 py-1.5 rounded-md inline-block mb-4 border border-brand-100 uppercase tracking-wide">
+                        <div class="bg-white border border-brand-100 rounded-2xl p-7 shadow-sm hover:shadow-xl hover:shadow-brand-500/10 hover:border-brand-300 transition-all-custom relative overflow-hidden group">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-brand-500 group-hover:w-full group-hover:opacity-5 transition-all duration-500"></div>
+                            <div class="bg-brand-50 text-brand-700 text-xs font-bold px-3 py-1.5 rounded-lg inline-block mb-4 border border-brand-200 uppercase tracking-widest relative z-10">
                                 ${plan.focus}
                             </div>
-                            <p class="text-sm text-slate-700 font-semibold leading-relaxed">${plan.action}</p>
+                            <p class="text-sm text-brand-900 font-semibold leading-relaxed relative z-10">${plan.action}</p>
                         </div>
                     `;
                 });
@@ -513,8 +546,8 @@
 
             // High-End Blue Gradient
             const gradient = ctx.createLinearGradient(0, 0, 0, 350);
-            gradient.addColorStop(0, 'rgba(37, 99, 235, 0.25)'); // blue-600
-            gradient.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+            gradient.addColorStop(0, 'rgba(2, 132, 199, 0.3)'); // brand-600 with opacity
+            gradient.addColorStop(1, 'rgba(2, 132, 199, 0.0)');
 
             chartInstance = new Chart(ctx, {
                 type: 'line',
@@ -523,16 +556,18 @@
                     datasets: [{
                         label: datasetLabel,
                         data: dataPoints,
-                        borderColor: '#2563eb', // blue-600
+                        borderColor: '#0284c7', // brand-600
                         backgroundColor: gradient,
                         borderWidth: 3,
                         pointBackgroundColor: '#ffffff',
-                        pointBorderColor: '#2563eb',
+                        pointBorderColor: '#0284c7',
                         pointBorderWidth: 2,
                         pointRadius: 4,
-                        pointHoverRadius: 6,
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: '#0284c7',
+                        pointHoverBorderColor: '#ffffff',
                         fill: true,
-                        tension: 0.35 // Smooth elegant curve
+                        tension: 0.4 // Smooth elegant curve
                     }]
                 },
                 options: {
@@ -541,12 +576,12 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#1e293b',
+                            backgroundColor: '#0c4a6e', // brand-900
                             padding: 14,
                             titleFont: { family: 'Inter', size: 13, weight: 'bold' },
                             bodyFont: { family: 'Inter', size: 14, weight: 'normal' },
                             displayColors: false,
-                            cornerRadius: 8,
+                            cornerRadius: 12,
                             borderColor: 'rgba(255,255,255,0.1)',
                             borderWidth: 1
                         }
@@ -555,14 +590,14 @@
                         y: {
                             beginAtZero: true,
                             grid: {
-                                color: '#f1f5f9',
+                                color: '#e0f2fe', // brand-100
                                 drawBorder: false,
-                                borderDash: [4, 4]
+                                borderDash: [5, 5]
                             },
                             ticks: {
-                                font: { family: 'Inter', size: 12, weight: '500' },
-                                color: '#94a3b8',
-                                padding: 10
+                                font: { family: 'Inter', size: 12, weight: '600' },
+                                color: '#0369a1', // brand-700
+                                padding: 12
                             }
                         },
                         x: {
@@ -571,9 +606,9 @@
                                 drawBorder: false,
                             },
                             ticks: {
-                                font: { family: 'Inter', size: 12, weight: '500' },
-                                color: '#94a3b8',
-                                padding: 10
+                                font: { family: 'Inter', size: 12, weight: '600' },
+                                color: '#0369a1', // brand-700
+                                padding: 12
                             }
                         }
                     },
@@ -608,10 +643,10 @@
             
             if (type === 'error') {
                 notification.classList.add('bg-red-50', 'text-red-700', 'border', 'border-red-200');
-                notification.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-200');
-                document.getElementById('notification-icon').setAttribute('data-lucide', 'alert-circle');
+                notification.classList.remove('bg-brand-50', 'text-brand-700', 'border-brand-200');
+                document.getElementById('notification-icon').setAttribute('data-lucide', 'alert-triangle');
             } else {
-                notification.classList.add('bg-emerald-50', 'text-emerald-700', 'border', 'border-emerald-200');
+                notification.classList.add('bg-brand-50', 'text-brand-700', 'border', 'border-brand-200');
                 notification.classList.remove('bg-red-50', 'text-red-700', 'border-red-200');
                 document.getElementById('notification-icon').setAttribute('data-lucide', 'check-circle');
             }
