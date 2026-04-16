@@ -11,8 +11,8 @@ exports.handler = async function(event, context) {
         // 2. Ambil data mentah yang dikirim dari HTML
         const { data } = JSON.parse(event.body);
 
-        // 3. AMBIL API KEY DARI NETLIFY ENVIRONMENT VARIABLES
-        const apiKey = process.env.GEMINI_API_KEY;
+        // 3. AMBIL API KEY DARI NETLIFY ENVIRONMENT VARIABLES (Dibersihkan dari spasi ekstra)
+        const apiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : null;
 
         if (!apiKey) {
             return { 
@@ -21,8 +21,8 @@ exports.handler = async function(event, context) {
             };
         }
 
-        // 4. Hubungi Google Gemini API dari sisi Server (Aman dari publik)
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        // 4. Hubungi Google Gemini API dari sisi Server (Menggunakan model terbaru)
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
