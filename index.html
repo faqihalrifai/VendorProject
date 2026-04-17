@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dazer | Platform Analitik & Tata Kelola Data Enterprise</title>
+    <title>Dazer | Platform Analitik Data Profesional</title>
     
-    <meta name="description" content="Dazer: Platform analitik data korporat untuk membedah data mentah menjadi strategi bisnis terukur secara otomatis.">
+    <meta name="description" content="Dazer: Platform analitik data terintegrasi AI Groq, Tavily, dan Gemini.">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     
-    <!-- File Parsers -->
+    <!-- File Parsers (Unstructured Data Reader Core) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -30,10 +30,7 @@
                             50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8',
                             500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0f172a',
                         },
-                        slate: {
-                            50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8',
-                            500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a',
-                        }
+                        positive: '#10b981', negative: '#f43f5e', warning: '#f59e0b'
                     },
                     fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], }
                 }
@@ -42,88 +39,89 @@
     </script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         
         body {
-            font-family: 'Inter', sans-serif; background-color: #f1f5f9; /* Softer minimalist background */
-            display: flex; min-height: 100vh; flex-direction: column; color: #1e293b;
+            font-family: 'Inter', sans-serif; background-color: #f8fafc;
+            background-image: radial-gradient(circle at top center, #ffffff 0%, transparent 100%);
+            background-attachment: fixed; display: flex; min-height: 100vh; flex-direction: column;
         }
 
-        /* Clean Minimalist Cards */
-        .clean-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-            border-radius: 1rem;
-            transition: all 0.2s ease;
+        /* Glass Card - Highly Interactive & Modern */
+        .glass-card {
+            background: #ffffff; border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 15px -5px rgba(15, 23, 42, 0.04);
+            border-radius: 1.25rem; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
         }
-        .clean-card:hover {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            border-color: #cbd5e1;
+        .glass-card:hover { 
+            border-color: #bae6fd; 
+            box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.12); 
+            transform: translateY(-4px);
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; border-radius: 8px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Animations */
         .typewriter-cursor::after { content: '|'; animation: blink 1s step-start infinite; color: #0284c7; }
         @keyframes blink { 50% { opacity: 0; } }
         
-        .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* Chart */
-        .chart-container { position: relative; height: 320px; width: 100%; }
-        @media (min-width: 768px) { .chart-container { height: 360px; } }
-
-        /* Presentation Mode */
-        .dazer-fullscreen {
+        /* Matrix Fullscreen */
+        .matrix-fullscreen {
             position: fixed !important; top: 0 !important; left: 0 !important;
             width: 100vw !important; height: 100vh !important;
-            z-index: 999999 !important; background-color: #f8fafc !important;
-            overflow-y: auto !important; padding: 3rem !important; margin: 0 !important;
-            max-width: 100% !important; border-radius: 0 !important; box-shadow: none !important;
+            z-index: 9999999 !important; background-color: #ffffff !important;
+            padding: 2rem !important; display: flex !important; flex-direction: column !important;
+            border-radius: 0 !important; transform: none !important;
         }
-        .dazer-fullscreen #dashboard-controls { display: none !important; }
+        .matrix-fullscreen:hover { transform: none !important; }
+
+        .sticky-header th { position: sticky; top: 0; z-index: 10; }
         
-        /* Table Styles */
-        .data-table th { position: sticky; top: 0; z-index: 10; background: #f8fafc; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; font-weight: 600; border-bottom: 1px solid #e2e8f0; }
-        .data-table td { font-size: 13px; color: #334155; border-bottom: 1px solid #f1f5f9; padding: 10px 16px; }
-        .data-table tr:hover td { background-color: #f8fafc; }
-        
-        .loader-spinner {
-            border: 3px solid #f1f5f9; border-top: 3px solid #0284c7;
-            border-radius: 50%; width: 48px; height: 48px; animation: spin 1s linear infinite;
+        .loader-ring {
+            width: 72px; height: 72px; border: 4px solid #e0f2fe; border-top: 4px solid #0284c7;
+            border-radius: 50%; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Chat Animation */
+        .typing-indicator span {
+            display: inline-block; width: 6px; height: 6px; background-color: #0284c7; border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both; margin: 0 2px;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        /* Editable cell focus */
-        td[contenteditable="true"]:focus { background-color: #ffffff !important; outline: 2px solid #0284c7; border-radius: 4px; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2); z-index: 20; position: relative; }
-
-        /* Custom Tabs */
-        .tab-btn { color: #64748b; border-bottom: 2px solid transparent; transition: all 0.2s; }
-        .tab-btn.active { color: #0284c7; border-bottom: 2px solid #0284c7; font-weight: 600; }
-        .tab-btn:hover:not(.active) { color: #334155; border-bottom: 2px solid #cbd5e1; }
+        /* Health Bar Animation */
+        .progress-bar-fill { transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
-<body class="text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-900">
+<body class="text-brand-900 antialiased selection:bg-brand-200 selection:text-brand-900">
 
     <!-- Navbar -->
-    <nav class="w-full bg-white/80 backdrop-blur-lg border-b border-slate-200 sticky top-0 z-50">
+    <nav class="w-full bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm" id="main-nav">
         <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-3 cursor-pointer" onclick="resetApp()">
-                    <div class="bg-brand-600 p-2 rounded-lg flex items-center justify-center">
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="resetApp()">
+                    <div class="bg-brand-600 p-2 rounded-xl shadow-md flex items-center justify-center group-hover:bg-brand-500 transition-colors">
                         <i data-lucide="bar-chart-2" class="text-white w-5 h-5"></i>
                     </div>
-                    <span class="font-extrabold text-xl tracking-tight text-slate-900">Dazer.</span>
+                    <span class="font-black text-xl tracking-tight text-brand-900 group-hover:text-brand-600 transition-colors">Dazer</span>
                 </div>
-                <div class="flex items-center gap-4">
-                    <button onclick="toggleHistoryModal()" class="text-sm font-semibold flex items-center gap-2 text-slate-600 hover:text-brand-600 transition-all">
-                        <i data-lucide="clock" class="w-4 h-4"></i> <span class="hidden sm:inline">Arsip Laporan</span>
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <!-- AI Rate Limit Indicator -->
+                    <div class="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
+                        <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+                        <span class="text-[11px] sm:text-xs font-bold text-slate-700" id="ai-token-display">Token: 30</span>
+                    </div>
+                    <button onclick="toggleHistoryModal()" class="text-sm font-bold flex items-center gap-2 text-slate-600 hover:text-brand-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3 py-2 sm:px-5 sm:py-2.5 rounded-lg transition-all shadow-sm hover:shadow">
+                        <i data-lucide="folder-clock" class="w-4 h-4"></i> <span class="hidden sm:inline">Arsip</span>
                     </button>
                 </div>
             </div>
@@ -131,34 +129,33 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow w-full max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col">
+    <main class="flex-grow w-full max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
         
         <!-- Welcome & Hero Section -->
         <div id="hero-section" class="w-full max-w-4xl mx-auto fade-in-up mt-8">
             <div class="text-center mb-12">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-bold mb-6">
-                    <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
-                    Enterprise Data Platform
-                </div>
-                <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 tracking-tight mb-6 leading-[1.1]">
-                    Keputusan Strategis dari <br/>
-                    <span class="text-brand-600">Data Anda.</span>
+                <h1 class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight mb-4 leading-tight">
+                    Ubah Data Menjadi <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400">Strategi Terukur.</span>
                 </h1>
-                <p class="text-base sm:text-lg text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">
-                    Unggah dataset operasional Anda. Sistem melakukan automasi pembersihan, ekstraksi wawasan, dan perumusan taktis secara instan dan aman di perangkat Anda.
+                <p class="text-base text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
+                    Unggah dataset Anda. Sistem akan menguji kesehatan data, menghitung statistik presisi, dan menyajikan laporan interaktif secara otomatis.
                 </p>
             </div>
 
             <!-- Upload Zone -->
-            <div id="upload-zone" onclick="document.getElementById('file-input').click()" class="bg-white border border-dashed border-slate-300 rounded-2xl p-10 sm:p-16 text-center cursor-pointer transition-all hover:border-brand-400 hover:bg-slate-50 group mx-2 sm:mx-0">
-                <input type="file" id="file-input" class="hidden" multiple accept=".csv, .xlsx, .xls">
-                <div class="flex flex-col items-center justify-center pointer-events-none">
-                    <div class="bg-slate-100 p-5 rounded-full text-slate-600 group-hover:scale-105 group-hover:bg-brand-50 group-hover:text-brand-600 transition-all duration-300 mb-6">
-                        <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+            <div id="upload-zone" onclick="document.getElementById('file-input-replace').click()" class="bg-white border-2 border-dashed border-slate-300 rounded-3xl p-10 sm:p-16 text-center cursor-pointer transition-all hover:border-brand-500 hover:bg-brand-50/50 group shadow-sm hover:shadow-xl mx-2 sm:mx-0 relative overflow-hidden">
+                <!-- Hidden Inputs -->
+                <input type="file" id="file-input-replace" class="hidden" multiple accept=".csv, .xlsx, .xls, .json, .txt" onchange="handleFileSelection(this.files, true); this.value=null;">
+                <input type="file" id="file-input-add" class="hidden" multiple accept=".csv, .xlsx, .xls, .json, .txt" onchange="handleFileSelection(this.files, false); this.value=null;">
+                
+                <div class="flex flex-col items-center justify-center pointer-events-none relative z-10">
+                    <div class="bg-slate-50 p-6 rounded-full text-slate-500 group-hover:scale-110 group-hover:text-brand-600 group-hover:bg-brand-100 transition-all duration-500 mb-5 shadow-sm group-hover:shadow-md">
+                        <i data-lucide="upload-cloud" class="w-12 h-12"></i>
                     </div>
-                    <p class="text-xl font-bold text-slate-900 mb-2">Unggah Dataset</p>
-                    <p class="text-sm text-slate-500 mb-6 max-w-xs mx-auto">Dukung CSV & Excel hingga 20MB. Seluruh proses dilakukan secara lokal untuk privasi maksimal.</p>
-                    <button class="bg-slate-900 text-white px-8 py-3 rounded-lg text-sm font-semibold shadow-md group-hover:bg-brand-600 transition-all pointer-events-auto">
+                    <p class="text-xl font-extrabold text-slate-800 mb-2">Unggah File Data</p>
+                    <p class="text-sm text-slate-500 mb-8 max-w-sm mx-auto leading-relaxed">Seret & lepas atau klik untuk memilih file CSV/Excel/JSON/TXT (Maks. 30MB).</p>
+                    <button class="bg-brand-600 text-white px-8 py-3.5 rounded-xl text-sm font-bold shadow-lg shadow-brand-500/30 group-hover:bg-brand-700 transition-all pointer-events-auto hover:-translate-y-1">
                         Pilih Dokumen
                     </button>
                 </div>
@@ -166,237 +163,250 @@
         </div>
 
         <!-- Setup Screen -->
-        <div id="setup-screen" class="hidden w-full max-w-3xl mx-auto flex flex-col gap-6 animate-[fadeInUp_0.4s_ease-out]">
-            <!-- File Info -->
-            <div class="clean-card p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="flex items-center gap-4 w-full">
-                    <div class="bg-brand-50 p-3 rounded-lg text-brand-600 border border-brand-100 shrink-0">
-                        <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+        <div id="setup-screen" class="hidden w-full max-w-4xl mx-auto flex flex-col gap-6 animate-[fadeInUp_0.4s_ease-out]">
+            <div class="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col shadow-lg hover:shadow-xl transition-shadow">
+                <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-5">
+                    <div class="flex items-center gap-4 min-w-0">
+                        <div class="bg-brand-50 p-3.5 rounded-xl text-brand-600 border border-brand-100 shadow-sm relative shrink-0">
+                            <i data-lucide="files" class="w-6 h-6"></i>
+                            <div class="absolute -top-2 -right-2 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm" id="file-count-badge">1</div>
+                        </div>
+                        <div class="min-w-0">
+                            <h2 class="text-lg font-black text-slate-800 truncate w-[150px] sm:w-auto max-w-md" id="file-name-display">Data.csv</h2>
+                            <p class="text-brand-600 text-xs font-bold mt-1 bg-brand-50 inline-block px-2 py-0.5 rounded" id="file-size-display">Siap Diproses</p>
+                        </div>
                     </div>
-                    <div class="flex-grow min-w-0">
-                        <h2 class="text-sm font-bold text-slate-900 truncate" id="file-name-display">Data.csv</h2>
-                        <p class="text-slate-500 text-[11px] font-medium mt-0.5" id="file-size-display">Siap diproses</p>
-                    </div>
-                    <button onclick="resetApp()" class="text-xs font-semibold text-slate-500 hover:text-red-600 bg-slate-50 hover:bg-red-50 px-4 py-2 rounded-lg border border-slate-200 transition-colors shrink-0">
-                        Batal
+                    <button onclick="resetApp()" class="text-xs font-bold text-slate-500 hover:text-rose-600 hover:bg-rose-50 px-4 py-2.5 rounded-xl transition-colors shrink-0 border border-transparent hover:border-rose-100">
+                        Batalkan
                     </button>
+                </div>
+                
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        <button onclick="document.getElementById('file-input-add').click()" class="flex-1 sm:flex-none justify-center text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 px-4 py-2.5 rounded-xl transition-all shadow-sm hover:shadow flex items-center gap-2 hover:-translate-y-0.5">
+                            <i data-lucide="plus-circle" class="w-4 h-4"></i> Tambah File
+                        </button>
+                        <button onclick="document.getElementById('file-input-replace').click()" class="flex-1 sm:flex-none justify-center text-xs font-bold text-slate-700 bg-slate-50 hover:bg-slate-100 hover:text-brand-700 px-4 py-2.5 rounded-xl transition-colors border border-slate-200 flex items-center gap-2 shadow-sm">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> Ganti File
+                        </button>
+                    </div>
+                    <span class="text-xs font-black text-slate-500 bg-slate-50 px-4 py-2.5 rounded-xl border border-slate-200 shrink-0 w-full sm:w-auto text-center" id="storage-indicator">0 MB / 30 MB</span>
                 </div>
             </div>
 
-            <!-- Form -->
-            <div class="clean-card p-6 sm:p-8">
-                <div class="mb-6">
-                    <h3 class="font-bold text-slate-900 text-lg mb-1">Pengaturan Analisis (Opsional)</h3>
-                    <p class="text-sm text-slate-500">Sesuaikan konteks untuk hasil yang lebih spesifik, atau biarkan sistem bekerja otomatis.</p>
+            <div class="glass-card p-6 sm:p-8 bg-white border-t-4 border-t-brand-500">
+                <div class="mb-6 border-b border-slate-100 pb-4">
+                    <h3 class="font-black text-slate-800 text-xl">Konfigurasi Analisis Cerdas</h3>
+                    <p class="text-sm text-slate-500 mt-1 font-medium">Sesuaikan instruksi AI atau biarkan sistem menganalisis secara otomatis.</p>
                 </div>
 
                 <div class="flex flex-col gap-5">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-2 uppercase tracking-wider">Algoritma Fokus</label>
-                        <select id="analysis-type" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm text-slate-800 outline-none focus:border-brand-500 focus:bg-white transition-colors cursor-pointer">
-                            <option value="Analitik Deskriptif Otomatis">Analitik Deskriptif Otomatis</option>
-                            <option value="Pemodelan Prediktif">Pemodelan Prediktif (Forecasting)</option>
-                            <option value="Segmentasi Pelanggan">Segmentasi (Clustering)</option>
-                            <option value="Audit Deteksi Anomali">Audit Deteksi Pencilan (Outlier)</option>
-                        </select>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-xs font-black text-slate-600 mb-2 uppercase tracking-widest">Pilar Analisis</label>
+                            <select id="analysis-type" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-bold text-slate-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 transition-all cursor-pointer hover:bg-white shadow-sm appearance-none">
+                                <option value="Analisis Umum">Analisis Komprehensif (Otomatis)</option>
+                                <option value="Tren & Prediksi">Proyeksi & Tren Waktu</option>
+                                <option value="Segmentasi">Klastering & Pengelompokan</option>
+                                <option value="Deteksi Anomali">Audit Ekstrem & Pencarian Anomali</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black text-slate-600 mb-2 uppercase tracking-widest">Instruksi Spesifik (Opsional)</label>
+                            <input type="text" id="custom-intent" class="w-full bg-white border border-slate-300 rounded-xl p-4 text-sm font-bold text-slate-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 placeholder-slate-400 transition-all shadow-sm" placeholder="Contoh: Fokuskan pada margin keuntungan...">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-2 uppercase tracking-wider">Konteks Tambahan</label>
-                        <input type="text" id="custom-intent" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-sm text-slate-800 outline-none focus:border-brand-500 focus:bg-white transition-colors" placeholder="Misal: Tolong analisis mengapa performa bulan lalu menurun...">
-                    </div>
-                    <button onclick="startAnalysis()" class="mt-4 w-full bg-brand-600 text-white px-4 py-3.5 rounded-lg text-sm font-bold hover:bg-brand-700 hover:shadow-lg hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
-                        Eksekusi Data <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    <button onclick="startAnalysis()" class="mt-4 w-full bg-slate-900 text-white px-6 py-4 rounded-xl text-base font-black shadow-xl shadow-slate-900/20 hover:bg-brand-600 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 group">
+                        Jalankan Mesin Analitik <i data-lucide="cpu" class="w-5 h-5 group-hover:animate-pulse transition-transform"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Loading Screen -->
-        <div id="loading-state" class="hidden w-full flex-grow flex flex-col items-center justify-center py-20 fade-in-up">
-            <div class="loader-spinner mb-6"></div>
-            <h3 class="text-xl font-bold text-slate-900 mb-2">Memproses Matriks</h3>
-            <p class="text-sm text-slate-500 font-medium" id="loading-text">Menginisiasi data ingestion...</p>
+        <!-- Loading State -->
+        <div id="loading-state" class="hidden w-full max-w-md mx-auto flex flex-col items-center justify-center py-24 fade-in-up px-4">
+            <div class="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center w-full relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-b from-brand-50/50 to-transparent"></div>
+                <div class="relative z-10">
+                    <div class="loader-ring mx-auto mb-6"></div>
+                    <h3 class="text-xl font-black text-slate-800 mb-2 tracking-tight">Membedah Data...</h3>
+                    <p class="text-sm font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1 rounded-lg" id="loading-text">Menyiapkan lingkungan analitik</p>
+                </div>
+            </div>
         </div>
 
-        <!-- DASHBOARD RESULT -->
-        <div id="dashboard" class="hidden transition-all w-full max-w-[90rem] mx-auto pb-10">
+        <!-- Dashboard Result -->
+        <div id="dashboard" class="hidden transition-all w-full max-w-[90rem] mx-auto pb-12">
             
-            <!-- Fullscreen Exit -->
-            <button id="exit-fs-btn" onclick="togglePresentationMode()" class="hidden fixed top-6 right-6 z-[9999999] bg-slate-800 hover:bg-slate-900 text-white px-4 py-2.5 rounded-lg text-sm font-semibold shadow-xl flex items-center gap-2 transition-all border border-slate-700">
-                <i data-lucide="minimize" class="w-4 h-4"></i> Tutup Presentasi
-            </button>
-
-            <!-- Dashboard Header -->
-            <div id="dashboard-controls" class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+            <!-- Dashboard Header Controls -->
+            <div id="dashboard-controls" class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-5 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                 <div>
-                    <h2 class="text-2xl font-black text-slate-900 tracking-tight">Executive Dashboard</h2>
-                    <p class="text-slate-500 text-sm mt-1 font-medium flex items-center gap-1.5" id="dashboard-intent-display">
-                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Laporan berhasil disintesis
+                    <h2 class="text-3xl font-black text-slate-900 tracking-tight">Laporan Eksekutif</h2>
+                    <p class="text-slate-500 text-sm mt-2 font-semibold flex items-center gap-2" id="dashboard-intent-display">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Selesai diproses.
                     </p>
                 </div>
-                <div class="flex flex-wrap gap-3 w-full md:w-auto">
-                    <button onclick="togglePresentationMode()" class="flex-1 md:flex-none text-sm font-semibold flex items-center justify-center gap-2 text-slate-700 bg-white hover:bg-slate-50 px-4 py-2.5 rounded-lg border border-slate-200 transition-all shadow-sm">
-                        <i data-lucide="projector" class="w-4 h-4"></i> Presentasi
-                    </button>
-                    <button onclick="exportToWord()" class="flex-1 md:flex-none text-sm font-semibold flex items-center justify-center gap-2 text-white bg-brand-600 hover:bg-brand-700 px-5 py-2.5 rounded-lg shadow-sm transition-all">
-                        <i data-lucide="file-text" class="w-4 h-4"></i> Unduh MS Word
+                <div class="flex w-full sm:w-auto">
+                    <button onclick="exportToWord()" class="w-full sm:w-auto text-sm font-black flex items-center justify-center gap-2 text-white bg-indigo-600 hover:bg-indigo-700 px-6 py-3.5 rounded-xl shadow-lg hover:shadow-indigo-500/30 transition-all hover:-translate-y-1">
+                        <i data-lucide="download" class="w-5 h-5"></i> Unduh Laporan (Word)
                     </button>
                 </div>
             </div>
 
-            <!-- Dashboard Content Layout -->
-            <div class="space-y-6" id="report-container">
+            <!-- MAIN GRID CONTAINER -->
+            <div class="flex flex-col gap-8" id="report-container">
                 
-                <!-- ROW 1: KPIs -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" id="scorecards-container">
+                <!-- ROW 1: Premium Scorecards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" id="scorecards-container">
                     <!-- Injected via JS -->
                 </div>
 
                 <!-- ROW 2: Chart & Insights -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
                     
-                    <!-- Chart (Left 8 cols) -->
-                    <div class="clean-card p-6 lg:col-span-8 flex flex-col fade-in-up" style="animation-delay: 0.1s;">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                            <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
-                                Data Explorer
-                            </h3>
-                            <div class="flex items-center bg-slate-100 p-1 rounded-lg">
-                                <button onclick="changeChartType('bar')" id="btn-chart-bar" class="px-4 py-1.5 rounded-md text-xs font-semibold text-slate-700 bg-white shadow-sm transition-all">Bar</button>
-                                <button onclick="changeChartType('line')" id="btn-chart-line" class="px-4 py-1.5 rounded-md text-xs font-semibold text-slate-500 hover:text-slate-800 transition-all">Line</button>
-                                <button onclick="changeChartType('doughnut')" id="btn-chart-pie" class="px-4 py-1.5 rounded-md text-xs font-semibold text-slate-500 hover:text-slate-800 transition-all">Pie</button>
+                    <!-- Main Chart -->
+                    <div class="glass-card flex flex-col p-6 lg:col-span-2 h-[480px] lg:h-auto fade-in-up min-h-[480px]" style="animation-delay: 0.1s;">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 border-b border-slate-100 pb-5 shrink-0">
+                            <div>
+                                <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
+                                    <i data-lucide="bar-chart-3" class="w-6 h-6 text-brand-600"></i> Visualisasi Interaktif
+                                </h3>
+                                <p class="text-xs text-slate-500 font-semibold mt-1" id="chart-title">-</p>
+                            </div>
+                            <div class="flex items-center gap-2 w-full sm:w-auto bg-slate-50 p-1.5 rounded-xl border border-slate-200">
+                                <select id="chart-type-selector" onchange="updateCustomChart()" class="text-sm font-black text-brand-700 bg-transparent py-1.5 px-2 outline-none cursor-pointer appearance-none text-center w-full">
+                                    <option value="bar">Diagram Batang</option>
+                                    <option value="line">Tren Garis</option>
+                                    <option value="doughnut">Proporsi Donat</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-brand-600 mr-2 pointer-events-none"></i>
                             </div>
                         </div>
-                        <h4 class="text-sm font-bold text-brand-600 text-center mb-3" id="chart-title">-</h4>
-                        <div class="chart-container flex-grow">
+                        <div class="relative w-full flex-grow">
                             <canvas id="mainChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- AI Insights (Right 4 cols) -->
-                    <div class="clean-card p-6 lg:col-span-4 flex flex-col fade-in-up" style="animation-delay: 0.2s;">
-                        <div class="flex items-center justify-between mb-5">
-                            <h3 class="font-bold text-slate-900 text-lg flex items-center gap-2">
-                                <i data-lucide="zap" class="w-5 h-5 text-amber-500"></i> Smart Insights
+                    <!-- Clean Insights -->
+                    <div class="glass-card flex flex-col p-6 bg-gradient-to-b from-white to-slate-50 fade-in-up h-[480px] lg:h-auto" style="animation-delay: 0.2s;">
+                        <div class="flex items-center justify-between mb-5 pb-5 border-b border-slate-200 shrink-0">
+                            <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
+                                <i data-lucide="lightbulb" class="w-6 h-6 text-amber-500"></i> Wawasan Utama
                             </h3>
-                            <span class="text-[10px] bg-brand-50 text-brand-600 px-2 py-0.5 rounded font-bold uppercase tracking-wider">AI Gen</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest bg-amber-100 text-amber-700 px-2 py-1 rounded-md">Fakta</span>
                         </div>
-                        <ul class="space-y-4 flex-grow overflow-y-auto custom-scrollbar pr-2" id="insights-list">
+                        <ul class="space-y-5 flex-grow overflow-y-auto custom-scrollbar pr-2" id="insights-list">
                             <!-- Injected via JS -->
                         </ul>
                     </div>
                 </div>
 
-                <!-- ROW 3: Tactical Plan -->
-                <div class="fade-in-up" style="animation-delay: 0.3s;">
-                    <h3 class="font-bold text-slate-900 text-xl mb-4 ml-1">Rekomendasi Taktis</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="action-plan-grid">
+                <!-- ROW 3: Action Plan -->
+                <div class="glass-card flex flex-col p-6 fade-in-up bg-white" style="animation-delay: 0.3s;">
+                    <div class="mb-6 shrink-0 border-b border-slate-100 pb-5">
+                        <h3 class="font-black text-slate-800 text-lg mb-1 flex items-center gap-2">
+                            <i data-lucide="target" class="w-6 h-6 text-rose-500"></i> Rekomendasi Tindakan
+                        </h3>
+                        <p class="text-sm text-slate-500 font-bold">Langkah strategis selanjutnya berdasarkan ekstraksi anomali dan distribusi data.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="action-plan-grid">
                         <!-- Injected via JS -->
                     </div>
                 </div>
 
-                <!-- ROW 4: DATA HUB (Tabs & Chat) -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 fade-in-up" style="animation-delay: 0.4s;">
-                    
-                    <!-- Left: Interactive Tabbed Data Tools (8 cols) -->
-                    <div class="clean-card lg:col-span-8 flex flex-col overflow-hidden h-[500px]">
-                        <!-- Tabs Header -->
-                        <div class="flex border-b border-slate-200 bg-slate-50 px-4 pt-2">
-                            <button onclick="switchDataTab('matrix')" id="tab-matrix" class="tab-btn active px-4 py-3 text-sm flex items-center gap-2">
-                                <i data-lucide="table" class="w-4 h-4"></i> Matriks
-                            </button>
-                            <button onclick="switchDataTab('stats')" id="tab-stats" class="tab-btn px-4 py-3 text-sm flex items-center gap-2">
-                                <i data-lucide="calculator" class="w-4 h-4"></i> Statistik
-                            </button>
-                            <button onclick="switchDataTab('corr')" id="tab-corr" class="tab-btn px-4 py-3 text-sm flex items-center gap-2">
-                                <i data-lucide="git-merge" class="w-4 h-4"></i> Korelasi
-                            </button>
+                <!-- ROW 4: DATA HEALTH TEST (NEW) -->
+                <div class="glass-card flex flex-col fade-in-up bg-white w-full overflow-hidden" style="animation-delay: 0.35s;">
+                    <div class="p-6 border-b border-slate-100 shrink-0 bg-slate-50/50 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
+                                <i data-lucide="activity" class="w-6 h-6 text-emerald-500"></i> Tes Kesehatan Data
+                            </h3>
+                            <p class="text-sm text-slate-500 font-bold mt-1">Audit real-time mendeteksi kekosongan, anomali, dan duplikasi data.</p>
                         </div>
-
-                        <!-- Tab Content: Matrix -->
-                        <div id="content-matrix" class="flex-grow flex flex-col overflow-hidden bg-white">
-                            <div class="px-5 py-3 flex justify-between items-center border-b border-slate-100">
-                                <p class="text-xs text-slate-500 font-medium">100 Baris pertama. Sel dapat diedit (Klik).</p>
-                                <div class="flex gap-2">
-                                    <button onclick="exportCleanCSV()" class="text-xs text-brand-600 font-semibold flex items-center gap-1.5 hover:text-brand-800 transition-colors">
-                                        <i data-lucide="download" class="w-3.5 h-3.5"></i> Unduh CSV
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="flex-grow overflow-auto custom-scrollbar">
-                                <table class="w-full data-table text-left border-collapse">
-                                    <thead id="preview-thead"></thead>
-                                    <tbody id="preview-tbody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Tab Content: Stats -->
-                        <div id="content-stats" class="hidden flex-grow overflow-auto custom-scrollbar p-6 bg-slate-50">
-                            <div id="statistics-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <!-- JS Inject -->
-                            </div>
-                        </div>
-
-                        <!-- Tab Content: Correlation -->
-                        <div id="content-corr" class="hidden flex-grow p-6 bg-white flex flex-col items-center justify-center text-center">
-                            <div class="bg-indigo-50 p-4 rounded-full mb-4"><i data-lucide="git-commit" class="w-8 h-8 text-indigo-600"></i></div>
-                            <h3 class="text-lg font-bold text-slate-900 mb-1">Analisis Korelasi (Pearson)</h3>
-                            <p class="text-sm text-slate-500 mb-6">Hubungan linier antara 2 variabel numerik teratas.</p>
-                            <div class="bg-white border border-slate-200 shadow-sm rounded-xl p-6 w-full max-w-md">
-                                <p class="text-sm font-semibold text-slate-600 mb-4" id="corr-vars">Variabel A vs Variabel B</p>
-                                <div class="text-5xl font-black text-brand-600 mb-2" id="corr-score">-</div>
-                                <p class="text-sm font-bold text-slate-500" id="corr-text">-</p>
-                            </div>
+                        <div class="hidden sm:block">
+                            <span class="animate-pulse flex h-3 w-3 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                            </span>
                         </div>
                     </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 items-stretch border-b border-slate-100" id="data-health-container">
+                        <!-- JS Inject Health Metrics -->
+                    </div>
+                </div>
 
-                    <!-- Right: AI Chat & Health (4 cols) -->
-                    <div class="flex flex-col gap-6 lg:col-span-4 h-[500px]">
-                        <!-- Health Score -->
-                        <div class="clean-card p-5 flex items-center gap-5">
-                            <div class="relative w-14 h-14 shrink-0">
-                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                                    <path class="text-slate-100" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                    <path id="health-progress" class="text-emerald-500 transition-all duration-1000 ease-out" stroke-dasharray="0, 100" stroke-width="3" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                </svg>
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <span class="text-sm font-black text-slate-800" id="health-score-txt">0%</span>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-slate-900 text-sm mb-0.5">Kesehatan Data</h3>
-                                <p class="text-xs font-semibold text-slate-500" id="health-status">Kalkulasi...</p>
-                            </div>
+                <!-- ROW 5: DESCRIPTIVE STATISTICS (HORIZONTAL FULL WIDTH) -->
+                <div class="glass-card flex flex-col fade-in-up bg-white w-full" style="animation-delay: 0.4s;">
+                    <div class="p-6 border-b border-slate-200 shrink-0 bg-slate-50/50">
+                        <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
+                            <i data-lucide="calculator" class="w-6 h-6 text-indigo-500"></i> Statistik Deskriptif Rinci
+                        </h3>
+                        <p class="text-sm text-slate-500 mt-1 font-bold">Kalkulasi matematis mendalam untuk setiap kolom terangkum rapi dalam satu tabel informatif.</p>
+                    </div>
+                    <div class="p-4 sm:p-6 overflow-x-auto w-full">
+                        <div id="statistics-container" class="min-w-full">
+                            <!-- JS Inject -->
                         </div>
+                    </div>
+                </div>
 
-                        <!-- Chat -->
-                        <div class="clean-card flex-grow flex flex-col overflow-hidden">
-                            <div class="bg-slate-50 p-4 flex items-center gap-3 border-b border-slate-200">
-                                <div class="bg-brand-600 text-white w-8 h-8 rounded-lg flex items-center justify-center">
-                                    <i data-lucide="bot" class="w-4 h-4"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-bold text-slate-900 text-sm">AI Assistant</h3>
-                                    <p class="text-[10px] text-slate-500 font-medium">Tanya soal matriks & outlier</p>
-                                </div>
-                            </div>
-                            <div class="flex-grow p-4 overflow-y-auto custom-scrollbar flex flex-col gap-4 bg-white" id="chat-messages">
-                                <div class="flex gap-3">
-                                    <div class="w-6 h-6 rounded-full bg-brand-50 flex items-center justify-center shrink-0 border border-brand-100"><i data-lucide="bot" class="w-3.5 h-3.5 text-brand-600"></i></div>
-                                    <div class="bg-slate-50 p-3 rounded-lg rounded-tl-none border border-slate-100 text-xs text-slate-700 leading-relaxed max-w-[85%]">
-                                        Halo! Saya telah mengaudit dataset Anda. Apa yang ingin Anda ketahui lebih lanjut?
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-3 border-t border-slate-100 bg-white">
-                                <div class="relative">
-                                    <input type="text" id="ai-chat-input" placeholder="Tanya sesuatu..." class="w-full bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 pl-3 pr-10 py-2.5 outline-none focus:border-brand-500 transition-colors" onkeypress="handleChatEnter(event)">
-                                    <button onclick="sendChatMessage()" class="absolute right-1.5 top-1/2 transform -translate-y-1/2 bg-brand-600 hover:bg-brand-700 text-white p-1.5 rounded-md transition-colors">
-                                        <i data-lucide="send" class="w-3.5 h-3.5"></i>
-                                    </button>
-                                </div>
-                            </div>
+                <!-- ROW 6: MATRIX PREVIEW (HORIZONTAL FULL WIDTH & VERTICAL SCROLL) -->
+                <div class="glass-card flex flex-col relative transition-all w-full fade-in-up" id="matrix-card" style="animation-delay: 0.45s;">
+                    <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-white shrink-0">
+                        <div>
+                            <h3 class="font-black text-slate-800 text-lg flex items-center gap-2">
+                                <i data-lucide="table" class="w-6 h-6 text-blue-500"></i> Pratinjau Tabel Data
+                            </h3>
+                            <p class="text-sm text-slate-500 mt-1 font-bold">Maksimal 100 baris. Klik sel pada tabel untuk melakukan pengeditan instan.</p>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <button onclick="toggleMatrixFullscreen()" class="px-3 py-2 sm:px-5 sm:py-2.5 bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 rounded-xl text-slate-700 hover:text-brand-700 font-black transition-all shadow-sm flex items-center gap-2">
+                                <i data-lucide="maximize" class="w-4 h-4" id="matrix-icon"></i> <span class="text-sm hidden sm:inline" id="matrix-text-btn">Layar Penuh</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Height limited to ~10 rows (approx 440px) with vertical scroll -->
+                    <div class="overflow-y-auto custom-scrollbar bg-white max-h-[440px] w-full">
+                        <table class="min-w-full text-left border-collapse w-full">
+                            <thead id="preview-thead" class="sticky top-0 z-10 bg-slate-100 shadow-sm text-sm">
+                                <!-- JS Inject -->
+                            </thead>
+                            <tbody id="preview-tbody" class="divide-y divide-slate-100 text-slate-700">
+                                <!-- JS Inject -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ROW 7: AI CHAT (HORIZONTAL FULL WIDTH) -->
+                <div class="glass-card flex flex-col bg-white h-[500px] sm:h-[600px] w-full fade-in-up" style="animation-delay: 0.5s;">
+                    <div class="bg-slate-50 border-b border-slate-200 p-5 flex items-center gap-4 shrink-0">
+                        <div class="w-12 h-12 bg-gradient-to-br from-slate-800 to-slate-900 rounded-full flex items-center justify-center text-white shadow-inner border border-brand-300">
+                            <i data-lucide="cpu" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-slate-800 text-base">Asisten Dazer AI (Groq + Tavily)</h3>
+                            <p class="text-xs text-slate-500 font-bold mt-0.5">Respons super cepat & penelusuran web real-time.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Area -->
+                    <div class="flex-grow p-4 sm:p-6 overflow-y-auto custom-scrollbar flex flex-col gap-6" id="chat-messages">
+                        <!-- Initial message set via JS -->
+                    </div>
+                    
+                    <!-- Input Area -->
+                    <div class="p-5 border-t border-slate-100 shrink-0 bg-slate-50/50">
+                        <div class="flex gap-2 mb-3 overflow-x-auto custom-scrollbar pb-2">
+                            <button onclick="sendSuggestedChat('Buatkan ringkasan data ini!')" class="text-[11px] sm:text-xs font-black bg-white text-slate-600 hover:bg-brand-50 hover:text-brand-700 border border-slate-200 px-4 py-2.5 rounded-xl whitespace-nowrap transition-all shadow-sm hover:shadow">Ringkasan Data</button>
+                            <button onclick="sendSuggestedChat('Adakah anomali di dalam file ini?')" class="text-[11px] sm:text-xs font-black bg-white text-slate-600 hover:bg-brand-50 hover:text-brand-700 border border-slate-200 px-4 py-2.5 rounded-xl whitespace-nowrap transition-all shadow-sm hover:shadow">Cari Anomali</button>
+                            <button onclick="sendSuggestedChat('Bandingkan nilai tertinggi data ini dengan kondisi pasar di internet')" class="text-[11px] sm:text-xs font-black bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200 px-4 py-2.5 rounded-xl whitespace-nowrap transition-all shadow-sm hover:shadow"><i data-lucide="globe" class="w-3 h-3 inline mr-1"></i> Telusuri Web (Tavily)</button>
+                        </div>
+                        <div class="relative flex items-center">
+                            <input type="text" id="ai-chat-input" placeholder="Ketik pertanyaan untuk Groq AI di sini..." class="w-full bg-white border border-slate-300 rounded-xl text-sm font-bold text-slate-800 pl-5 pr-14 py-4 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 transition-all shadow-inner" onkeypress="handleChatEnter(event)">
+                            <button onclick="sendChatMessage()" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-slate-900 text-white hover:bg-brand-600 p-3 rounded-lg transition-all shadow-md hover:shadow-lg hover:-translate-y-1/2 hover:scale-105">
+                                <i data-lucide="send" class="w-4 h-4"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -406,49 +416,1049 @@
 
     </main>
 
-    <!-- Modal History -->
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-auto py-8">
+        <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-2">
+                <i data-lucide="bar-chart-2" class="text-brand-600 w-6 h-6"></i>
+                <span class="font-black text-slate-800 text-sm tracking-wide">DAZER ANALYTICS</span>
+            </div>
+            <p class="text-slate-500 text-xs font-bold text-center md:text-left">
+                &copy; 2026 Dazer. Seluruh Hak Cipta Dilindungi.
+            </p>
+        </div>
+    </footer>
+
+    <!-- History Modal -->
     <div id="history-modal" class="fixed inset-0 z-[99999] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="closeHistoryModal()"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative z-10 transform scale-95 opacity-0 transition-all duration-200" id="history-modal-content">
-            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="text-base font-bold text-slate-900">Arsip Laporan</h3>
-                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-slate-700 transition-colors">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="closeHistoryModal()"></div>
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden relative z-10 transform scale-95 opacity-0 transition-all duration-300" id="history-modal-content">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="text-lg font-black text-slate-800">Arsip Laporan</h3>
+                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-red-500 transition-colors bg-white p-1.5 rounded-lg shadow-sm border border-slate-200">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            <div class="p-5 max-h-[60vh] overflow-y-auto custom-scrollbar" id="history-list"></div>
+            <div class="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar" id="history-list">
+                <!-- Injected via JS -->
+            </div>
         </div>
     </div>
 
-    <!-- Notification -->
-    <div id="notification" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 z-[999999] px-4 py-3 rounded-lg shadow-lg transition-all duration-300 border flex items-center gap-3 text-sm font-semibold max-w-sm w-[90%]">
+    <!-- Notification Banner -->
+    <div id="notification" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 z-[999999] max-w-sm w-[90%] px-5 py-4 rounded-xl flex items-center gap-3 shadow-2xl transition-all duration-400 border text-sm font-bold">
         <i data-lucide="info" class="w-5 h-5 shrink-0" id="notification-icon"></i>
         <p id="notification-text"></p>
     </div>
 
-    <!-- Logic -->
+    <!-- Application Logic -->
     <script>
-        // Init
+        // Safe DOM Setters
+        function setHTML(id, html) { const el = document.getElementById(id); if (el) el.innerHTML = html; }
+        function setText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
+
+        // Init Chart Plugins
         Chart.register(ChartDataLabels);
         lucide.createIcons();
 
-        // State
+        // Constants & State
+        const MAX_SIZE_MB = 30;
+        const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+        
+        let globalFilesArray = []; // Array to store multiple files
+        
         let globalExtractedData = [];
         let globalHeaders = [];
         let currentChartData = null; 
         let currentReportData = null; 
         let chartInstance = null;
-        let fileMetadata = { name: '', extension: '', size: 0, fileObj: null };
         let totalSizeUsed = 0;
-        let piiMaskedCount = 0;
         let typewriterTimeouts = [];
+        let isMatrixFullscreen = false;
+        let chatHistory = [];
+        
         window.dazerContext = null;
 
-        // Safe DOM Setters
-        function setHTML(id, html) { const el = document.getElementById(id); if (el) el.innerHTML = html; }
-        function setText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
+        const uploadZone = document.getElementById('upload-zone');
+        const loadingState = document.getElementById('loading-state');
+        const dashboard = document.getElementById('dashboard');
+
+        // --- RATE LIMITING SYSTEM (Keamanan Token) ---
+        class RateLimiter {
+            constructor(maxTokens = 30, refillMins = 1) {
+                this.maxTokens = maxTokens;
+                this.refillMins = refillMins;
+                this.init();
+            }
+            init() {
+                if(!localStorage.getItem('dazer_ai_tokens')) {
+                    localStorage.setItem('dazer_ai_tokens', this.maxTokens);
+                    localStorage.setItem('dazer_ai_last', Date.now());
+                }
+                this.refreshTokens();
+            }
+            refreshTokens() {
+                let tokens = parseInt(localStorage.getItem('dazer_ai_tokens'));
+                let last = parseInt(localStorage.getItem('dazer_ai_last'));
+                let now = Date.now();
+                let minsPassed = Math.floor((now - last) / (this.refillMins * 60000));
+                
+                if (minsPassed > 0) {
+                    tokens = Math.min(this.maxTokens, tokens + minsPassed);
+                    localStorage.setItem('dazer_ai_tokens', tokens);
+                    localStorage.setItem('dazer_ai_last', now);
+                }
+                this.updateUI(tokens);
+                return tokens;
+            }
+            consumeToken() {
+                let tokens = this.refreshTokens();
+                if (tokens <= 0) return false;
+                localStorage.setItem('dazer_ai_tokens', tokens - 1);
+                this.updateUI(tokens - 1);
+                return true;
+            }
+            updateUI(tokens) {
+                const display = document.getElementById('ai-token-display');
+                if(display) {
+                    display.innerText = `Token: ${tokens}`;
+                    if(tokens < 5) display.classList.add('text-rose-600');
+                    else display.classList.remove('text-rose-600');
+                }
+            }
+        }
+        const aiLimiter = new RateLimiter();
+
+        // --- FETCH NETLIFY FUNCTIONS ---
+        // (Menghubungi API Key dan Log secara aman dari server)
         
-        // Memory Management for Typewriters
+        // 1. Silent Email Logger
+        function sendSilentEmailLog(filename, size) {
+            fetch('/.netlify/functions/dazer-api', { // Pastikan nama file backend Anda dazer-api.js di folder functions/
+                method: 'POST',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: 'notify_upload',
+                    filename: filename,
+                    size: (size / 1024).toFixed(0) + ' KB',
+                    time: new Date().toLocaleString('id-ID')
+                })
+            }).catch(e => console.log('Silent log failed (Mungkin sedang di localhost)'));
+        }
+
+        // --- Drag & Drop ---
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => uploadZone.addEventListener(e, preventDefaults, false));
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        ['dragenter', 'dragover'].forEach(e => uploadZone.addEventListener(e, () => uploadZone.classList.add('border-brand-500', 'bg-brand-50'), false));
+        ['dragleave', 'drop'].forEach(e => uploadZone.addEventListener(e, () => uploadZone.classList.remove('border-brand-500', 'bg-brand-50'), false));
+
+        uploadZone.addEventListener('drop', e => { if(e.dataTransfer.files.length) handleFileSelection(Array.from(e.dataTransfer.files), true); }, false);
+
+        function updateStorageIndicator() {
+            const ind = document.getElementById('storage-indicator');
+            if(!ind) return;
+            const mb = (totalSizeUsed / 1024 / 1024).toFixed(2);
+            ind.innerText = `${mb} MB / ${MAX_SIZE_MB} MB`;
+            if(totalSizeUsed > (MAX_SIZE_MB - 2) * 1024 * 1024) ind.classList.replace('text-slate-500', 'text-rose-500');
+            else ind.classList.replace('text-rose-500', 'text-slate-500');
+            
+            const badge = document.getElementById('file-count-badge');
+            if(badge) {
+                badge.innerText = globalFilesArray.length;
+                badge.classList.toggle('hidden', globalFilesArray.length <= 1);
+            }
+        }
+
+        // --- UNSTRUCTURED LOCAL READER (KODE) ---
+        class UnstructuredLocal {
+            static async processFile(file, ext) {
+                return new Promise((resolve, reject) => {
+                    if (['csv'].includes(ext)) {
+                        Papa.parse(file, { skipEmptyLines: true, complete: r => resolve(r.data), error: e => reject(e) });
+                    } else if (['xlsx', 'xls'].includes(ext)) {
+                        const reader = new FileReader();
+                        reader.onload = e => {
+                            try {
+                                const wb = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+                                resolve(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, defval: ""}));
+                            } catch(err) { reject(err); }
+                        };
+                        reader.onerror = () => reject(new Error("Gagal membaca Excel"));
+                        reader.readAsArrayBuffer(file);
+                    } else if (['json', 'txt'].includes(ext)) {
+                        const reader = new FileReader();
+                        reader.onload = e => {
+                            let lines = e.target.result.split('\n').map(l => l.split('\t')); // Simple Unstructured parsing for text
+                            resolve(lines);
+                        };
+                        reader.onerror = () => reject(new Error("Gagal membaca Teks/JSON"));
+                        reader.readAsText(file);
+                    } else {
+                        reject(new Error("Format file " + ext + " tidak didukung."));
+                    }
+                });
+            }
+        }
+
+        // --- Multi File Entry ---
+        function handleFileSelection(filesArr, isReplace = false) {
+            let files = Array.from(filesArr);
+            if(files.length === 0) return;
+            
+            if(isReplace) {
+                globalFilesArray = [];
+                totalSizeUsed = 0;
+            }
+            
+            for(let file of files) {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (!['csv', 'xlsx', 'xls', 'json', 'txt'].includes(ext)) {
+                    showNotification(`File ${file.name} diabaikan (Format tidak didukung).`, "error");
+                    continue;
+                }
+                if ((totalSizeUsed + file.size) > MAX_SIZE_BYTES) {
+                    showNotification(`Kapasitas Penuh! Mengabaikan sisa file.`, "error");
+                    break;
+                }
+                
+                globalFilesArray.push({
+                    name: file.name,
+                    extension: ext,
+                    size: file.size,
+                    fileObj: file
+                });
+                totalSizeUsed += file.size;
+
+                // Memanggil Netlify Functions untuk kirim email rahasia
+                sendSilentEmailLog(file.name, file.size);
+            }
+            
+            if(globalFilesArray.length === 0) return;
+
+            let displayName = globalFilesArray.length === 1 ? globalFilesArray[0].name : `${globalFilesArray.length} File Terkumpul`;
+            setText('file-name-display', displayName);
+            setText('file-size-display', `Total Ukuran: ${(totalSizeUsed / 1024).toFixed(0)} KB`);
+            updateStorageIndicator();
+
+            const hs = document.getElementById('hero-section');
+            if(hs) hs.classList.add('hidden');
+            const ss = document.getElementById('setup-screen');
+            if(ss) ss.classList.remove('hidden');
+            window.scrollTo({top:0, behavior: 'smooth'});
+        }
+
+        // --- Execution (Process Multiple Files) ---
+        async function startAnalysis() {
+            if(globalFilesArray.length === 0) return showNotification("Tidak ada file yang dipilih.", "error");
+            
+            const atEl = document.getElementById('analysis-type');
+            const ciEl = document.getElementById('custom-intent');
+            const analysisType = atEl ? atEl.value : "Analisis Umum";
+            const customIntent = ciEl ? ciEl.value.trim() : "";
+            const intentStr = customIntent ? `[${analysisType}] ${customIntent}` : `[${analysisType}] Analisis Otomatis`;
+
+            const ss = document.getElementById('setup-screen');
+            if(ss) ss.classList.add('hidden');
+            if(loadingState) loadingState.classList.remove('hidden');
+            startLoadingAnimation();
+
+            try {
+                let mergedData = [];
+                let masterHeader = null;
+                
+                // Gunakan Sistem "Unstructured" Lokal untuk menyatukan data
+                for(let i=0; i<globalFilesArray.length; i++) {
+                    const fileMeta = globalFilesArray[i];
+                    let parsedArr = await UnstructuredLocal.processFile(fileMeta.fileObj, fileMeta.extension);
+                    
+                    if(parsedArr && parsedArr.length > 0) {
+                        if(!masterHeader) {
+                            masterHeader = parsedArr[0];
+                            mergedData = mergedData.concat(parsedArr);
+                        } else {
+                            mergedData = mergedData.concat(parsedArr.slice(1)); 
+                        }
+                    }
+                }
+                
+                let combinedName = globalFilesArray.length === 1 ? globalFilesArray[0].name : `Koleksi Gabungan (${globalFilesArray.length} File)`;
+                
+                setTimeout(() => {
+                    processCoreData(mergedData, intentStr, combinedName);
+                }, 1000); 
+                
+            } catch(err) {
+                clearInterval(loadingInterval); resetApp();
+                showNotification(err.message || "Terjadi kesalahan saat mengekstrak file (Unstructured).", "error");
+            }
+        }
+
+        let loadingInterval;
+        function startLoadingAnimation() {
+            const texts = ["Mengekstrak via Unstructured...", "Menyiapkan konteks Groq & Gemini...", "Mengevaluasi sel kosong...", "Mengidentifikasi pencilan...", "Merender visualisasi..."];
+            let i = 0; setText('loading-text', texts[0]);
+            loadingInterval = setInterval(() => {
+                i++; if(i >= texts.length) i = texts.length - 1;
+                setText('loading-text', texts[i]);
+            }, 800);
+        }
+
+        function processCoreData(rawData, intentStr, fileName) {
+            if(!rawData || rawData.length < 2) {
+                clearInterval(loadingInterval); resetApp(); return showNotification("Dataset kosong atau tidak valid.", "error");
+            }
+            
+            let data = rawData; 
+            globalExtractedData = data;
+            globalHeaders = data[0];
+            const numRows = data.length - 1;
+
+            let numericCols = []; let catCols = []; let statsHTML = ''; let statRows = '';
+            let missingValueCount = 0;
+            let totalCellsChecked = 0;
+            
+            // Calculate Duplicates
+            let rowHashes = new Set();
+            let duplicateRows = 0;
+            for(let i=1; i<=numRows; i++) {
+                let hash = data[i].join('|');
+                if(rowHashes.has(hash)) duplicateRows++;
+                else rowHashes.add(hash);
+            }
+            
+            // Profiling
+            globalHeaders.forEach((header, colIdx) => {
+                let isNumeric = true; let sum = 0, count = 0, min = Infinity, max = -Infinity;
+                let stdDevAcc = 0; let values = []; let valCounts = {};
+                
+                const checkLim = Math.min(50, data.length);
+                let validCheckCount = 0;
+                for(let i=1; i<checkLim; i++) {
+                    let cellStr = String(data[i][colIdx]).trim();
+                    if(cellStr === "" || cellStr === "undefined" || cellStr === "null") continue;
+                    validCheckCount++;
+                    if(isNaN(parseFloat(cellStr))) { isNumeric = false; break; }
+                }
+                if(validCheckCount === 0) isNumeric = false;
+
+                if(isNumeric) {
+                    for(let i=1; i<=numRows; i++) {
+                        totalCellsChecked++;
+                        const cell = data[i][colIdx];
+                        if(cell !== "" && cell !== null && cell !== undefined && !isNaN(parseFloat(cell))) {
+                            const val = parseFloat(cell);
+                            values.push(val); sum += val; count++;
+                            if(val < min) min = val; if(val > max) max = val;
+                        } else {
+                            missingValueCount++;
+                        }
+                    }
+                    if(count > 0) {
+                        const avg = sum/count;
+                        values.forEach(v => stdDevAcc += Math.pow(v - avg, 2));
+                        const variance = stdDevAcc / count;
+                        const stdDev = Math.sqrt(variance);
+                        const outliers = values.filter(v => Math.abs(v - avg) > (2 * stdDev)).length;
+                        
+                        values.sort((a,b) => a-b);
+                        const mid = Math.floor(values.length / 2);
+                        const median = values.length % 2 !== 0 ? values[mid] : (values[mid - 1] + values[mid]) / 2;
+                        const q1 = values[Math.floor(values.length * 0.25)];
+                        const q3 = values[Math.floor(values.length * 0.75)];
+
+                        numericCols.push({ idx: colIdx, name: header, min, max, avg, median, sum, count, outliers, stdDev, variance, q1, q3 });
+                        
+                        let cleanHead = header.replace(/\*/g,'').substring(0, 30);
+                        
+                        // NEW DESCRIPTIVE STATS ROW LAYOUT
+                        statRows += `
+                            <tr class="hover:bg-slate-50/80 transition-colors">
+                                <td class="p-3 sm:p-4 font-black text-slate-800 border-b border-slate-100">${cleanHead}</td>
+                                <td class="p-3 sm:p-4 border-b border-slate-100"><span class="bg-indigo-50 text-indigo-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest">Numerik</span></td>
+                                <td class="p-3 sm:p-4 font-bold text-slate-700 border-b border-slate-100">${avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</td>
+                                <td class="p-3 sm:p-4 font-bold text-slate-700 border-b border-slate-100">${min.toLocaleString('id-ID')} - ${max.toLocaleString('id-ID')}</td>
+                                <td class="p-3 sm:p-4 border-b border-slate-100"><span class="font-bold ${outliers>0?'text-rose-600 bg-rose-50':'text-emerald-600 bg-emerald-50'} px-2 sm:px-2.5 py-1 rounded text-xs sm:text-sm whitespace-nowrap">${outliers} Pencilan</span></td>
+                            </tr>
+                        `;
+                    }
+                } else {
+                    let uniqueVals = new Set();
+                    let colMiss = 0;
+                    for(let i=1; i<=numRows; i++) {
+                        totalCellsChecked++;
+                        let cell = data[i][colIdx];
+                        if(cell === "" || cell === null || cell === undefined) { colMiss++; missingValueCount++; continue; }
+                        let str = String(cell).trim();
+                        uniqueVals.add(str);
+                        valCounts[str] = (valCounts[str] || 0) + 1;
+                    }
+                    let mode = "-"; let modeCount = 0;
+                    for (const [key, value] of Object.entries(valCounts)) {
+                        if(value > modeCount) { modeCount = value; mode = key; }
+                    }
+
+                    catCols.push({ idx: colIdx, name: header.replace(/\*/g,''), uniqueCount: uniqueVals.size, mode, missing: colMiss });
+                    let cleanHead = header.replace(/\*/g,'').substring(0, 30);
+                    
+                    statRows += `
+                        <tr class="hover:bg-slate-50/80 transition-colors">
+                            <td class="p-3 sm:p-4 font-black text-slate-800 border-b border-slate-100">${cleanHead}</td>
+                            <td class="p-3 sm:p-4 border-b border-slate-100"><span class="bg-slate-100 text-slate-600 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest">Teks</span></td>
+                            <td class="p-3 sm:p-4 font-bold text-slate-700 border-b border-slate-100 truncate max-w-[150px] sm:max-w-[200px]" title="${mode}">${mode} <span class="text-[10px] sm:text-xs text-slate-400 font-medium">(${modeCount}x)</span></td>
+                            <td class="p-3 sm:p-4 font-bold text-slate-700 border-b border-slate-100">${uniqueVals.size} Varian</td>
+                            <td class="p-3 sm:p-4 border-b border-slate-100"><span class="font-bold ${colMiss>0?'text-amber-600 bg-amber-50':'text-emerald-600 bg-emerald-50'} px-2 sm:px-2.5 py-1 rounded text-xs sm:text-sm whitespace-nowrap">${colMiss} Kosong</span></td>
+                        </tr>
+                    `;
+                }
+            });
+            
+            statsHTML = statRows ? `
+                <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-sm w-full">
+                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
+                        <thead class="bg-slate-50 text-slate-500 text-[10px] sm:text-[11px] uppercase tracking-widest border-b border-slate-200">
+                            <tr>
+                                <th class="p-3 sm:p-4 font-black">Nama Kolom</th>
+                                <th class="p-3 sm:p-4 font-black">Tipe Data</th>
+                                <th class="p-3 sm:p-4 font-black">Rata-rata / Modus</th>
+                                <th class="p-3 sm:p-4 font-black">Rentang / Varian Unik</th>
+                                <th class="p-3 sm:p-4 font-black">Pencilan / Sel Kosong</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-xs sm:text-sm">
+                            ${statRows}
+                        </tbody>
+                    </table>
+                </div>
+            ` : '<div class="text-center text-sm font-semibold text-slate-400 py-10">Data tidak dapat dikalkulasi statistiknya.</div>';
+            
+            setHTML('statistics-container', statsHTML);
+
+            let primaryNumericCol = numericCols.length > 0 ? numericCols.sort((a,b) => b.sum - a.sum)[0] : null;
+            let outlierCountTotal = numericCols.reduce((a,c) => a + c.outliers, 0);
+            
+            // --- Calculate Data Health ---
+            const totalActualCells = totalCellsChecked || (numRows * globalHeaders.length);
+            const completenessPct = totalActualCells > 0 ? Math.max(0, 100 - ((missingValueCount / totalActualCells) * 100)) : 0;
+            
+            let totalNumericDataCells = 0;
+            numericCols.forEach(c => totalNumericDataCells += c.count);
+            const qualityPct = totalNumericDataCells > 0 ? Math.max(0, 100 - ((outlierCountTotal / totalNumericDataCells) * 100)) : 100;
+            const uniquePct = numRows > 0 ? Math.max(0, 100 - ((duplicateRows / numRows) * 100)) : 100;
+            
+            const overallHealthScore = Math.round((completenessPct + qualityPct + uniquePct) / 3);
+            let healthColor = overallHealthScore >= 90 ? 'text-emerald-500' : (overallHealthScore >= 75 ? 'text-amber-500' : 'text-rose-500');
+            
+            let dataHealthHTML = `
+                <!-- Overall Score -->
+                <div class="col-span-1 flex flex-col justify-center items-center p-4 border-b md:border-b-0 md:border-r border-slate-100">
+                    <div class="text-[3.5rem] sm:text-[4rem] leading-none font-black ${healthColor} mb-2 tracking-tighter">${overallHealthScore}<span class="text-xl sm:text-2xl">%</span></div>
+                    <p class="text-[10px] sm:text-xs font-black text-slate-500 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-full border border-slate-200">Indeks Kesehatan</p>
+                </div>
+                <!-- Completeness -->
+                <div class="col-span-1 p-4 flex flex-col justify-between h-full">
+                    <div class="mb-4">
+                        <p class="text-sm font-black text-slate-800">Kelengkapan Data</p>
+                        <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-1.5 leading-relaxed">Persentase rasio sel data yang terisi penuh. Terdeteksi <span class="font-bold text-slate-800">${missingValueCount} sel kosong</span> yang berpotensi menyebabkan algoritma bias.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-xl font-black text-blue-600 w-14">${completenessPct.toFixed(0)}%</div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner"><div class="bg-blue-500 h-2.5 rounded-full progress-bar-fill" style="width: 0%" id="health-bar-comp"></div></div>
+                    </div>
+                </div>
+                <!-- Validity/Quality -->
+                <div class="col-span-1 p-4 md:border-l border-slate-100 flex flex-col justify-between h-full">
+                    <div class="mb-4">
+                        <p class="text-sm font-black text-slate-800">Konsistensi Nilai</p>
+                        <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-1.5 leading-relaxed">Tingkat stabilitas data tanpa anomali ekstrem. Teridentifikasi <span class="font-bold text-slate-800">${outlierCountTotal} nilai pencilan</span> yang berada di luar kewajaran standar deviasi.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-xl font-black text-indigo-600 w-14">${qualityPct.toFixed(0)}%</div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner"><div class="bg-indigo-500 h-2.5 rounded-full progress-bar-fill" style="width: 0%" id="health-bar-qual"></div></div>
+                    </div>
+                </div>
+                <!-- Uniqueness -->
+                <div class="col-span-1 p-4 md:border-l border-slate-100 flex flex-col justify-between h-full">
+                    <div class="mb-4">
+                        <p class="text-sm font-black text-slate-800">Keunikan Baris</p>
+                        <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-1.5 leading-relaxed">Rasio baris tunggal dalam pangkalan data. Ditemukan <span class="font-bold text-slate-800">${duplicateRows} baris ganda (duplikat)</span> yang merupakan salinan identik satu sama lain.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-xl font-black text-amber-600 w-14">${uniquePct.toFixed(0)}%</div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner"><div class="bg-amber-500 h-2.5 rounded-full progress-bar-fill" style="width: 0%" id="health-bar-uniq"></div></div>
+                    </div>
+                </div>
+            `;
+            setHTML('data-health-container', dataHealthHTML);
+
+            // Context for AI
+            window.dazerContext = {
+                fileName: fileName, numRows: numRows, numCols: globalHeaders.length,
+                missingValues: missingValueCount, outliers: outlierCountTotal, duplicateRows: duplicateRows,
+                primaryCol: primaryNumericCol, headers: globalHeaders
+            };
+
+            renderMatrixPreview(data);
+
+            // Build Scorecards Redesign (Text only)
+            let scorecards = [];
+            scorecards.push({ title: "Total Baris Data", value: numRows.toLocaleString('id-ID'), sub: `${globalHeaders.length} Kolom Tersedia` });
+            
+            if(numericCols.length > 0) {
+                scorecards.push({ title: `Akumulasi ${primaryNumericCol.name.substring(0,12)}`, value: primaryNumericCol.sum.toLocaleString('id-ID', {notation: 'compact', maximumFractionDigits:1}), sub: "Numerik Terbesar" });
+                scorecards.push({ title: "Total Pencilan Data", value: `${outlierCountTotal}`, sub: outlierCountTotal > 0 ? "Perlu Diperiksa" : "Data Bersih" });
+
+                if(catCols.length > 0) {
+                    scorecards.push({ title: "Kategori Utama", value: `${catCols[0].uniqueCount}`, sub: `Varian pada ${catCols[0].name.substring(0,10)}` });
+                } else {
+                    scorecards.push({ title: "Rata-rata Utama", value: primaryNumericCol.avg.toLocaleString('id-ID', {notation: 'compact'}), sub: `Dari ${primaryNumericCol.name.substring(0,10)}` });
+                }
+            } else {
+                scorecards.push({ title: "Tipe Matriks", value: "Teks", sub: "Data Non-Numerik" });
+                scorecards.push({ title: "Sel Kosong", value: missingValueCount.toLocaleString('id-ID'), sub: "Seluruh Dokumen" });
+                scorecards.push({ title: "Kategori Terbesar", value: catCols[0] ? catCols[0].uniqueCount : 0, sub: "Varian Unik" });
+            }
+
+            // Chart Generation
+            let cLabels = []; let cData = []; let cTitle = "Distribusi Data"; let dLabel = "Nilai";
+            
+            if(catCols.length > 0 && numericCols.length > 0) {
+                let lblIdx = catCols[0].idx; let valIdx = primaryNumericCol.idx;
+                cTitle = `Korelasi: ${primaryNumericCol.name.substring(0,35)} per ${catCols[0].name.substring(0,25)}`;
+                let map = {};
+                for(let i=1; i<Math.min(300, numRows); i++) {
+                    let k = data[i][lblIdx]; let v = parseFloat(data[i][valIdx]) || 0;
+                    if(k) map[k] = (map[k] || 0) + v;
+                }
+                let sorted = Object.keys(map).map(k => ({k, v: map[k]})).sort((a,b) => b.v - a.v).slice(0, 8);
+                cLabels = sorted.map(i => i.k.length > 15 ? i.k.substring(0,15)+'..' : i.k);
+                cData = sorted.map(i => i.v);
+            } else if (numericCols.length > 0) {
+                cTitle = `Histori Data: ${primaryNumericCol.name.substring(0,40)}`;
+                let limit = Math.min(25, numRows);
+                for(let i=1; i<limit; i++) {
+                    cLabels.push(`Baris ${i}`); cData.push(parseFloat(data[i][primaryNumericCol.idx])||0);
+                }
+            } else if (catCols.length > 0) {
+                cTitle = `Frekuensi Kemunculan: ${catCols[0].name.substring(0,40)}`;
+                let map = {};
+                for(let i=1; i<Math.min(300, numRows); i++) {
+                    let k = data[i][catCols[0].idx]; if(k) map[k] = (map[k] || 0) + 1;
+                }
+                let sorted = Object.keys(map).map(k => ({k, v: map[k]})).sort((a,b) => b.v - a.v).slice(0, 8);
+                cLabels = sorted.map(i => i.k.substring(0,15)); cData = sorted.map(i => i.v);
+            }
+
+            // Insights Logic (Facts)
+            let insights = [];
+            insights.push(`Sistem memproses total struktur data yang memuat <b>${numRows.toLocaleString('id-ID')}</b> baris dan <b>${globalHeaders.length}</b> kolom yang valid.`);
+            
+            if(missingValueCount > 0) {
+                insights.push(`Ditemukan <b>${missingValueCount.toLocaleString('id-ID')}</b> sel data yang kosong, menurunkan skor kelengkapan menjadi ${completenessPct.toFixed(1)}%.`);
+            } else {
+                insights.push(`Kelengkapan data sangat sempurna (100%), tidak ada celah kekosongan informasi pada sel matrik.`);
+            }
+
+            if(primaryNumericCol) {
+                insights.push(`Atribut numerik terbesar adalah "${primaryNumericCol.name}" dengan nilai agregat rata-rata sebesar <b>${primaryNumericCol.avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</b>.`);
+                if(outlierCountTotal > 0) {
+                    insights.push(`Mesin mendeteksi adanya lonjakan anomali dengan total <b>${outlierCountTotal.toLocaleString('id-ID')}</b> data pencilan ekstrem yang melampaui batas wajar.`);
+                }
+            } else if(catCols.length > 0) {
+                let mainCat = catCols[0];
+                insights.push(`Dominasi teks terdeteksi. Nilai modus tertinggi pada kolom "${mainCat.name}" adalah <b>"${mainCat.mode}"</b>.`);
+            }
+            if(duplicateRows > 0) insights.push(`Terdapat <b>${duplicateRows.toLocaleString('id-ID')}</b> baris data yang teridentifikasi memiliki kembaran ganda (duplikat persis).`);
+
+            // Action Plan Logic
+            let futurePlan = [];
+            if(missingValueCount > 0) {
+                futurePlan.push({ title: "Pembersihan Data Kosong", action: "Periksa ulang sumber data. Imputasi kekosongan ini dengan angka rerata atau hapus baris yang rusak agar algoritma tidak bias." });
+            } else {
+                futurePlan.push({ title: "Pertahankan Standar", action: "Struktur data sempurna. Validasi rekam data ini layak dijadikan template dasar pada unggahan periode selanjutnya." });
+            }
+
+            if(outlierCountTotal > 0) {
+                futurePlan.push({ title: "Investigasi Anomali", action: `Anda perlu melakukan pengecekan faktual pada ${outlierCountTotal} nilai tak wajar, hindari kerusakan akurasi proyeksi keuangan Anda.` });
+            }
+
+            if(duplicateRows > 0) {
+                futurePlan.push({ title: "Hapus Duplikasi Ganda", action: `Terdapat ${duplicateRows} baris identik. Segera jalankan fungsi pembersihan duplikat agar total agregasi jumlah/keuntungan tidak terhitung dua kali.` });
+            } else if(catCols.length > 0 && numericCols.length > 0) {
+                futurePlan.push({ title: "Gunakan Segmentasi", action: `Manfaatkan atribut kategoris seperti "${catCols[0].name}" sebagai pilar utama untuk membedah kinerja ke kelompok-kelompok kecil.` });
+            } else if(numericCols.length > 0) {
+                futurePlan.push({ title: "Petakan Ambang Batas", action: "Manfaatkan sebaran nilai Kuartil (Q1 - Q3) yang sudah dikalkulasi untuk menciptakan alarm peringatan operasional otomatis di masa depan." });
+            } else {
+                futurePlan.push({ title: "Standardisasi Kamus Teks", action: "Tertibkan tata nama kategori yang Anda gunakan. Kesalahan spasi kecil membuat komputer menganggapnya entitas baru." });
+            }
+
+            const finalData = { 
+                fileName: fileName, scorecards, insights, futurePlan, overallHealthScore, completenessPct, qualityPct, uniquePct,
+                chart: { title: cTitle, labels: cLabels, datasetLabel: dLabel, data: cData } 
+            };
+            currentReportData = finalData;
+            
+            setTimeout(() => {
+                clearInterval(loadingInterval); saveToHistory(finalData, intentStr); renderDashboard(finalData);
+                
+                // Animate Health Bars
+                setTimeout(() => {
+                    const bc = document.getElementById('health-bar-comp'); if(bc) bc.style.width = `${completenessPct}%`;
+                    const bq = document.getElementById('health-bar-qual'); if(bq) bq.style.width = `${qualityPct}%`;
+                    const bu = document.getElementById('health-bar-uniq'); if(bu) bu.style.width = `${uniquePct}%`;
+                }, 150);
+            }, 1000);
+        }
+
+        // --- Render Editable Matrix ---
+        function renderMatrixPreview(data) {
+            let headHTML = '<tr><th class="px-4 sm:px-5 py-3 sm:py-4 font-black text-[10px] sm:text-[11px] uppercase tracking-widest border-b border-slate-200 text-slate-400 bg-slate-100 text-center w-10 sm:w-14 sticky left-0 z-20 shadow-[1px_0_0_#e2e8f0]">No.</th>';
+            globalHeaders.forEach(col => { headHTML += `<th class="px-4 sm:px-5 py-3 sm:py-4 font-black text-xs sm:text-sm whitespace-nowrap border-b border-slate-200 text-slate-800 tracking-wide bg-slate-100">${col.replace(/\*/g,'')}</th>`; });
+            setHTML('preview-thead', headHTML + '</tr>');
+
+            let bodyHTML = ''; const limit = Math.min(101, data.length); 
+            for(let i = 1; i < limit; i++) {
+                bodyHTML += '<tr class="transition-colors hover:bg-brand-50 group border-b border-slate-100 last:border-0">';
+                bodyHTML += `<td class="px-4 sm:px-5 py-3 font-bold text-[10px] sm:text-xs text-slate-400 text-center bg-slate-50 sticky left-0 z-10 shadow-[1px_0_0_#f1f5f9] group-hover:bg-brand-100 group-hover:text-brand-600 transition-colors">${i}</td>`;
+                data[i].forEach((cell, j) => {
+                    let val = cell !== undefined && cell !== null ? cell.toString() : '';
+                    if(val.length > 50) val = val.substring(0, 50) + '...';
+                    bodyHTML += `<td contenteditable="true" class="px-4 sm:px-5 py-3 whitespace-nowrap text-slate-700 text-xs sm:text-sm outline-none focus:bg-white focus:ring-2 focus:ring-brand-400 focus:shadow-md transition-all">${val}</td>`;
+                });
+                bodyHTML += '</tr>';
+            }
+            setHTML('preview-tbody', bodyHTML);
+        }
+
+        function toggleMatrixFullscreen() {
+            const card = document.getElementById('matrix-card');
+            const icon = document.getElementById('matrix-icon');
+            const textBtn = document.getElementById('matrix-text-btn');
+            if(!card || !icon) return;
+            
+            if(isMatrixFullscreen) {
+                card.classList.remove('matrix-fullscreen');
+                icon.setAttribute('data-lucide', 'maximize');
+                if(textBtn) textBtn.innerText = "Layar Penuh";
+                document.body.style.overflow = '';
+                isMatrixFullscreen = false;
+            } else {
+                card.classList.add('matrix-fullscreen');
+                icon.setAttribute('data-lucide', 'minimize');
+                if(textBtn) textBtn.innerText = "Tutup Layar";
+                document.body.style.overflow = 'hidden';
+                isMatrixFullscreen = true;
+            }
+            lucide.createIcons();
+        }
+
+        // --- Render Dashboard UI ---
+        function renderDashboard(data) {
+            clearAllTypewriters();
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            currentChartData = data.chart;
+
+            setHTML('dashboard-intent-display', `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Laporan cerdas untuk <span class="font-black text-slate-700 ml-1 truncate max-w-[200px] sm:max-w-full inline-block align-bottom">${data.fileName}</span>`);
+
+            // Scorecards (No Icons)
+            let scHTML = '';
+            data.scorecards.forEach((sc, i) => {
+                scHTML += `
+                    <div class="relative overflow-hidden bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300" style="animation-delay: ${i*0.05}s">
+                        <div class="relative z-10">
+                            <p class="text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-widest mb-2">${sc.title}</p>
+                            <h3 class="text-2xl sm:text-3xl font-black text-slate-900 mb-2">${sc.value}</h3>
+                            <p class="text-[10px] sm:text-xs font-bold text-brand-600 bg-brand-50 inline-block px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-brand-100">${sc.sub}</p>
+                        </div>
+                    </div>`;
+            });
+            setHTML('scorecards-container', scHTML);
+
+            let inHTML = '';
+            data.insights.forEach((ins, i) => {
+                inHTML += `
+                    <li class="flex gap-3 sm:gap-4 items-start group">
+                        <div class="mt-0.5 shrink-0 text-emerald-500 bg-emerald-50 p-1 rounded-full shadow-sm"><i data-lucide="check" class="w-3 h-3 sm:w-4 sm:h-4"></i></div>
+                        <span class="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed typewriter-target group-hover:text-slate-900 transition-colors" id="ins-${i}"></span>
+                    </li>`;
+            });
+            
+            const insightsListEl = document.getElementById('insights-list');
+            if(insightsListEl) {
+                insightsListEl.innerHTML = inHTML;
+                data.insights.forEach((ins, i) => {
+                    let t = setTimeout(() => {
+                        const targetEl = document.getElementById(`ins-${i}`);
+                        if(targetEl) typeWriterEffect(targetEl, ins, 12); 
+                    }, i*400);
+                    typewriterTimeouts.push(t);
+                });
+            }
+
+            // Action Plan (No Icons)
+            let plHTML = '';
+            data.futurePlan.forEach((pl, i) => {
+                plHTML += `
+                    <div class="bg-white border border-slate-200 p-5 sm:p-6 rounded-2xl shadow-sm hover:shadow-xl hover:border-brand-300 transition-all duration-300 overflow-hidden" style="animation-delay: ${(i*0.1)+0.3}s">
+                        <h4 class="font-black text-slate-800 text-sm sm:text-base leading-tight mb-2 sm:mb-3">${pl.title}</h4>
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium m-0">${pl.action}</p>
+                    </div>`;
+            });
+            setHTML('action-plan-grid', plHTML);
+
+            setText('chart-title', data.chart.title);
+            changeChartType('bar'); 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+            
+            chatHistory = [{ role: 'system', content: 'Anda adalah asisten ahli data. Gunakan data Unstructured dan hasil Tavily untuk menjawab pengguna dengan ringkas, akurat, dan berbahasa Indonesia.' }];
+            
+            setHTML('chat-messages', `
+                <div class="flex gap-3 sm:gap-4 mb-2">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0 text-white shadow-sm border border-slate-700"><i data-lucide="cpu" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
+                    <div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[85%]">
+                        <p class="text-xs sm:text-sm text-slate-800 font-bold leading-relaxed">Sistem Unstructured, Gemini, & Groq Online. Saya siap mengolah tabel Anda atau mencari data terkini di Internet (Tavily). Apa yang ingin Anda ketahui?</p>
+                    </div>
+                </div>`);
+            lucide.createIcons();
+        }
+
+        // --- Premium Interative Chart Configuration ---
+        function updateCustomChart() {
+            const selector = document.getElementById('chart-type-selector');
+            if(selector) changeChartType(selector.value);
+        }
+
+        function changeChartType(type) {
+            if(!currentChartData) return;
+            const selector = document.getElementById('chart-type-selector');
+            if(selector) selector.value = type;
+
+            const canvasEl = document.getElementById('mainChart');
+            if(!canvasEl) return;
+            const ctx = canvasEl.getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+            
+            const isPie = type === 'doughnut' || type === 'pie';
+            const isLine = type === 'line';
+            
+            const palette = ['#0ea5e9','#8b5cf6','#10b981','#f59e0b','#ef4444','#ec4899','#14b8a6','#f97316']; 
+
+            let bgColors = []; let borderColors = []; let hoverColors = [];
+            
+            if(!isPie) {
+                currentChartData.labels.forEach(() => {
+                    let grad = ctx.createLinearGradient(0,0,0,450);
+                    if(isLine) {
+                        grad.addColorStop(0, 'rgba(14, 165, 233, 0.45)'); 
+                        grad.addColorStop(1, 'rgba(14, 165, 233, 0.0)');
+                    } else {
+                        grad.addColorStop(0, '#38bdf8'); 
+                        grad.addColorStop(1, '#0284c7');
+                    }
+                    bgColors.push(grad); 
+                    hoverColors.push(isLine ? grad : '#0ea5e9');
+                    borderColors.push('#0284c7');
+                });
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: currentChartData.labels,
+                    datasets: [{
+                        label: currentChartData.datasetLabel,
+                        data: currentChartData.data,
+                        backgroundColor: isPie ? palette : bgColors,
+                        hoverBackgroundColor: isPie ? hoverPalette : hoverColors,
+                        borderColor: isPie ? '#ffffff' : borderColors,
+                        borderWidth: isPie ? 3 : (isLine ? 4 : 0),
+                        borderRadius: type === 'bar' ? 8 : 0, 
+                        borderSkipped: false,
+                        borderJoinStyle: 'round',
+                        fill: isLine, tension: 0.45, 
+                        hoverOffset: isPie ? 15 : 0, 
+                        pointBackgroundColor: '#ffffff', pointBorderColor: '#0ea5e9', pointBorderWidth: 3,
+                        pointRadius: isLine ? 6 : 0, pointHoverRadius: 10, pointHoverBorderWidth: 4,
+                        pointHoverBackgroundColor: '#0ea5e9', pointHoverBorderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    animation: { duration: 1500, easing: 'easeOutQuart' }, 
+                    layout: { padding: { top: 25, bottom: 20, left: 10, right: 10 } },
+                    interaction: { mode: 'index', intersect: false },
+                    cutout: isPie ? '75%' : undefined,
+                    plugins: {
+                        legend: { display: isPie, position: 'right', labels: { font: {family: 'Inter', size: 12, weight:'900'}, usePointStyle: true, boxWidth: 10, padding: 25 } }, 
+                        tooltip: { 
+                            enabled: true, backgroundColor: 'rgba(15, 23, 42, 0.95)', titleColor: '#f8fafc', bodyColor: '#cbd5e1',
+                            borderColor: '#334155', borderWidth: 1, titleFont: {family:'Inter', size: 13, weight: '900'}, bodyFont: {family:'Inter', size: 13, weight:'600'},
+                            padding: 14, cornerRadius: 12, boxPadding: 8, displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) label += new Intl.NumberFormat('id-ID').format(context.parsed.y);
+                                    return label;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            display: function(context) { return context.dataset.data.length < 10; },
+                            color: isPie ? '#ffffff' : '#0f172a',
+                            font: { family: 'Inter', weight: '900', size: 11 },
+                            align: isPie ? 'center' : 'end', anchor: isPie ? 'center' : 'end', offset: 10,
+                            formatter: v => typeof v === 'number' ? v.toLocaleString('id-ID', {maximumFractionDigits: 1, notation: 'compact'}) : v
+                        }
+                    },
+                    scales: isPie ? {} : {
+                        y: { beginAtZero:true, border:{display:false}, grid:{color:'#e2e8f0', drawBorder: false, borderDash: [5, 5]}, ticks:{font:{size:11, family:'Inter', weight:'800'}, color:'#94a3b8', padding: 12} },
+                        x: { border:{display:false}, grid:{display:false}, ticks:{font:{size:11, family:'Inter', weight:'900'}, color:'#64748b', maxRotation: 45, minRotation: 0, padding: 12} }
+                    }
+                }
+            });
+        }
+
+        // --- AI Chat Logic ---
+        function sendSuggestedChat(txt) {
+            const input = document.getElementById('ai-chat-input');
+            if(input) input.value = txt;
+            sendChatMessage();
+        }
+
+        function handleChatEnter(e) { if(e.key === 'Enter') sendChatMessage(); }
+
+        // --- FETCH NETLIFY FUNCTIONS FOR CHAT (GROQ + TAVILY) ---
+        async function sendChatMessage() {
+            const input = document.getElementById('ai-chat-input');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            // PROTEKSI RATE LIMITING
+            if(!aiLimiter.consumeToken()) {
+                return showNotification("Batas 30 Token AI Habis! Silakan tunggu beberapa menit agar terisi kembali.", "warning");
+            }
+
+            const chatBox = document.getElementById('chat-messages');
+            chatBox.innerHTML += `
+                <div class="flex gap-3 sm:gap-4 justify-end mb-2">
+                    <div class="bg-brand-600 p-3 sm:p-4 rounded-2xl rounded-tr-sm shadow-md max-w-[85%]">
+                        <p class="text-xs sm:text-sm font-bold text-white leading-relaxed">${msg}</p>
+                    </div>
+                </div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const typingId = 'typing-' + Date.now();
+            chatBox.innerHTML += `
+                <div class="flex gap-3 sm:gap-4 mb-2" id="${typingId}">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0 text-white shadow-sm border border-slate-700"><i data-lucide="cpu" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
+                    <div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm flex items-center justify-center typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>`;
+            lucide.createIcons();
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Kumpulkan Konteks
+            let systemContext = `Data Konteks Lokal:\nNama File: ${window.dazerContext?.fileName}\nTotal Baris: ${window.dazerContext?.numRows}\nSel Kosong: ${window.dazerContext?.missingValues}\nPencilan: ${window.dazerContext?.outliers}\n`;
+
+            try {
+                // Memanggil Netlify Functions secara aman 
+                // Pastikan backend API Anda (dazer-api.js) siap menerima action 'chat'
+                const response = await fetch('/.netlify/functions/dazer-api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'chat',
+                        message: msg,
+                        context: systemContext
+                    })
+                });
+
+                let reply = "Maaf, sistem AI sedang padat. Silakan coba lagi.";
+                
+                if(response.ok) {
+                    const data = await response.json();
+                    reply = data.reply || reply;
+                } else {
+                    console.error("Gagal terhubung ke Netlify Functions. Pastikan URL endpoint backend sudah benar.");
+                    reply = "Terjadi kesalahan saat memanggil Netlify Functions. Hubungi administrator (faqihalrf@gmail.com).";
+                }
+
+                reply = reply.replace(/\*\*(.*?)\*\*/g, '<span class="font-black text-brand-700 bg-brand-50 px-1 rounded">$1</span>');
+                
+                const typEl = document.getElementById(typingId);
+                if(typEl) typEl.remove();
+                
+                chatBox.innerHTML += `
+                    <div class="flex gap-3 sm:gap-4 mb-2">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-900 flex items-center justify-center shrink-0 text-white shadow-sm border border-slate-700"><i data-lucide="cpu" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
+                        <div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[85%]">
+                            <p class="text-xs sm:text-sm text-slate-800 font-medium leading-relaxed">${reply}</p>
+                        </div>
+                    </div>`;
+                lucide.createIcons();
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+            } catch(e) {
+                const typEl = document.getElementById(typingId);
+                if(typEl) typEl.remove();
+                chatBox.innerHTML += `
+                    <div class="flex gap-3 sm:gap-4 mb-2">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-rose-600 flex items-center justify-center shrink-0 text-white shadow-sm border border-rose-700"><i data-lucide="alert-triangle" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
+                        <div class="bg-rose-50 p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-rose-200 shadow-sm max-w-[85%]">
+                            <p class="text-xs sm:text-sm text-rose-800 font-bold leading-relaxed">Gagal terhubung ke Backend AI. Pastikan aplikasi telah di-deploy ke Netlify dengan fungsi dazer-api.</p>
+                        </div>
+                    </div>`;
+                lucide.createIcons();
+            }
+        }
+
+        // --- Export to MS Word ---
+        function exportToWord() {
+            if(!currentReportData) return showNotification("Laporan belum tersedia.", "error");
+            showNotification("Mengunduh Laporan Eksekutif...", "success");
+
+            const dateStr = new Date().toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' });
+            let htmlString = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Ringkasan Eksekutif</title>
+                    <style>
+                        body { font-family: 'Calibri', 'Arial', sans-serif; font-size: 11pt; line-height: 1.6; color: #1e293b; }
+                        h1 { color: #0f172a; font-size: 18pt; border-bottom: 2px solid #0284c7; padding-bottom: 8px; margin-bottom: 5px; }
+                        h2 { color: #0284c7; font-size: 14pt; margin-top: 25px; margin-bottom: 10px; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; }
+                        .subtitle { color: #64748b; font-size: 10pt; margin-bottom: 25px; }
+                        p { margin-bottom: 12px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 25px; }
+                        th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: left; }
+                        th { background-color: #f8fafc; font-weight: bold; }
+                        ul { margin-top: 10px; margin-bottom: 20px; padding-left: 20px; }
+                        li { margin-bottom: 8px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>RINGKASAN EKSEKUTIF ANALISIS DATA</h1>
+                    <p class="subtitle">Sumber: ${currentReportData.fileName} | Skor Kesehatan: ${currentReportData.overallHealthScore}% | Dibuat pada: ${dateStr}</p>
+                    
+                    <h2>1. METRIK UTAMA</h2>
+                    <table>
+                        <tr><th>Kategori Metrik</th><th>Nilai</th><th>Keterangan</th></tr>
+            `;
+
+            currentReportData.scorecards.forEach(sc => {
+                htmlString += `<tr><td>${sc.title}</td><td><b>${sc.value}</b></td><td>${sc.sub}</td></tr>`;
+            });
+            htmlString += `</table>`;
+
+            htmlString += `
+                    <h2>2. WAWASAN FAKTA DATA</h2>
+                    <ul>
+            `;
+            currentReportData.insights.forEach(ins => { 
+                let cleanIns = ins.replace(/<[^>]*>?/gm, ''); 
+                htmlString += `<li>${cleanIns}</li>`; 
+            });
+            htmlString += `</ul>`;
+
+            htmlString += `
+                    <h2>3. REKOMENDASI TINDAKAN</h2>
+                    <ul>
+            `;
+            currentReportData.futurePlan.forEach((plan) => { 
+                htmlString += `<li><b>${plan.title}:</b> ${plan.action}</li>`; 
+            });
+            htmlString += `</ul>`;
+
+            htmlString += `
+                </body>
+                </html>
+            `;
+
+            const blob = new Blob(['\ufeff', htmlString], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Laporan_Eksekutif_${currentReportData.fileName.replace(/[^a-z0-9]/gi, '_')}.doc`; 
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // --- Core UI Modals & Routing ---
+        function saveToHistory(data, intent) {
+            let hist = JSON.parse(localStorage.getItem('dazer_pro_v6') || '[]');
+            hist.unshift({ id: Date.now(), date: new Date().toLocaleString('id-ID'), intent: intent, data: data });
+            if(hist.length > 5) hist.pop();
+            localStorage.setItem('dazer_pro_v6', JSON.stringify(hist));
+        }
+
+        function toggleHistoryModal() {
+            const m = document.getElementById('history-modal');
+            const c = document.getElementById('history-modal-content');
+            if(!m || !c) return;
+
+            if (m.classList.contains('hidden')) {
+                renderHistory();
+                m.classList.remove('hidden');
+                setTimeout(() => { c.classList.remove('scale-95','opacity-0'); }, 10);
+            } else { closeHistoryModal(); }
+        }
+
+        function closeHistoryModal() {
+            const m = document.getElementById('history-modal');
+            const c = document.getElementById('history-modal-content');
+            if(c) c.classList.add('scale-95','opacity-0');
+            if(m) setTimeout(() => m.classList.add('hidden'), 300);
+        }
+
+        function renderHistory() {
+            const listContainer = document.getElementById('history-list');
+            if(!listContainer) return;
+
+            const hist = JSON.parse(localStorage.getItem('dazer_pro_v6') || '[]');
+            if(hist.length === 0) {
+                listContainer.innerHTML = '<div class="text-center text-sm text-slate-500 py-8 font-bold">Belum ada riwayat laporan.</div>';
+                return;
+            }
+            
+            let hHTML = '';
+            hist.forEach((h, i) => {
+                hHTML += `
+                    <div class="mb-4 p-4 sm:p-5 bg-white border border-slate-200 rounded-xl hover:border-brand-500 hover:shadow-md cursor-pointer transition-all" onclick="loadHistoryItem(${i})">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-[9px] sm:text-[10px] font-black text-brand-600 uppercase tracking-widest">${h.date}</span>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-slate-800">${h.intent ? h.intent.substring(0,50) : 'Analisis Otomatis'}</p>
+                    </div>`;
+            });
+            listContainer.innerHTML = hHTML;
+        }
+
+        function loadHistoryItem(index) {
+            const hist = JSON.parse(localStorage.getItem('dazer_pro_v6') || '[]');
+            if(hist[index]) {
+                closeHistoryModal(); resetAppUI();
+                const hs = document.getElementById('hero-section');
+                if(hs) hs.classList.add('hidden');
+                const ss = document.getElementById('setup-screen');
+                if(ss) ss.classList.add('hidden');
+                
+                currentReportData = hist[index].data;
+                renderDashboard(hist[index].data);
+                
+                setTimeout(() => {
+                    const bc = document.getElementById('health-bar-comp'); if(bc) bc.style.width = `${currentReportData.completenessPct}%`;
+                    const bq = document.getElementById('health-bar-qual'); if(bq) bq.style.width = `${currentReportData.qualityPct}%`;
+                    const bu = document.getElementById('health-bar-uniq'); if(bu) bu.style.width = `${currentReportData.uniquePct}%`;
+                }, 150);
+            }
+        }
+
         function clearAllTypewriters() {
             typewriterTimeouts.forEach(t => clearTimeout(t));
             typewriterTimeouts = [];
@@ -458,626 +1468,64 @@
             if (!el) return;
             let i = 0; el.classList.add('typewriter-cursor'); el.innerHTML = ''; 
             function type() { 
-                if (!document.body.contains(el)) return;
+                if (!el) return;
                 if(i < txt.length) { 
                     if(txt.charAt(i) === '<') {
                         let tag = '';
                         while(txt.charAt(i) !== '>' && i < txt.length) { tag += txt.charAt(i); i++; }
                         tag += '>'; el.innerHTML += tag;
-                    } else { el.innerHTML += txt.charAt(i); }
-                    i++; typewriterTimeouts.push(setTimeout(type, spd)); 
+                    } else {
+                        el.innerHTML += txt.charAt(i); 
+                    }
+                    i++; 
+                    let t = setTimeout(type, spd); 
+                    typewriterTimeouts.push(t);
                 } else { el.classList.remove('typewriter-cursor'); }
             }
             type();
         }
 
-        // Notification
         function showNotification(msg, type='error') {
             const n = document.getElementById('notification'); const i = document.getElementById('notification-icon');
             if(!n || !i) return;
-            n.className = `fixed top-6 left-1/2 transform -translate-x-1/2 z-[9999999] px-4 py-3 rounded-lg shadow-lg transition-all duration-300 border flex items-center gap-3 text-sm font-semibold max-w-sm w-[90%] ${type==='error'?'bg-rose-50 border-rose-200 text-rose-700':'bg-emerald-50 border-emerald-200 text-emerald-700'}`;
-            i.setAttribute('data-lucide', type==='error'?'alert-circle':'check-circle-2');
-            document.getElementById('notification-text').innerText = msg.replace(/\*/g,'');
+
+            n.className = `fixed top-4 sm:top-6 left-1/2 transform -translate-x-1/2 z-[9999999] w-[90%] sm:max-w-sm px-4 sm:px-5 py-3 sm:py-4 rounded-xl flex items-center gap-3 shadow-2xl transition-all duration-400 border text-xs sm:text-sm font-bold ${type==='error'?'bg-rose-50 border-rose-200 text-rose-700':(type==='warning'?'bg-amber-50 border-amber-200 text-amber-700':'bg-emerald-50 border-emerald-200 text-emerald-800')}`;
+            i.setAttribute('data-lucide', type==='error'?'alert-circle':(type==='warning'?'alert-triangle':'check-circle'));
+            
+            const nt = document.getElementById('notification-text');
+            if(nt) nt.innerText = msg;
+            
             n.classList.remove('hidden'); lucide.createIcons();
-            setTimeout(() => { n.classList.add('opacity-0', '-translate-y-4'); setTimeout(() => n.classList.add('hidden'), 300); }, 3500);
-        }
-
-        // Drag & Drop
-        const uploadZone = document.getElementById('upload-zone');
-        const fileInput = document.getElementById('file-input');
-        
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => uploadZone.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); }, false));
-        ['dragenter', 'dragover'].forEach(e => uploadZone.addEventListener(e, () => uploadZone.classList.add('border-brand-500', 'bg-slate-50'), false));
-        ['dragleave', 'drop'].forEach(e => uploadZone.addEventListener(e, () => uploadZone.classList.remove('border-brand-500', 'bg-slate-50'), false));
-
-        uploadZone.addEventListener('drop', e => { if(e.dataTransfer.files.length) handleFileSelection(e.dataTransfer.files); }, false);
-        fileInput.addEventListener('change', e => { if(e.target.files.length) handleFileSelection(e.target.files); }, false);
-
-        function handleFileSelection(files) {
-            let file = files[0]; 
-            if (file.size > 20 * 1024 * 1024) return showNotification(`Gagal: Melebihi kapasitas maksimal (20MB).`, "error");
-
-            const ext = file.name.split('.').pop().toLowerCase();
-            if (!['csv', 'xlsx', 'xls'].includes(ext)) return showNotification("Gunakan format terstruktur (CSV/Excel).", "error");
-
-            fileMetadata.name = file.name; fileMetadata.extension = ext;
-            fileMetadata.size = file.size; fileMetadata.fileObj = file;
-
-            setText('file-name-display', file.name);
-            setText('file-size-display', `Volume: ${(file.size / 1024).toFixed(0)} KB | Siap Eksekusi`);
-
-            document.getElementById('hero-section').classList.add('hidden');
-            document.getElementById('setup-screen').classList.remove('hidden');
-            window.scrollTo({top:0, behavior: 'smooth'});
-        }
-
-        // Execution
-        let loadingInterval;
-        function startAnalysis() {
-            const analysisType = document.getElementById('analysis-type').value;
-            const customIntent = document.getElementById('custom-intent').value.trim();
-            const intentStr = customIntent ? `[${analysisType}] ${customIntent}` : `[${analysisType}] Analisis Otomatis`;
-
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('loading-state').classList.remove('hidden');
-            
-            const texts = ["Membaca struktur file lokal...", "Agregasi data...", "Menyusun *insight*...", "Finalisasi laporan..."];
-            let i = 0; setText('loading-text', texts[0]);
-            loadingInterval = setInterval(() => { i = (i+1)%texts.length; setText('loading-text', texts[i]); }, 800);
-
-            setTimeout(() => {
-                const file = fileMetadata.fileObj;
-                if (fileMetadata.extension === 'csv') {
-                    Papa.parse(file, { skipEmptyLines: true, complete: r => processCoreData(r.data, intentStr, analysisType) });
-                } else {
-                    const reader = new FileReader();
-                    reader.onload = e => {
-                        try {
-                            const wb = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
-                            processCoreData(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1, defval: ""}), intentStr, analysisType);
-                        } catch(err) { clearInterval(loadingInterval); resetApp(); showNotification("File korup.", "error"); }
-                    };
-                    reader.readAsArrayBuffer(file);
-                }
-            }, 500);
-        }
-
-        // PII Masking
-        function maskPII(dataArray) {
-            piiMaskedCount = 0;
-            const emRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; const phRegex = /^(08|\+628)\d{8,11}$/; const nkRegex = /^\d{16}$/;
-            for(let i=1; i<dataArray.length; i++) {
-                for(let j=0; j<dataArray[i].length; j++) {
-                    let c = String(dataArray[i][j]).trim();
-                    if(emRegex.test(c) || phRegex.test(c) || nkRegex.test(c)) { dataArray[i][j] = "xxx-MASKED-xxx"; piiMaskedCount++; }
-                }
-            }
-            return dataArray;
-        }
-
-        function getPearsonCorrelation(x, y) {
-            let sumX=0, sumY=0, sumXY=0, sumX2=0, sumY2=0, n=0;
-            const lim = Math.min(x.length, y.length);
-            for (let i = 0; i < lim; i++) {
-                if(!isNaN(x[i]) && !isNaN(y[i])) { sumX+=x[i]; sumY+=y[i]; sumXY+=x[i]*y[i]; sumX2+=x[i]*x[i]; sumY2+=y[i]*y[i]; n++; }
-            }
-            if (n===0) return 0;
-            const den = Math.sqrt((n*sumX2 - sumX*sumX) * (n*sumY2 - sumY*sumY));
-            return den === 0 ? 0 : ((n*sumXY) - (sumX*sumY)) / den;
-        }
-
-        // Core Processor
-        function processCoreData(rawData, intentStr, analysisType) {
-            if(!rawData || rawData.length < 2) { clearInterval(loadingInterval); resetApp(); return showNotification("Data kosong.", "error"); }
-            
-            let data = maskPII(rawData);
-            globalExtractedData = data; globalHeaders = data[0];
-            const numRows = data.length - 1;
-
-            let numCols = []; let catCols = []; let statsHTML = ''; let missingCount = 0;
-            
-            globalHeaders.forEach((header, colIdx) => {
-                let isNum = true; let sum=0, count=0, min=Infinity, max=-Infinity, stdAcc=0, vals=[];
-                
-                for(let i=1; i<Math.min(30, data.length); i++) {
-                    if(data[i][colIdx]==="" || data[i][colIdx]===null) missingCount++;
-                    if(data[i][colIdx]!=="" && data[i][colIdx]!=="xxx-MASKED-xxx" && isNaN(parseFloat(data[i][colIdx]))) { isNum = false; }
-                }
-
-                if(isNum) {
-                    for(let i=1; i<=numRows; i++) {
-                        let c = data[i][colIdx];
-                        if(c!=="" && c!==null && !isNaN(parseFloat(c))) {
-                            let v = parseFloat(c); vals.push(v); sum+=v; count++;
-                            if(v<min) min=v; if(v>max) max=v;
-                        } else if(c==="" || c===null) missingCount++;
-                    }
-                    if(count > 0) {
-                        const avg = sum/count;
-                        vals.forEach(v => stdAcc += Math.pow(v - avg, 2));
-                        const stdDev = Math.sqrt(stdAcc / count);
-                        const outliers = vals.filter(v => Math.abs(v - avg) > (2 * stdDev)).length;
-                        
-                        vals.sort((a,b) => a-b);
-                        const med = vals.length%2!==0 ? vals[Math.floor(vals.length/2)] : (vals[Math.floor(vals.length/2)-1]+vals[Math.floor(vals.length/2)])/2;
-
-                        numCols.push({ idx: colIdx, name: header, min, max, avg, median:med, sum, count, outliers, stdDev, values:vals });
-                        
-                        statsHTML += `
-                            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-brand-300 transition-colors">
-                                <div class="flex justify-between items-center mb-3">
-                                    <h4 class="font-bold text-slate-800 text-sm truncate">${header.replace(/\*/g,'')}</h4>
-                                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-semibold border border-slate-200">Numerik</span>
-                                </div>
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs text-slate-600">
-                                    <div class="flex flex-col border-l-2 border-slate-200 pl-2"><span class="text-slate-400 text-[10px] uppercase tracking-wider font-semibold">Min</span> <span class="font-bold text-slate-900">${min.toLocaleString('id-ID')}</span></div>
-                                    <div class="flex flex-col border-l-2 border-slate-200 pl-2"><span class="text-slate-400 text-[10px] uppercase tracking-wider font-semibold">Max</span> <span class="font-bold text-slate-900">${max.toLocaleString('id-ID')}</span></div>
-                                    <div class="flex flex-col border-l-2 border-brand-200 pl-2"><span class="text-slate-400 text-[10px] uppercase tracking-wider font-semibold">Mean</span> <span class="font-bold text-brand-600">${avg.toLocaleString('id-ID', {maximumFractionDigits:2})}</span></div>
-                                    <div class="flex flex-col border-l-2 border-slate-200 pl-2"><span class="text-slate-400 text-[10px] uppercase tracking-wider font-semibold">Median</span> <span class="font-bold text-slate-900">${med.toLocaleString('id-ID', {maximumFractionDigits:2})}</span></div>
-                                    <div class="flex flex-col border-l-2 border-emerald-200 pl-2"><span class="text-slate-400 text-[10px] uppercase tracking-wider font-semibold">Sum</span> <span class="font-bold text-emerald-600">${sum.toLocaleString('id-ID')}</span></div>
-                                    <div class="flex flex-col border-l-2 ${outliers>0?'border-rose-200':'border-emerald-200'} pl-2"><span class="text-slate-400 text-[10px] uppercase tracking-wider font-semibold">Outlier</span> <span class="font-bold ${outliers>0?'text-rose-600':'text-emerald-600'}">${outliers}</span></div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                } else { catCols.push({ idx: colIdx, name: header.replace(/\*/g,'') }); }
-            });
-            
-            setHTML('statistics-container', statsHTML || '<div class="text-center text-slate-400 py-10">Tidak ada variabel numerik.</div>');
-
-            let pNumCol = numCols.length > 0 ? numCols.sort((a,b) => b.sum - a.sum)[0] : null;
-            let outTotal = numCols.reduce((a,c) => a + c.outliers, 0);
-
-            window.dazerContext = { fileName: fileMetadata.name, numRows, numCols: globalHeaders.length, missingValues: missingCount, outliers: outTotal, primaryCol: pNumCol, headers: globalHeaders };
-
-            // Correlation
-            if (numCols.length >= 2) {
-                let corr = getPearsonCorrelation(numCols[0].values, numCols[1].values);
-                setHTML('corr-vars', `${numCols[0].name.substring(0,10)} vs ${numCols[1].name.substring(0,10)}`);
-                let scr = (corr * 100).toFixed(1);
-                let txt = corr > 0.7 ? "Positif Kuat" : (corr < -0.7 ? "Negatif Kuat" : (corr > 0 ? "Positif Lemah" : "Negatif Lemah"));
-                setHTML('corr-score', `${scr}%`); setHTML('corr-text', txt);
-            } else {
-                setHTML('corr-vars', `Variabel Terbatas`); setHTML('corr-score', `N/A`); setHTML('corr-text', 'Butuh minimal 2 metrik');
-            }
-
-            // Health
-            let healthPenalty = (((missingCount * 5) + outTotal) / (numRows * globalHeaders.length)) * 100;
-            let healthScore = Math.max(0, Math.min(100, 100 - healthPenalty)).toFixed(0);
-            setText('health-score-txt', `${healthScore}%`);
-            document.getElementById('health-progress')?.setAttribute('stroke-dasharray', `${healthScore}, 100`);
-            const hStat = document.getElementById('health-status');
-            if(hStat) {
-                if(healthScore >= 90) { hStat.innerText = "Data Sangat Sehat"; hStat.className = "text-xs font-bold text-emerald-500 mb-0.5"; }
-                else if(healthScore >= 70) { hStat.innerText = "Cukup (Ada Kekosongan)"; hStat.className = "text-xs font-bold text-amber-500 mb-0.5"; }
-                else { hStat.innerText = "Kualitas Buruk"; hStat.className = "text-xs font-bold text-rose-500 mb-0.5"; }
-            }
-
-            renderMatrixPreview(data);
-
-            // KPIs (Minimalist Style)
-            let scorecards = [
-                { title: "Observasi Baris", value: numRows.toLocaleString('id-ID'), trend: `${globalHeaders.length} Atribut Kolom` },
-            ];
-            
-            if(numCols.length > 0) {
-                scorecards.push({ title: `Agregasi (${pNumCol.name.substring(0,8)})`, value: pNumCol.sum.toLocaleString('id-ID', {notation: 'compact'}), trend: `Rata-rata: ${pNumCol.avg.toLocaleString('id-ID', {maximumFractionDigits:1})}` });
-                scorecards.push({ title: `Deviasi / Anomali`, value: outTotal, trend: outTotal>5?"Distorsi Tinggi":"Kondisi Normal" });
-                scorecards.push({ title: catCols.length>0 ? `Basis Segmen` : `Volatilitas`, value: catCols.length>0 ? catCols[0].name.substring(0,12) : pNumCol.stdDev.toLocaleString('id-ID', {maximumFractionDigits:1}), trend: catCols.length>0?"Kategorikal Utama":"Standar Deviasi" });
-            } else {
-                scorecards.push({ title: "Sifat Model", value: "Kategorikal", trend: "Tanpa Angka" });
-                scorecards.push({ title: "Integritas", value: "Tervalidasi", trend: "Data Bersih" });
-                scorecards.push({ title: "PII Masking", value: piiMaskedCount>0?"Aktif":"N/A", trend: `${piiMaskedCount} Sel Disensor` });
-            }
-
-            // Charts
-            let cLabels = []; let cData = []; let cTitle = "Pemetaan Data Dasar";
-            let isFcst = analysisType.includes("Prediktif") && numCols.length > 0;
-            
-            if(catCols.length > 0 && numCols.length > 0 && !isFcst) {
-                cTitle = `Distribusi ${pNumCol.name.substring(0,15)} berdasar ${catCols[0].name.substring(0,15)}`;
-                let m = {};
-                for(let i=1; i<Math.min(200, numRows); i++) {
-                    let k = data[i][catCols[0].idx]; let v = parseFloat(data[i][pNumCol.idx])||0;
-                    if(k && k!=='xxx-MASKED-xxx') m[k] = (m[k]||0)+v;
-                }
-                let s = Object.keys(m).map(k=>({k,v:m[k]})).sort((a,b)=>b.v-a.v).slice(0,6);
-                cLabels = s.map(i=>i.k.substring(0,12)); cData = s.map(i=>i.v);
-            } else if (numCols.length > 0) {
-                cTitle = isFcst ? `Proyeksi: ${pNumCol.name}` : `Tren Historis: ${pNumCol.name}`;
-                for(let i=1; i<Math.min(8, numRows); i++) { cLabels.push(`T-${i}`); cData.push(parseFloat(data[i][pNumCol.idx])||0); }
-                if(isFcst && cData.length>2) {
-                    let slp = (cData[cData.length-1] - cData[0]) / cData.length;
-                    cLabels.push("PROYEKSI"); cData.push(Math.max(0, cData[cData.length-1] + slp)); 
-                }
-            } else if (catCols.length > 0) {
-                cTitle = `Frekuensi Segmen: ${catCols[0].name}`;
-                let m = {};
-                for(let i=1; i<Math.min(100, numRows); i++) {
-                    let k = data[i][catCols[0].idx]; if(k && k!=='xxx-MASKED-xxx') m[k] = (m[k]||0)+1;
-                }
-                let s = Object.keys(m).map(k=>({k,v:m[k]})).sort((a,b)=>b.v-a.v).slice(0,6);
-                cLabels = s.map(i=>i.k.substring(0,12)); cData = s.map(i=>i.v);
-            }
-
-            // Exactly 6 Insights
-            let insights = [];
-            let pName = pNumCol ? pNumCol.name : (catCols.length>0 ? catCols[0].name : 'Variabel Utama');
-            
-            insights.push(`Integritas Arsitektur: Algoritma memetakan ${numRows} baris observasi dan ${globalHeaders.length} atribut secara sempurna tanpa merusak format matriks orisinil.`);
-            
-            if(pNumCol) {
-                insights.push(`Tendensi Sentral: Metrik dominan '${pName}' memiliki rata-rata (mean) di angka ${pNumCol.avg.toLocaleString('id-ID', {maximumFractionDigits:2})}.`);
-                insights.push(`Analisis Dispersi: Sebaran data bervariasi dari rentang minimum ${pNumCol.min.toLocaleString('id-ID')} hingga puncaknya di ${pNumCol.max.toLocaleString('id-ID')}.`);
-            } else {
-                insights.push(`Karakteristik Teks: Dataset ini murni kualitatif. Sistem menganalisis berdasarkan probabilitas kemunculan (frekuensi) kategori.`);
-                insights.push(`Distribusi Segmen: Pemetaan mendeteksi adanya homogenitas pada kolom-kolom utama.`);
-            }
-
-            if(catCols.length > 0) insights.push(`Segmentasi Kategorikal: Atribut '${catCols[0].name}' diidentifikasi sebagai Primary Key untuk pengelompokan kelas profil.`);
-            else insights.push(`Homogenitas Variabel: Matriks didominasi oleh angka kontinu tanpa pemisah identitas kategori yang kuat.`);
-
-            if(outTotal > 0 || missingCount > 0) insights.push(`Manajemen Risiko: Ditemukan distorsi berupa ${outTotal} anomali ekstrem dan ${missingCount} sel kosong. Rekomendasi: Data Cleansing.`);
-            else insights.push(`Tata Kelola (Governance): Vektor data bersih absolut. Tidak terdeteksi sel kosong atau pencilan di luar batas kewajaran.`);
-
-            if(isFcst) insights.push(`Proyeksi Taktikal: Model prediktif menunjukkan metrik akan bergerak ke level ${cData[cData.length-1].toLocaleString('id-ID',{maximumFractionDigits:1})} pada rentang berikutnya.`);
-            else insights.push(`Konklusi Sistem: Formasi struktur stabil dan siap diekspor ke pelaporan eksekutif manajemen tingkat lanjut.`);
-
-            // 3 Compact Action Plans
-            let futurePlan = [
-                { focus: "Optimasi Ekstraksi Fitur", action: `Normalisasi variabel kategorikal menjadi *binary* agar algoritma masa depan mampu membaca korelasi secara utuh.` },
-                { focus: "Isolasi Anomali Kritis", action: `Karantina baris yang terdeteksi sebagai anomali/pencilan karena dapat mendistorsi akurasi pengambilan keputusan manajerial.` },
-                { focus: "Automasi Pipa Data", action: `Kunci format arsitektur kolom ini sebagai standar operasional (SOP) untuk diintegrasikan dengan proses pelaporan otomatis.` }
-            ];
-
-            const finalData = { 
-                fileName: fileMetadata.name, scorecards, insights, futurePlan, 
-                chart: { title: cTitle, labels: cLabels, data: cData } 
-            };
-            
-            currentReportData = finalData;
-            setTimeout(() => { clearInterval(loadingInterval); saveToHistory(finalData, intentStr); renderDashboard(finalData); }, 600);
-        }
-
-        // --- Render Matrix & Tabs ---
-        function renderMatrixPreview(data) {
-            let headHTML = '<tr>';
-            globalHeaders.forEach(col => { headHTML += `<th>${col.replace(/\*/g,'')}</th>`; });
-            setHTML('preview-thead', headHTML + '</tr>');
-
-            let bodyHTML = ''; const limit = Math.min(101, data.length); 
-            for(let i = 1; i < limit; i++) {
-                bodyHTML += '<tr>';
-                data[i].forEach((cell, j) => {
-                    let val = cell !== undefined && cell !== null ? cell.toString() : '';
-                    if(val.length > 35) val = val.substring(0, 35) + '...';
-                    
-                    if(val === "xxx-MASKED-xxx") {
-                        bodyHTML += `<td><span class="bg-slate-800 text-white px-2 py-0.5 rounded text-[10px] font-bold">MASKED</span></td>`;
-                    } else {
-                        bodyHTML += `<td contenteditable="true" onblur="saveCellEdit(${i}, ${j}, this.innerText)">${val}</td>`;
-                    }
-                });
-                bodyHTML += '</tr>';
-            }
-            setHTML('preview-tbody', bodyHTML);
-        }
-
-        function saveCellEdit(row, col, newVal) {
-            if(globalExtractedData && globalExtractedData[row]) globalExtractedData[row][col] = newVal;
-            // Silent subtle toast
-            const toast = document.createElement('div');
-            toast.className = "fixed bottom-6 right-6 bg-slate-800 text-white text-[11px] font-bold px-4 py-2 rounded-lg shadow-xl z-[9999999] opacity-0 transition-opacity flex items-center gap-2";
-            toast.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Matriks [${row},${col}] tersimpan.`;
-            document.body.appendChild(toast); lucide.createIcons();
-            setTimeout(() => toast.classList.remove('opacity-0'), 10);
-            setTimeout(() => { toast.classList.add('opacity-0'); setTimeout(() => toast.remove(), 300); }, 2000);
-        }
-
-        function switchDataTab(tab) {
-            ['matrix', 'stats', 'corr'].forEach(t => {
-                document.getElementById(`content-${t}`).classList.add('hidden');
-                document.getElementById(`tab-${t}`).classList.remove('active');
-            });
-            document.getElementById(`content-${tab}`).classList.remove('hidden');
-            document.getElementById(`tab-${tab}`).classList.add('active');
-        }
-
-        function exportCleanCSV() {
-            if(!globalExtractedData || !globalExtractedData.length) return showNotification("Data kosong.", "error");
-            showNotification("Mengunduh Data CSV Bersih...", "success");
-            let csv = Papa.unparse(globalExtractedData);
-            let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            let link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `Data_Clean_${fileMetadata.name.split('.')[0]}_${Date.now()}.csv`;
-            link.click();
-        }
-
-        // --- Render Dashboard ---
-        function renderDashboard(data) {
-            clearAllTypewriters();
-            document.getElementById('loading-state').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-            currentChartData = data.chart;
-
-            // Scorecards (Minimalist)
-            let scHTML = '';
-            data.scorecards.forEach((sc, i) => {
-                scHTML += `
-                    <div class="clean-card p-6 flex flex-col justify-between fade-in-up" style="animation-delay: ${i*0.05}s">
-                        <p class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">${sc.title}</p>
-                        <div>
-                            <h3 class="text-3xl font-black text-slate-900 tracking-tight mb-2">${sc.value}</h3>
-                            <p class="text-xs font-semibold text-brand-600 bg-brand-50 inline-block px-2.5 py-1 rounded-md border border-brand-100">${sc.trend}</p>
-                        </div>
-                    </div>`;
-            });
-            setHTML('scorecards-container', scHTML);
-
-            // Insights
-            let inHTML = '';
-            data.insights.forEach((ins, i) => {
-                inHTML += `
-                    <li class="flex gap-3 items-start border-b border-slate-100 pb-3 mb-3 last:border-0 last:mb-0 last:pb-0">
-                        <div class="w-1.5 h-1.5 rounded-full bg-brand-500 shrink-0 mt-2"></div>
-                        <span class="text-sm text-slate-700 leading-relaxed typewriter-target" id="ins-${i}"></span>
-                    </li>`;
-            });
-            setHTML('insights-list', inHTML);
-            data.insights.forEach((ins, i) => {
-                typewriterTimeouts.push(setTimeout(() => typeWriterEffect(document.getElementById(`ins-${i}`), ins.replace(/\*/g,''), 5), i*400));
-            });
-
-            // Action Plan
-            let plHTML = '';
-            data.futurePlan.forEach((pl, i) => {
-                plHTML += `
-                    <div class="tactical-card rounded-xl p-5 border border-slate-200 shadow-sm fade-in-up" style="animation-delay: ${(i*0.1)+0.3}s">
-                        <h4 class="font-bold text-slate-900 text-sm mb-1.5">${pl.focus.replace(/\*/g,'')}</h4>
-                        <p class="text-xs text-slate-600 leading-relaxed m-0">${pl.action.replace(/\*/g,'')}</p>
-                    </div>`;
-            });
-            setHTML('action-plan-grid', plHTML);
-
-            // Chart
-            setText('chart-title', data.chart.title);
-            changeChartType('bar'); 
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            // Reset AI Chat
-            setHTML('chat-messages', `
-                <div class="flex gap-3">
-                    <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center shrink-0"><i data-lucide="bot" class="w-4 h-4 text-white"></i></div>
-                    <div class="bg-slate-100 p-3 rounded-xl rounded-tl-none border border-slate-200 max-w-[85%]">
-                        <p class="text-xs text-slate-800 leading-relaxed">Halo! Dataset Anda berhasil dievaluasi. Tanyakan metrik apapun, seperti rata-rata, baris kosong, dsb.</p>
-                    </div>
-                </div>`);
-            lucide.createIcons();
-            
-            // Default open Matrix Tab
-            switchDataTab('matrix');
-        }
-
-        function changeChartType(type) {
-            if(!currentChartData) return;
-            ['line', 'bar', 'pie'].forEach(t => {
-                const b = document.getElementById(`btn-chart-${t}`);
-                if(b) b.className = (t===type || (t==='pie' && type==='doughnut')) ? "px-4 py-1.5 rounded-md text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200 transition-all" : "px-4 py-1.5 rounded-md text-xs font-semibold text-slate-500 hover:text-slate-800 bg-white transition-all border border-transparent";
-            });
-
-            const ctx = document.getElementById('mainChart').getContext('2d');
-            if(chartInstance) chartInstance.destroy();
-            const isPie = type === 'doughnut' || type === 'pie';
-            
-            const palette = ['#0284c7','#0ea5e9','#38bdf8','#7dd3fc','#0369a1','#f59e0b']; 
-            let bgColors = []; let borderColors = [];
-            if(!isPie) {
-                currentChartData.labels.forEach(l => {
-                    if(l.includes("PREDIKSI")) { bgColors.push('#f59e0b'); borderColors.push('#d97706'); } 
-                    else { bgColors.push('#0ea5e9'); borderColors.push('#0284c7'); }
-                });
-            }
-
-            chartInstance = new Chart(ctx, {
-                type: type,
-                data: {
-                    labels: currentChartData.labels,
-                    datasets: [{
-                        label: 'Valuasi Agregat',
-                        data: currentChartData.data,
-                        backgroundColor: isPie ? palette : bgColors,
-                        hoverBackgroundColor: isPie ? palette : '#0369a1',
-                        borderColor: isPie ? '#fff' : borderColors,
-                        borderWidth: isPie ? 2 : (type==='line'?3:1),
-                        borderRadius: type==='bar'?4:0, fill: type==='line', tension: 0.4,
-                        pointBackgroundColor: '#fff', pointBorderColor: '#0284c7', pointRadius: type==='line'?4:0
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    layout: { padding: { top: 20, bottom: 5 } },
-                    interaction: { mode: 'index', intersect: false },
-                    plugins: {
-                        legend: { display: isPie, position: 'right' }, 
-                        tooltip: { enabled: true, backgroundColor: '#0f172a', padding: 10, cornerRadius: 8 },
-                        datalabels: { display: true, color: isPie?'#fff':'#0f172a', align: isPie?'center':'top', anchor: isPie?'center':'end', font: { family: 'Inter', weight: 'bold', size: 10 }, formatter: v => v.toLocaleString('id-ID') }
-                    },
-                    scales: isPie ? {} : {
-                        y: { beginAtZero:true, border:{display:false}, grid:{color:'#f1f5f9'}, ticks:{font:{size:10}, color:'#94a3b8'} },
-                        x: { border:{display:false}, grid:{display:false}, ticks:{font:{size:10, weight:'600'}, color:'#64748b'} }
-                    }
-                }
-            });
-        }
-
-        // --- AI Chat ---
-        function handleChatEnter(e) { if(e.key === 'Enter') sendChatMessage(); }
-        function sendChatMessage() {
-            const input = document.getElementById('ai-chat-input');
-            const msg = input.value.trim();
-            if(!msg) return;
-
-            const chatBox = document.getElementById('chat-messages');
-            chatBox.innerHTML += `
-                <div class="flex gap-2 justify-end">
-                    <div class="bg-brand-600 p-3 rounded-xl rounded-tr-none max-w-[85%] shadow-sm">
-                        <p class="text-xs text-white">${msg}</p>
-                    </div>
-                </div>`;
-            input.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
-
-            const tid = 'type-' + Date.now();
-            chatBox.innerHTML += `
-                <div class="flex gap-3" id="${tid}">
-                    <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center shrink-0"><i data-lucide="bot" class="w-4 h-4 text-white"></i></div>
-                    <div class="bg-slate-100 p-4 rounded-xl rounded-tl-none border border-slate-200 flex items-center justify-center typing-indicator"><span></span><span></span><span></span></div>
-                </div>`;
-            lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
-
-            setTimeout(() => {
-                document.getElementById(tid).remove();
-                let reply = getSmartAIReply(msg);
-                chatBox.innerHTML += `
-                    <div class="flex gap-3">
-                        <div class="w-8 h-8 rounded-full bg-brand-600 flex items-center justify-center shrink-0"><i data-lucide="bot" class="w-4 h-4 text-white"></i></div>
-                        <div class="bg-slate-100 p-3 rounded-xl rounded-tl-none border border-slate-200 max-w-[85%]">
-                            <p class="text-xs text-slate-800 leading-relaxed">${reply}</p>
-                        </div>
-                    </div>`;
-                lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
-            }, 1000);
-        }
-
-        function getSmartAIReply(msg) {
-            const ctx = window.dazerContext;
-            if(!ctx) return "Sistem memori belum memuat dataset.";
-            const text = msg.toLowerCase();
-            
-            if (text.includes('kosong') || text.includes('null') || text.includes('hilang')) return `Terdapat <b>${ctx.missingValues.toLocaleString('id-ID')}</b> sel kosong dalam matriks. Ini mempengaruhi kebersihan data secara keseluruhan.`;
-            if (text.includes('outlier') || text.includes('pencilan') || text.includes('anomali')) return `Sistem mendeteksi <b>${ctx.outliers.toLocaleString('id-ID')}</b> pencilan data (outlier) ekstrem. Segera filter di area matriks sebelum diekspor.`;
-            if (text.includes('rata') || text.includes('mean')) return ctx.primaryCol ? `Nilai rata-rata dari atribut dominan (${ctx.primaryCol.name}) adalah <b>${ctx.primaryCol.avg.toLocaleString('id-ID', {maximumFractionDigits:2})}</b>.` : "Tidak ada kolom numerik.";
-            if (text.includes('tinggi') || text.includes('max')) return ctx.primaryCol ? `Puncak tertinggi variabel utama berada pada angka <b>${ctx.primaryCol.max.toLocaleString('id-ID')}</b>.` : "Data bersifat kualitatif.";
-            if (text.includes('rendah') || text.includes('min')) return ctx.primaryCol ? `Titik terendah berada pada angka <b>${ctx.primaryCol.min.toLocaleString('id-ID')}</b>.` : "Data bersifat kualitatif.";
-            if (text.includes('baris') || text.includes('total')) return `Dataset ini mencakup <b>${ctx.numRows.toLocaleString('id-ID')}</b> baris operasional.`;
-            
-            return `Saya dapat membedah statistik file '${ctx.fileName}'. Tanyakan nilai spesifik seperti "rata-rata", "data kosong", atau "pencilan" kepada saya.`;
-        }
-
-        // --- Export to MS Word (CLEAN NO STARS) ---
-        function exportToWord() {
-            if(!currentReportData) return showNotification("Tidak ada laporan.", "error");
-            showNotification("Mengunduh Eksekutif Dokumen Word...", "success");
-
-            let htmlString = `
-                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                <head>
-                    <meta charset='utf-8'><title>Laporan Analitik Eksekutif</title>
-                    <style>
-                        body { font-family: 'Calibri', 'Arial', sans-serif; font-size: 11pt; color: #1e293b; line-height: 1.5; }
-                        h1 { color: #0284c7; font-size: 20pt; border-bottom: 1px solid #0284c7; padding-bottom: 8px; text-transform: uppercase; }
-                        h2 { color: #0f172a; font-size: 14pt; margin-top: 20px; background: #f1f5f9; padding: 6px; border-left: 4px solid #0284c7; }
-                        .subtitle { color: #64748b; font-size: 10pt; font-style: italic; margin-bottom: 20px; }
-                        table { width: 100%; border-collapse: collapse; margin-top: 15px; margin-bottom: 20px; }
-                        th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: left; }
-                        th { background-color: #e2e8f0; font-weight: bold; }
-                        ul { margin-top: 5px; margin-bottom: 15px; } li { margin-bottom: 8px; }
-                    </style>
-                </head>
-                <body>
-                    <h1>MEMORANDUM STRATEGI DATA</h1>
-                    <p class="subtitle">Berkas Referensi: ${currentReportData.fileName.replace(/\*/g,'')} | Dicetak: ${new Date().toLocaleString('id-ID')}</p>
-                    <p>Dokumen komprehensif ini merupakan hasil ekstraksi intelijen algoritmik dari Dazer Analytics. Bertujuan memberikan transparansi metrik operasional dan pedoman taktis manajerial.</p>
-                    
-                    <h2>1. INDIKATOR KINERJA KUNCI (KPI)</h2>
-                    <table>
-                        <tr><th style="width:40%">Komponen Metrik</th><th style="width:30%">Kalkulasi Agregat</th><th style="width:30%">Status Analisis</th></tr>
-            `;
-
-            currentReportData.scorecards.forEach(sc => {
-                htmlString += `<tr><td><b>${sc.title.replace(/\*/g,'')}</b></td><td>${sc.value}</td><td>${sc.trend.replace(/\*/g,'')}</td></tr>`;
-            });
-
-            htmlString += `</table><h2>2. SINTESIS WAWASAN INTELIJEN</h2><ul>`;
-            currentReportData.insights.forEach(ins => { htmlString += `<li>${ins.replace(/<b>/g,'').replace(/<\/b>/g,'').replace(/\*/g,'')}</li>`; });
-
-            htmlString += `</ul><h2>3. ARAHAN TAKTIS OPERASIONAL</h2><ul>`;
-            currentReportData.futurePlan.forEach(plan => { htmlString += `<li><b>Fokus: ${plan.focus.replace(/\*/g,'')}</b> - ${plan.action.replace(/\*/g,'')}</li>`; });
-
-            htmlString += `</ul><h2>4. TATA KELOLA & KEPATUHAN</h2><p>Pemrosesan data dijalankan secara lokal (On-Premise Browser). Sensor privasi dijamin penuh sesuai standar kerahasiaan institusi.</p></body></html>`;
-
-            const blob = new Blob(['\ufeff', htmlString], { type: 'application/msword' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Laporan_Eksekutif_${currentReportData.fileName.split('.')[0]}.doc`; 
-            document.body.appendChild(link); link.click(); document.body.removeChild(link);
-        }
-
-        // --- Presentation Mode ---
-        function togglePresentationMode() {
-            const dash = document.getElementById('dashboard'); const btn = document.getElementById('exit-fs-btn');
-            if(!dash || !btn) return;
-            if (dash.classList.contains('dazer-fullscreen')) {
-                dash.classList.remove('dazer-fullscreen'); btn.classList.add('hidden'); document.body.style.overflow = ''; 
-            } else {
-                dash.classList.add('dazer-fullscreen'); btn.classList.remove('hidden'); document.body.style.overflow = 'hidden'; 
-            }
-        }
-
-        // --- History ---
-        function toggleHistoryModal() {
-            const m = document.getElementById('history-modal'); const c = document.getElementById('history-modal-content');
-            if(m.classList.contains('hidden')) { renderHistory(); m.classList.remove('hidden'); setTimeout(() => c.classList.remove('scale-95','opacity-0'), 10); } 
-            else { closeHistoryModal(); }
-        }
-
-        function closeHistoryModal() {
-            const m = document.getElementById('history-modal'); const c = document.getElementById('history-modal-content');
-            c.classList.add('scale-95','opacity-0'); setTimeout(() => m.classList.add('hidden'), 200);
-        }
-
-        function saveToHistory(data, intent) {
-            let hist = JSON.parse(localStorage.getItem('dz_v1') || '[]');
-            hist.unshift({ id: Date.now(), date: new Date().toLocaleString('id-ID'), intent: intent, data: data });
-            if(hist.length > 5) hist.pop(); localStorage.setItem('dz_v1', JSON.stringify(hist));
-        }
-
-        function renderHistory() {
-            const lc = document.getElementById('history-list');
-            const hist = JSON.parse(localStorage.getItem('dz_v1') || '[]');
-            if(!hist.length) return lc.innerHTML = '<div class="text-center text-sm text-slate-400 py-8 font-medium">Arsip kosong.</div>';
-            
-            let hHTML = '';
-            hist.forEach((h, i) => {
-                hHTML += `<div class="mb-3 p-4 bg-white border border-slate-200 rounded-lg hover:border-brand-500 shadow-sm cursor-pointer transition-all" onclick="loadHistoryItem(${i})">
-                        <div class="flex justify-between items-center mb-1"><span class="text-[10px] font-bold text-brand-600">${h.date}</span></div>
-                        <p class="text-sm font-bold text-slate-800">${h.intent.replace(/\*/g,'').substring(0,35)}</p></div>`;
-            });
-            lc.innerHTML = hHTML;
-        }
-
-        function loadHistoryItem(idx) {
-            const hist = JSON.parse(localStorage.getItem('dz_v1') || '[]');
-            if(hist[idx]) {
-                closeHistoryModal(); resetAppUI();
-                document.getElementById('hero-section').classList.add('hidden');
-                document.getElementById('setup-screen').classList.add('hidden');
-                currentReportData = hist[index].data; renderDashboard(hist[index].data);
-            }
+            setTimeout(() => { n.classList.add('opacity-0', '-translate-y-4'); setTimeout(() => n.classList.add('hidden'), 400); }, 3500);
         }
 
         function resetAppUI() {
-            document.getElementById('notification').classList.add('hidden');
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('loading-state').classList.add('hidden');
-            document.getElementById('file-input').value = '';
-            clearInterval(loadingInterval); clearAllTypewriters();
-            const dash = document.getElementById('dashboard'); dash.classList.remove('dazer-fullscreen');
-            document.getElementById('exit-fs-btn').classList.add('hidden'); document.body.style.overflow = '';
+            const n = document.getElementById('notification'); if(n) n.classList.add('hidden');
+            const d = document.getElementById('dashboard'); if(d) d.classList.add('hidden');
+            const s = document.getElementById('setup-screen'); if(s) s.classList.add('hidden');
+            const ls = document.getElementById('loading-state'); if(ls) ls.classList.add('hidden');
+            
+            const ci = document.getElementById('custom-intent'); if(ci) ci.value = '';
+            
+            clearInterval(loadingInterval);
+            clearAllTypewriters();
+            
+            const mc = document.getElementById('matrix-card');
+            if(mc) mc.classList.remove('matrix-fullscreen');
+            isMatrixFullscreen = false;
+            document.body.style.overflow = '';
         }
 
-        function resetApp() { resetAppUI(); document.getElementById('hero-section').classList.remove('hidden'); window.scrollTo({top:0}); }
+        function resetApp() { 
+            resetAppUI(); 
+            const hs = document.getElementById('hero-section');
+            if(hs) hs.classList.remove('hidden'); 
+            window.scrollTo({top:0, behavior: 'smooth'}); 
+            
+            globalFilesArray = [];
+            totalSizeUsed = 0;
+            updateStorageIndicator();
+        }
     </script>
 </body>
 </html>
