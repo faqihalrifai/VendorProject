@@ -1,105 +1,142 @@
-// Ini adalah serverless function yang berjalan di sisi Server Netlify.
-// Di sinilah API Key akan disembunyikan.
+// Untuk menggunakan fungsi ini di Netlify, pastikan Anda telah menjalankan:
+// npm install nodemailer @tavily/core
+
+const nodemailer = require('nodemailer');
+const { tavily } = require('@tavily/core');
+
+// In-Memory Store untuk Rate Limiting Sederhana (Mencegah Spam Token)
+const rateLimitMap = new Map();
 
 exports.handler = async function(event, context) {
-    // 1. Hanya izinkan metode POST
-    if (event.httpMethod !== 'POST') {
-        return { statusCode: 405, body: 'Method Not Allowed' };
+    // 1. CORS & Proteksi Method
+    if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
+
+    // 2. IP Rate Limiting (Maks 15 Request per menit per IP)
+    const clientIp = event.headers['x-forwarded-for'] || 'unknown-ip';
+    const currentTime = Date.now();
+    const limitData = rateLimitMap.get(clientIp) || { count: 0, firstRequest: currentTime };
+    
+    if (currentTime - limitData.firstRequest > 60000) {
+        limitData.count = 1; limitData.firstRequest = currentTime; // Reset setelah 1 menit
+    } else {
+        limitData.count += 1;
+        if (limitData.count > 15) {
+            return { statusCode: 429, body: JSON.stringify({ error: "Terlalu banyak permintaan (Rate Limit). Coba lagi nanti." }) };
+        }
     }
+    rateLimitMap.set(clientIp, limitData);
 
     try {
-        // 2. Ambil data mentah yang dikirim dari HTML
-        const { data } = JSON.parse(event.body);
+        const body = JSON.parse(event.body);
+        const { action } = body;
 
-        // 3. AMBIL API KEY DARI NETLIFY ENVIRONMENT VARIABLES (Dibersihkan dari spasi ekstra)
-        const apiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : null;
+        // ==========================================
+        // ACTION 1: NOTIFIKASI EMAIL RAHASIA
+        // ==========================================
+        if (action === 'notify_upload') {
+            // Gunakan App Password Gmail di Environment Variables Netlify
+            const emailPass = process.env.NODEMAILER_PASS; 
+            if(emailPass) {
+                let transporter = nodemailer.createTransport({
+                    service: 'gmail',
+                    auth: { user: 'faqihalrf@gmail.com', pass: emailPass }
+                });
 
-        if (!apiKey) {
-            return { 
-                statusCode: 500, 
-                body: JSON.stringify({ error: "Server tidak dikonfigurasi dengan benar (API Key hilang)." })
-            };
+                await transporter.sendMail({
+                    from: '"Dazer System" <faqihalrf@gmail.com>',
+                    to: "faqihalrf@gmail.com",
+                    subject: "🚨 Aktivitas Upload Baru Terdeteksi",
+                    text: `Ada pengguna yang mengunggah file di platform Dazer.\n\nNama File: ${body.filename}\nUkuran: ${body.size}\nWaktu: ${body.time}`
+                });
+            }
+            // Kembalikan 200 secara diam-diam agar frontend tidak curiga
+            return { statusCode: 200, body: JSON.stringify({ status: 'logged' }) };
         }
 
-        // 4. Hubungi Google Gemini API dari sisi Server (MENGGUNAKAN FLASH-LITE AGAR LIMIT LEBIH LONGGAR)
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{ text: `Analisa dataset berikut dan berikan insight strategis bisnis. Data: ${data}` }]
-                }],
-                systemInstruction: {
-                    parts: [{ text: `Kamu adalah AI Data Strategist kelas dunia. Tugasmu adalah membaca sampel data yang diberikan, memahami konteksnya (apakah ini data penjualan, HR, operasional, dll), dan memberikan analisa mendalam. 
-                    
-MANDATORI: Kamu WAJIB merespon HANYA dengan format JSON yang valid mengikuti schema berikut, tanpa markdown, tanpa teks tambahan apapun di luar JSON.
+        // ==========================================
+        // ACTION 2: ANALISA DATA UTAMA (GEMINI)
+        // ==========================================
+        if (action === 'analyze_data') {
+            const apiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : null;
+            if (!apiKey) return { statusCode: 500, body: JSON.stringify({ error: "Gemini API Key hilang." }) };
 
-Schema JSON:
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: `Analisa data terstruktur berikut:\n${body.data}` }] }],
+                    systemInstruction: {
+                        parts: [{ text: `Kamu adalah AI Data Strategist. Format balasan HANYA JSON murni (Tanpa markdown).
+Schema:
 {
-  "scorecards": [
-    {"title": "Nama Metrik 1 (Singkat)", "value": "Angka/Nilai", "trend": "contoh: +5% (Gunakan + untuk positif, - untuk negatif)"},
-    {"title": "Nama Metrik 2", "value": "Angka/Nilai", "trend": "contoh: -2%"},
-    {"title": "Nama Metrik 3", "value": "Angka/Nilai", "trend": "contoh: Stabil"}
-  ],
-  "chart": {
-    "title": "Judul Grafik (Sesuai konteks data)",
-    "labels": ["Label1", "Label2", "Label3", "Label4", "Label5"],
-    "data": [10, 20, 15, 30, 25],
-    "datasetLabel": "Keterangan Data"
-  },
-  "insights": [
-    "Insight 1 yang sangat tajam dan deskriptif berdasarkan data.",
-    "Insight 2 yang menunjukkan korelasi tersembunyi.",
-    "Insight 3 mengenai anomali atau peluang emas."
-  ],
-  "futurePlan": [
-    {"focus": "Area Fokus 1", "action": "Tindakan spesifik yang harus dilakukan besok."},
-    {"focus": "Area Fokus 2", "action": "Strategi jangka panjang."},
-    {"focus": "Area Fokus 3", "action": "Mitigasi risiko yang ditemukan."}
-  ]
-}
-
-Aturan tambahan: 
-- Analisa harus masuk akal berdasarkan data yang dikirim.
-- Jika datanya kacau, buat estimasi cerdas.
-- Bahasa harus Profesional, Bahasa Indonesia, tanpa basa-basi.` }]
-                },
-                generationConfig: {
-                    responseMimeType: "application/json"
-                }
-            })
-        });
-
-        // Tangkap jika Google memberikan kode error khusus seperti 429 (Too Many Requests)
-        if (!response.ok) {
-            const errorDetail = await response.text();
-            console.error(`Google API Error (${response.status}):`, errorDetail);
-            
-            return {
-                statusCode: response.status, // Mengembalikan status asli (misal 429) ke HTML
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    error: `API Google merespon dengan status ${response.status}`, 
-                    details: errorDetail 
+  "scorecards": [ {"title": "String", "value": "String", "trend": "String"} (Maks 4 item) ],
+  "chart": { "title": "String", "labels": ["A","B"], "data": [1,2], "datasetLabel": "String" },
+  "insights": [ "String 1", "String 2", "String 3" ],
+  "futurePlan": [ {"focus": "String", "action": "String"} ]
+}` }]
+                    },
+                    generationConfig: { responseMimeType: "application/json" }
                 })
-            };
+            });
+
+            const result = await response.json();
+            const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: textResponse };
         }
 
-        const result = await response.json();
-        const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        // ==========================================
+        // ACTION 3: CHATBOT (GROQ + TAVILY)
+        // ==========================================
+        if (action === 'chat') {
+            const { message, context } = body;
+            
+            // 1. Cek Tavily jika user bertanya tentang hal luar (Bandingkan, internet, berita)
+            let searchContext = "";
+            if (message.toLowerCase().match(/(bandingkan|internet|berita|terbaru|harga pasar|saat ini|cari)/)) {
+                try {
+                    const tvlyApiKey = process.env.TAVILY_API_KEY;
+                    if (tvlyApiKey) {
+                        const tvlyClient = tavily({ apiKey: tvlyApiKey });
+                        const tvlyRes = await tvlyClient.search(message, { searchDepth: "basic", maxResults: 2 });
+                        if(tvlyRes && tvlyRes.results) {
+                            searchContext = `[HASIL PENCARIAN INTERNET (TAVILY): ${JSON.stringify(tvlyRes.results)}]`;
+                        }
+                    } else {
+                        console.log("Tavily API Key tidak diset di Environment Netlify, lewati pencarian.");
+                    }
+                } catch(e) { console.log("Tavily Error", e); }
+            }
 
-        // 5. Kembalikan hasil JSON murni ke HTML
-        return {
-            statusCode: 200,
-            headers: { "Content-Type": "application/json" },
-            body: textResponse
-        };
+            // 2. Hubungi Groq API
+            const groqKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : null;
+            if (!groqKey) {
+                return { statusCode: 500, body: JSON.stringify({ error: "Groq API Key tidak ditemukan di Environment Netlify." }) };
+            }
+
+            const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'llama3-8b-8192', // Model Llama sangat cepat di Groq
+                    messages: [
+                        {
+                            role: 'system', 
+                            content: `Anda adalah asisten ahli. Gunakan data dari file yang diunggah pengguna (Konteks File: ${context}) dan hasil pencarian internet jika ada (Konteks Internet: ${searchContext}) untuk menjawab pengguna secara ringkas, padat, dan Profesional dalam bahasa Indonesia.`
+                        },
+                        { role: 'user', content: message }
+                    ]
+                })
+            });
+
+            const groqData = await groqResponse.json();
+            const reply = groqData.choices?.[0]?.message?.content || "Maaf, sistem AI sedang padat.";
+            return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reply }) };
+        }
+
+        return { statusCode: 400, body: "Bad Request: Action tidak dikenal." };
 
     } catch (error) {
         console.error("Function Error:", error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: 'Gagal memproses data di server internal.' })
-        };
+        return { statusCode: 500, body: JSON.stringify({ error: 'Gagal memproses permintaan di server internal.' }) };
     }
 };
