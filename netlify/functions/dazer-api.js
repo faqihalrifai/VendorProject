@@ -34,7 +34,6 @@ exports.handler = async function(event, context) {
         // ACTION 1: NOTIFIKASI EMAIL RAHASIA
         // ==========================================
         if (action === 'notify_upload') {
-            // Gunakan App Password Gmail di Environment Variables Netlify
             const emailPass = process.env.NODEMAILER_PASS; 
             if(emailPass) {
                 let transporter = nodemailer.createTransport({
@@ -49,7 +48,6 @@ exports.handler = async function(event, context) {
                     text: `Ada pengguna yang mengunggah file di platform Dazer.\n\nNama File: ${body.filename}\nUkuran: ${body.size}\nWaktu: ${body.time}`
                 });
             }
-            // Kembalikan 200 secara diam-diam agar frontend tidak curiga
             return { statusCode: 200, body: JSON.stringify({ status: 'logged' }) };
         }
 
@@ -90,7 +88,7 @@ Schema:
         if (action === 'chat') {
             const { message, context } = body;
             
-            // 1. Cek Tavily jika user bertanya tentang hal luar (Bandingkan, internet, berita)
+            // 1. Cek Tavily jika user bertanya tentang hal luar
             let searchContext = "";
             if (message.toLowerCase().match(/(bandingkan|internet|berita|terbaru|harga pasar|saat ini|cari)/)) {
                 try {
@@ -110,18 +108,21 @@ Schema:
             // 2. Hubungi Groq API
             const groqKey = process.env.GROQ_API_KEY ? process.env.GROQ_API_KEY.trim() : null;
             if (!groqKey) {
-                return { statusCode: 500, body: JSON.stringify({ error: "Groq API Key tidak ditemukan di Environment Netlify." }) };
+                return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reply: "[ERROR]: Groq API Key tidak ditemukan di Environment Variables Netlify." }) };
             }
+
+            // Batasi panjang konteks agar tidak melampaui batas memori Groq Llama3
+            const safeContext = context.substring(0, 10000); // Ambil maksimal 10.000 karakter
 
             const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: 'llama3-8b-8192', // Model Llama sangat cepat di Groq
+                    model: 'llama3-8b-8192',
                     messages: [
                         {
                             role: 'system', 
-                            content: `Anda adalah asisten ahli. Gunakan data dari file yang diunggah pengguna (Konteks File: ${context}) dan hasil pencarian internet jika ada (Konteks Internet: ${searchContext}) untuk menjawab pengguna secara ringkas, padat, dan Profesional dalam bahasa Indonesia.`
+                            content: `Anda adalah asisten ahli. Gunakan data dari file yang diunggah pengguna (Konteks File: ${safeContext}) dan hasil pencarian internet jika ada (Konteks Internet: ${searchContext}) untuk menjawab pengguna secara ringkas, padat, dan Profesional dalam bahasa Indonesia.`
                         },
                         { role: 'user', content: message }
                     ]
@@ -129,6 +130,18 @@ Schema:
             });
 
             const groqData = await groqResponse.json();
+
+            // TANGKAP ERROR DARI GROQ
+            if (!groqResponse.ok || groqData.error) {
+                console.error("GROQ ERROR DETAILS:", groqData.error);
+                const errorMessage = groqData.error?.message || "Terjadi kesalahan pada server Groq.";
+                return { 
+                    statusCode: 200, 
+                    headers: { "Content-Type": "application/json" }, 
+                    body: JSON.stringify({ reply: `[ERROR GROQ]: ${errorMessage}` }) 
+                };
+            }
+
             const reply = groqData.choices?.[0]?.message?.content || "Maaf, sistem AI sedang padat.";
             return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reply }) };
         }
