@@ -111,14 +111,14 @@ Schema:
                 return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reply: "[ERROR]: Groq API Key tidak ditemukan di Environment Variables Netlify." }) };
             }
 
-            // Batasi panjang konteks agar tidak melampaui batas memori Groq Llama3
+            // Batasi panjang konteks agar tidak melampaui batas memori Groq
             const safeContext = context.substring(0, 10000); // Ambil maksimal 10.000 karakter
 
             const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: 'llama3-8b-8192',
+                    model: 'llama-3.1-8b-instant', // Menggunakan model Llama terbaru yang didukung Groq
                     messages: [
                         {
                             role: 'system', 
