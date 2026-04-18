@@ -493,7 +493,7 @@
                     
                     <div class="p-3 sm:p-4 border-t border-slate-200 shrink-0 bg-slate-50">
                         <div class="relative flex items-center">
-                            <input type="text" id="ai-chat-input" placeholder="Tanya analisis apriori..." class="w-full bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 pl-4 pr-12 py-3 sm:py-3.5 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 transition-all shadow-sm" onkeypress="handleChatEnter(event)">
+                            <input type="text" id="ai-chat-input" placeholder="Tanya apa saja seputar data Anda atau info lainnya..." class="w-full bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 pl-4 pr-12 py-3 sm:py-3.5 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 transition-all shadow-sm" onkeypress="handleChatEnter(event)">
                             <button onclick="sendChatMessage()" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-brand-600 text-white hover:bg-brand-700 p-1.5 sm:p-2 rounded-lg transition-all shadow-md">
                                 <i data-lucide="send" class="w-4 h-4"></i>
                             </button>
@@ -1605,7 +1605,7 @@
             }, 800);
         }
 
-        // --- KABEL PENYAMBUNG AI CHAT ---
+        // --- KABEL PENYAMBUNG AI CHAT (DENGAN RICH CONTEXT) ---
         function handleChatEnter(e) { if(e.key === 'Enter') sendChatMessage(); }
         
         async function sendChatMessage() {
@@ -1639,13 +1639,25 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
+                // UPDATE PENTING: Membungkus konteks mendalam agar AI di Backend bisa membaca file
+                let richContext = "Tidak ada data aktif saat ini.";
+                if (currentReportData && globalExtractedData && globalHeaders) {
+                    richContext = `
+                    - Nama File: ${currentReportData.fileName}
+                    - Total Baris Asli: ${globalExtractedData.length - 1}
+                    - Daftar Kolom Atribut: ${globalHeaders.join(', ')}
+                    - Sampel 4 Baris Pertama Data Asli: ${JSON.stringify(globalExtractedData.slice(1, 5))}
+                    - Ringkasan Insight Utama KDD: ${JSON.stringify(currentReportData.insights)}
+                    `;
+                }
+
                 const response = await fetch('/.netlify/functions/dazer-api', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         action: 'chat', 
                         message: msg,
-                        context: `File: ${window.currentReportData?.fileName || '-'}, Baris: ${globalExtractedData.length - 1}` 
+                        context: richContext 
                     })
                 });
 
@@ -1671,8 +1683,9 @@
                 chatBox.scrollTop = chatBox.scrollHeight;
 
             } catch(e) {
+                // FALLBACK KHUSUS UNTUK SANDBOX/PREVIEW CANVAS 
                 document.getElementById(typingId)?.remove();
-                let reply = `Pertanyaan Anda: "${msg}". <br><br><i>[Fungsi AI tidak terhubung di sandbox preview ini].</i>`;
+                let reply = `Pertanyaan Anda: "${msg}". <br><br><i>[Sistem AI sedang offline di lingkungan Preview/Canvas ini karena API Backend belum di-deploy. Jika dua kode ini sudah live di Netlify, Dazer AI akan mampu membaca dan menjawab pertanyaan seputar konteks file Anda dengan sangat lancar].</i>`;
                 reply = reply.replace(/\*\*(.*?)\*\*/g, '<b class="text-slate-900">$1</b>');
 
                 chatBox.innerHTML += `
