@@ -43,7 +43,7 @@ exports.handler = async function(event, context) {
                     from: '"Dazer KDD" <faqihalrf@gmail.com>',
                     to: "faqihalrf@gmail.com",
                     subject: `🚨 KDD Activity: ${body.filename}`,
-                    text: `Aktivitas KDD Terdeteksi.\n\nFile: ${body.filename}\nUkuran: ${body.size}\nWaktu: ${body.time}`
+                    text: `Aktivitas KDD Terdeteksi di Dazer.\n\nFile: ${body.filename}\nUkuran: ${body.size}\nWaktu: ${body.time}\nPerangkat: ${body.device}\nIP Address: ${clientIp}\n\n*Catatan: Nama akun Google tidak dapat direkam secara otomatis tanpa fitur Login (Google OAuth) demi privasi pengguna.`
                 });
             }
             return { statusCode: 200, body: JSON.stringify({ status: 'logged' }) };
@@ -104,12 +104,10 @@ exports.handler = async function(event, context) {
 
             let internetContext = "";
             
-            // UPGRADE 1: Regex pencarian diperluas untuk menangkap kata tanya umum (W5H1)
             const needsInternet = message.toLowerCase().match(/(pasar|berita|tren|luar|bandingkan|saat ini|sekarang|2026|harga|apa|siapa|kapan|dimana|kenapa|bagaimana|terbaru|hari ini)/);
             
             if (needsInternet && tvlyKey) {
                 try {
-                    // UPGRADE 2: Menggunakan native fetch ke Tavily
                     const tvlyRes = await fetch('https://api.tavily.com/search', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -127,7 +125,6 @@ exports.handler = async function(event, context) {
                 } catch(e) { console.log("Tavily search failed or timeout"); }
             }
 
-            // UPGRADE 3: System Prompt Dazer AI agar sadar akan Data User
             const universalSystemPrompt = `Kamu adalah Dazer AI, Asisten Data Mining, Riset Pasar, dan Pengetahuan Umum yang sangat cerdas.
             Aturan Output (Wajib):
             1. JANGAN gunakan simbol markdown jelek seperti #, ##, atau asterisk berlebihan (**).
