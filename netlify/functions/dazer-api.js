@@ -88,21 +88,19 @@ Schema:
         if (action === 'chat') {
             const { message, context } = body;
             
-            // 1. Cek Tavily jika user bertanya tentang hal luar
+            // 1. Cek Tavily jika user bertanya tentang hal luar (Pencarian bebas)
             let searchContext = "";
-            if (message.toLowerCase().match(/(bandingkan|internet|berita|terbaru|harga pasar|saat ini|cari)/)) {
+            if (message.toLowerCase().match(/(bandingkan|internet|berita|terbaru|harga pasar|saat ini|cari|bagaimana|apa itu|siapa|kenapa)/)) {
                 try {
                     const tvlyApiKey = process.env.TAVILY_API_KEY;
                     if (tvlyApiKey) {
                         const tvlyClient = tavily({ apiKey: tvlyApiKey });
                         const tvlyRes = await tvlyClient.search(message, { searchDepth: "basic", maxResults: 2 });
                         if(tvlyRes && tvlyRes.results) {
-                            searchContext = `[HASIL PENCARIAN INTERNET (TAVILY): ${JSON.stringify(tvlyRes.results)}]`;
+                            searchContext = `\n[Fakta Internet (Tavily): ${JSON.stringify(tvlyRes.results)}]`;
                         }
-                    } else {
-                        console.log("Tavily API Key tidak diset di Environment Netlify, lewati pencarian.");
                     }
-                } catch(e) { console.log("Tavily Error", e); }
+                } catch(e) { console.log("Tavily Fetch Skipped", e); }
             }
 
             // 2. Hubungi Groq API
@@ -111,19 +109,25 @@ Schema:
                 return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reply: "[ERROR]: Groq API Key tidak ditemukan di Environment Variables Netlify." }) };
             }
 
-            // Batasi panjang konteks agar tidak melampaui batas memori Groq
-            const safeContext = context.substring(0, 10000); // Ambil maksimal 10.000 karakter
+            // Batasi panjang konteks agar tidak melampaui batas memori Groq Llama3
+            const safeContext = context.substring(0, 10000); 
+
+            // SYSTEM PROMPT UNIVERSAL: Bebas bahas data ATAUPUN bahas topik umum
+            const universalSystemPrompt = `Anda adalah Dazer AI, asisten virtual dan ahli data yang serba bisa. 
+Tugas utama Anda:
+1. Anda BEBAS menjawab pertanyaan umum, berdiskusi, memberikan saran, dan membahas topik apa pun di luar data (seperti ChatGPT).
+2. JIKA pengguna bertanya tentang data yang mereka unggah, gunakan informasi ini (Konteks File: ${safeContext}).
+3. JIKA ada hasil pencarian web terbaru (Konteks Internet: ${searchContext}), gabungkan informasi tersebut ke dalam jawaban Anda.
+
+Gunakan bahasa Indonesia yang profesional, ramah, dan sangat natural (tidak kaku).`;
 
             const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: 'llama-3.1-8b-instant', // Menggunakan model Llama terbaru yang didukung Groq
+                    model: 'llama-3.1-8b-instant', // Model terbaru Groq yang cepat & didukung penuh
                     messages: [
-                        {
-                            role: 'system', 
-                            content: `Anda adalah asisten ahli. Gunakan data dari file yang diunggah pengguna (Konteks File: ${safeContext}) dan hasil pencarian internet jika ada (Konteks Internet: ${searchContext}) untuk menjawab pengguna secara ringkas, padat, dan Profesional dalam bahasa Indonesia.`
-                        },
+                        { role: 'system', content: universalSystemPrompt },
                         { role: 'user', content: message }
                     ]
                 })
@@ -131,18 +135,14 @@ Schema:
 
             const groqData = await groqResponse.json();
 
-            // TANGKAP ERROR DARI GROQ
+            // Tangkap dan tampilkan error detail dari Groq jika ada
             if (!groqResponse.ok || groqData.error) {
                 console.error("GROQ ERROR DETAILS:", groqData.error);
                 const errorMessage = groqData.error?.message || "Terjadi kesalahan pada server Groq.";
-                return { 
-                    statusCode: 200, 
-                    headers: { "Content-Type": "application/json" }, 
-                    body: JSON.stringify({ reply: `[ERROR GROQ]: ${errorMessage}` }) 
-                };
+                return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reply: `[ERROR GROQ]: ${errorMessage}` }) };
             }
 
-            const reply = groqData.choices?.[0]?.message?.content || "Maaf, sistem AI sedang padat.";
+            const reply = groqData.choices?.[0]?.message?.content || "Maaf, sistem AI sedang memproses pembaruan. Silakan coba sebentar lagi.";
             return { statusCode: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reply }) };
         }
 
