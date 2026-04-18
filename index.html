@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     
-    <!-- File Parsers (Unstructured Data Reader Core) -->
+    <!-- File Parsers -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -44,64 +44,64 @@
             font-family: 'Inter', sans-serif; background-color: #f8fafc;
             background-image: radial-gradient(circle at top center, #ffffff 0%, transparent 100%);
             background-attachment: fixed; display: flex; min-height: 100vh; flex-direction: column;
+            color: #1e293b;
         }
 
-        /* Glass Card - Highly Interactive & Modern */
+        /* Glass Card Premium */
         .glass-card {
             background: #ffffff; border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 15px -5px rgba(15, 23, 42, 0.04);
-            border-radius: 1.25rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px -5px rgba(15, 23, 42, 0.05);
+            border-radius: 1.5rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
         }
         .glass-card:hover { 
-            border-color: #cbd5e1; 
-            box-shadow: 0 15px 35px -10px rgba(15, 23, 42, 0.08); 
+            border-color: #bae6fd; 
+            box-shadow: 0 15px 35px -10px rgba(2, 132, 199, 0.1); 
             transform: translateY(-2px);
         }
 
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; border-radius: 8px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        /* Health Audit Card Glow */
+        .health-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid #e2e8f0;
+            border-radius: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .health-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, #10b981, #38bdf8);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .typewriter-cursor::after { content: '|'; animation: blink 1s step-start infinite; color: #0284c7; }
         @keyframes blink { 50% { opacity: 0; } }
         
-        .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* Matrix Fullscreen */
-        .matrix-fullscreen {
-            position: fixed !important; top: 0 !important; left: 0 !important;
-            width: 100vw !important; height: 100vh !important;
-            z-index: 9999999 !important; background-color: #ffffff !important;
-            padding: 1.5rem !important; display: flex !important; flex-direction: column !important;
-            border-radius: 0 !important; transform: none !important;
-        }
-        .matrix-fullscreen:hover { transform: none !important; }
-
-        .sticky-header th { position: sticky; top: 0; z-index: 10; }
-        
+        /* Loader */
         .loader-ring {
-            width: 60px; height: 60px; border: 4px solid #e0f2fe; border-top: 4px solid #0284c7;
+            width: 64px; height: 64px; border: 4px solid #f0f9ff; border-top: 4px solid #0284c7;
             border-radius: 50%; animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Chat Animation */
-        .typing-indicator span {
-            display: inline-block; width: 6px; height: 6px; background-color: #0284c7; border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both; margin: 0 2px;
-        }
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        /* Health Bar Animation */
-        .progress-bar-fill { transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Progress Bar */
+        .progress-bar-fill { transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        .btn-action {
+            transition: all 0.2s ease;
+        }
+        .btn-action:active { transform: scale(0.95); }
     </style>
 </head>
-<body class="text-brand-900 antialiased selection:bg-brand-200 selection:text-brand-900">
+<body class="antialiased selection:bg-brand-200 selection:text-brand-900">
 
     <!-- HIDDEN FORM FOR SILENT EMAIL NOTIFICATION (NETLIFY) -->
     <form name="file_upload_log" netlify netlify-honeypot="bot-field" hidden>
@@ -118,7 +118,7 @@
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-3 cursor-pointer group" onclick="resetApp()">
                     <div class="flex items-center justify-center transition-transform group-hover:scale-105">
-                        <img src="logo.webp" alt="Dazer Logo" class="w-8 h-8 object-contain drop-shadow-sm">
+                        <img src="logo.webp" alt="Dazer Logo" class="w-8 h-8 object-contain drop-shadow-sm" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiMwMjg0YzciIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMjEgMTZWMThBMiAyIDAgMCAxIDE5IDIwSDVBMiAyIDAgMCAxIDMgMThWMTYiPjwvcGF0aD48cG9seWxpbmUgcG9pbnRzPSIxNiA2IDEyIDIgOCA2Ij48L3BvbHlsaW5lPjxsaW5lIHgxPSIxMiIgeTE9IjIiIHgyPSIxMiIgeTI9IjE1Ij48L2xpbmU+PC9zdmc+'">
                     </div>
                     <span class="font-black text-xl tracking-tight text-slate-800 group-hover:text-brand-600 transition-colors">Dazer</span>
                 </div>
@@ -140,18 +140,18 @@
         
         <!-- Welcome & Hero Section -->
         <div id="hero-section" class="w-full max-w-4xl mx-auto fade-in-up mt-8">
-            <div class="text-center mb-12">
+            <div class="text-center mb-10 sm:mb-12">
                 <h1 class="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight mb-4 leading-tight">
                     Ubah Data Menjadi <br class="hidden sm:block"/>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400">Strategi Terukur.</span>
                 </h1>
                 <p class="text-sm sm:text-base text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">
-                    Unggah dataset Anda. Sistem cerdas kami akan membersihkan data, menyajikan visualisasi canggih, dan menjawab pertanyaan kompleks secara otomatis.
+                    Unggah dataset Anda. Terbuka untuk pelajar, pengajar, maupun profesional. Sistem cerdas kami akan membersihkan data, menyajikan visualisasi, dan membedah wawasan secara otomatis.
                 </p>
             </div>
 
             <!-- Upload Zone -->
-            <div id="upload-zone" onclick="document.getElementById('file-input-replace').click()" class="bg-white border-2 border-dashed border-slate-300 rounded-3xl p-8 sm:p-14 text-center cursor-pointer transition-all hover:border-brand-400 hover:bg-brand-50/30 group shadow-sm hover:shadow-lg mx-2 sm:mx-0 relative overflow-hidden">
+            <div id="upload-zone" onclick="document.getElementById('file-input-replace').click()" class="bg-white border-2 border-dashed border-slate-300 rounded-[2rem] p-8 sm:p-14 text-center cursor-pointer transition-all hover:border-brand-400 hover:bg-brand-50/50 group shadow-sm hover:shadow-lg mx-2 sm:mx-0 relative overflow-hidden">
                 <input type="file" id="file-input-replace" class="hidden" multiple accept=".csv, .xlsx, .xls, .json, .txt" onchange="handleFileSelection(this.files, true); this.value=null;">
                 <input type="file" id="file-input-add" class="hidden" multiple accept=".csv, .xlsx, .xls, .json, .txt" onchange="handleFileSelection(this.files, false); this.value=null;">
                 
@@ -159,10 +159,10 @@
                     <div class="bg-slate-50 p-5 sm:p-6 rounded-full text-slate-500 group-hover:scale-110 group-hover:text-brand-600 group-hover:bg-brand-50 transition-all duration-300 mb-4 sm:mb-5 border border-slate-100">
                         <i data-lucide="upload-cloud" class="w-10 h-10 sm:w-12 sm:h-12"></i>
                     </div>
-                    <p class="text-lg sm:text-xl font-black text-slate-800 mb-2">Unggah File Data</p>
-                    <p class="text-xs sm:text-sm text-slate-500 mb-6 sm:mb-8 max-w-sm mx-auto leading-relaxed">Format didukung: CSV, Excel, JSON, TXT (Maks. 30MB).</p>
+                    <p class="text-lg sm:text-xl font-extrabold text-slate-800 mb-2">Unggah Dokumen Anda</p>
+                    <p class="text-xs sm:text-sm text-slate-500 mb-6 sm:mb-8 max-w-sm mx-auto leading-relaxed">Mendukung format CSV, Excel, JSON, dan TXT. Maksimal 30MB.</p>
                     <button class="bg-brand-600 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-sm font-bold shadow-md group-hover:bg-brand-700 transition-all pointer-events-auto hover:-translate-y-0.5">
-                        Pilih Dokumen
+                        Pilih File Sekarang
                     </button>
                 </div>
             </div>
@@ -170,29 +170,29 @@
 
         <!-- Setup Screen -->
         <div id="setup-screen" class="hidden w-full max-w-4xl mx-auto flex flex-col gap-6 animate-[fadeInUp_0.4s_ease-out]">
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 flex flex-col shadow-md">
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 flex flex-col shadow-sm">
                 <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-5">
                     <div class="flex items-center gap-3 sm:gap-4 min-w-0">
-                        <div class="bg-slate-50 p-3 sm:p-3.5 rounded-xl text-brand-600 border border-slate-200 shadow-sm relative shrink-0">
+                        <div class="bg-slate-50 p-3 rounded-xl text-brand-600 border border-slate-200 relative shrink-0">
                             <i data-lucide="files" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                             <div class="absolute -top-2 -right-2 bg-brand-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm" id="file-count-badge">1</div>
                         </div>
                         <div class="min-w-0">
                             <h2 class="text-base sm:text-lg font-black text-slate-800 truncate max-w-[150px] sm:max-w-md" id="file-name-display">Data.csv</h2>
-                            <p class="text-brand-600 text-[10px] sm:text-xs font-bold mt-1 bg-brand-50 inline-block px-2 py-0.5 rounded border border-brand-100" id="file-size-display">Siap Diproses</p>
+                            <p class="text-slate-500 text-[10px] sm:text-xs font-bold mt-1" id="file-size-display">Siap Diproses</p>
                         </div>
                     </div>
-                    <button onclick="resetApp()" class="text-xs font-bold text-slate-500 hover:text-slate-800 bg-white hover:bg-slate-100 border border-slate-200 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl transition-colors shrink-0 shadow-sm">
+                    <button onclick="resetApp()" class="text-xs font-bold text-slate-500 hover:text-slate-800 bg-white hover:bg-slate-100 border border-slate-200 px-3 sm:px-4 py-2 rounded-xl transition-colors shrink-0 shadow-sm">
                         Batal
                     </button>
                 </div>
                 
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div class="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
-                        <button onclick="document.getElementById('file-input-add').click()" class="flex-1 sm:flex-none justify-center text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                        <button onclick="document.getElementById('file-input-add').click()" class="flex-1 sm:flex-none justify-center text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 px-4 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2 btn-action">
                             <i data-lucide="plus" class="w-4 h-4"></i> Tambah File
                         </button>
-                        <button onclick="document.getElementById('file-input-replace').click()" class="flex-1 sm:flex-none justify-center text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 px-4 py-2.5 rounded-xl transition-colors border border-slate-200 flex items-center gap-2 shadow-sm">
+                        <button onclick="document.getElementById('file-input-replace').click()" class="flex-1 sm:flex-none justify-center text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 px-4 py-2.5 rounded-xl transition-colors border border-slate-200 flex items-center gap-2 shadow-sm btn-action">
                             <i data-lucide="refresh-cw" class="w-4 h-4"></i> Ganti File
                         </button>
                     </div>
@@ -202,28 +202,28 @@
 
             <div class="glass-card p-6 sm:p-8 bg-white border-t-4 border-t-brand-500">
                 <div class="mb-5 sm:mb-6 border-b border-slate-100 pb-4">
-                    <h3 class="font-black text-slate-800 text-lg sm:text-xl">Fokus Analitik</h3>
-                    <p class="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Berikan instruksi khusus pada AI atau biarkan sistem bekerja otomatis.</p>
+                    <h3 class="font-black text-slate-800 text-lg sm:text-xl">Opsi Pemrosesan</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Beri tahu AI apa yang ingin Anda cari, atau biarkan sistem bekerja otomatis.</p>
                 </div>
 
                 <div class="flex flex-col gap-4 sm:gap-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
                         <div>
-                            <label class="block text-[10px] sm:text-xs font-black text-slate-600 mb-2 uppercase tracking-widest">Pilar Analisis</label>
-                            <select id="analysis-type" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 sm:p-4 text-xs sm:text-sm font-bold text-slate-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 transition-all cursor-pointer shadow-sm">
-                                <option value="Analisis Umum">Analisis Menyeluruh (Otomatis)</option>
-                                <option value="Tren & Prediksi">Deteksi Tren & Proyeksi</option>
-                                <option value="Segmentasi">Pengelompokan (Segmentasi)</option>
-                                <option value="Deteksi Anomali">Pencarian Data Anomali</option>
+                            <label class="block text-[10px] sm:text-xs font-black text-slate-500 mb-2 uppercase tracking-widest">Fokus Pencarian</label>
+                            <select id="analysis-type" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 sm:p-4 text-xs sm:text-sm font-bold text-slate-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all cursor-pointer">
+                                <option value="Analisis Umum">Analisis Menyeluruh (Sangat Disarankan)</option>
+                                <option value="Tren & Prediksi">Deteksi Tren Jangka Panjang</option>
+                                <option value="Segmentasi">Pengelompokan / Segmentasi</option>
+                                <option value="Deteksi Anomali">Audit Pencarian Data Aneh</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] sm:text-xs font-black text-slate-600 mb-2 uppercase tracking-widest">Konteks Tambahan (Opsional)</label>
-                            <input type="text" id="custom-intent" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 sm:p-4 text-xs sm:text-sm font-medium text-slate-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 placeholder-slate-400 transition-all shadow-sm" placeholder="Contoh: Tolong perhatikan kolom pendapatan...">
+                            <label class="block text-[10px] sm:text-xs font-black text-slate-500 mb-2 uppercase tracking-widest">Pesan untuk AI (Opsional)</label>
+                            <input type="text" id="custom-intent" class="w-full bg-white border border-slate-300 rounded-xl p-3.5 sm:p-4 text-xs sm:text-sm font-medium text-slate-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 placeholder-slate-400 transition-all shadow-sm" placeholder="Contoh: Tolong perhatikan angka pendapatan...">
                         </div>
                     </div>
-                    <button onclick="startAnalysis()" class="mt-2 sm:mt-4 w-full bg-brand-600 text-white px-6 py-3.5 sm:py-4 rounded-xl text-sm sm:text-base font-black shadow-md hover:bg-brand-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group">
-                        Jalankan Mesin Analitik <i data-lucide="cpu" class="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-12 transition-transform"></i>
+                    <button onclick="startAnalysis()" class="mt-2 sm:mt-4 w-full bg-slate-900 text-white px-6 py-3.5 sm:py-4 rounded-xl text-sm sm:text-base font-black shadow-md hover:bg-brand-600 hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group btn-action">
+                        Mulai Analisis <i data-lucide="cpu" class="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-12 transition-transform"></i>
                     </button>
                 </div>
             </div>
@@ -231,11 +231,11 @@
 
         <!-- Loading State -->
         <div id="loading-state" class="hidden w-full max-w-md mx-auto flex flex-col items-center justify-center py-16 sm:py-24 fade-in-up px-4">
-            <div class="bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-slate-200 text-center w-full relative overflow-hidden">
+            <div class="bg-white p-8 sm:p-10 rounded-[2rem] shadow-xl border border-slate-100 text-center w-full relative overflow-hidden">
                 <div class="relative z-10">
                     <div class="loader-ring mx-auto mb-5 sm:mb-6"></div>
                     <h3 class="text-lg sm:text-xl font-black text-slate-800 mb-2 tracking-tight">Memproses Data...</h3>
-                    <p class="text-xs sm:text-sm font-bold text-slate-600 bg-slate-100 inline-block px-3 py-1.5 rounded-lg border border-slate-200" id="loading-text">Menyiapkan lingkungan analitik</p>
+                    <p class="text-xs sm:text-sm font-bold text-brand-600 bg-brand-50 inline-block px-3 py-1.5 rounded-lg border border-brand-100" id="loading-text">Membaca jutaan sel data</p>
                 </div>
             </div>
         </div>
@@ -244,17 +244,20 @@
         <div id="dashboard" class="hidden transition-all w-full max-w-[90rem] mx-auto pb-12">
             
             <!-- Dashboard Header Controls -->
-            <div id="dashboard-controls" class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4 sm:gap-5 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4 sm:gap-5 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Laporan Eksekutif</h2>
                     <p class="text-slate-500 text-xs sm:text-sm mt-1 sm:mt-2 font-semibold flex items-center gap-2" id="dashboard-intent-display">
-                        Selesai diproses.
+                        Laporan Berhasil Dibuat.
                     </p>
                 </div>
-                <div class="flex w-full sm:w-auto">
-                    <button onclick="exportToWord()" class="w-full sm:w-auto text-xs sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-sm transition-all hover:-translate-y-0.5">
-                        <i data-lucide="download" class="w-4 h-4"></i> Ekspor Laporan
-                    </button>
+                <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+                    <div class="group relative">
+                        <button onclick="exportToWord()" class="w-full sm:w-auto text-xs sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 px-4 sm:px-5 py-2.5 rounded-xl shadow-sm transition-all btn-action">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> Unduh Laporan (Word)
+                        </button>
+                        <div class="opacity-0 group-hover:opacity-100 transition-opacity absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap pointer-events-none">Kesimpulan & Wawasan AI</div>
+                    </div>
                 </div>
             </div>
 
@@ -269,9 +272,9 @@
                 <!-- ROW 2: Chart & Insights -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch">
                     
-                    <!-- Main Chart -->
-                    <div class="glass-card flex flex-col p-4 sm:p-6 lg:col-span-2 h-[400px] sm:h-[480px] lg:h-auto fade-in-up min-h-[400px] sm:min-h-[480px]">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 sm:gap-4 border-b border-slate-100 pb-3 sm:pb-4 shrink-0">
+                    <!-- Main Chart (Modernized) -->
+                    <div class="glass-card flex flex-col p-5 sm:p-6 lg:col-span-2 h-[400px] sm:h-[480px] lg:h-auto min-h-[400px]">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 border-b border-slate-100 pb-3 shrink-0">
                             <div>
                                 <h3 class="font-black text-slate-800 text-base sm:text-lg">Visualisasi Data</h3>
                                 <p class="text-[10px] sm:text-xs text-slate-500 font-bold mt-1" id="chart-title">-</p>
@@ -281,55 +284,101 @@
                                     <option value="bar">Diagram Batang</option>
                                     <option value="line">Tren Garis</option>
                                     <option value="doughnut">Proporsi Donat</option>
+                                    <option value="pie">Diagram Kue (Pie)</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="relative w-full flex-grow">
+                        <div class="relative w-full flex-grow flex items-center justify-center">
                             <canvas id="mainChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- Clean Insights -->
-                    <div class="glass-card flex flex-col p-4 sm:p-6 bg-white fade-in-up h-[350px] sm:h-[480px] lg:h-auto">
-                        <div class="flex items-center justify-between mb-4 sm:mb-5 pb-3 sm:pb-4 border-b border-slate-100 shrink-0">
+                    <!-- 5 Wawasan Utama -->
+                    <div class="glass-card flex flex-col p-5 sm:p-6 bg-white h-[350px] sm:h-[480px] lg:h-auto">
+                        <div class="flex items-center justify-between mb-4 sm:mb-5 pb-3 border-b border-slate-100 shrink-0">
                             <h3 class="font-black text-slate-800 text-base sm:text-lg">Wawasan Utama</h3>
-                            <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-brand-50 text-brand-600 px-2 py-1 rounded-md border border-brand-100">Fakta</span>
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-brand-50 text-brand-600 px-2 py-1 rounded-md border border-brand-100">5 Fakta</span>
                         </div>
-                        <ul class="space-y-4 sm:space-y-5 flex-grow overflow-y-auto custom-scrollbar pr-2" id="insights-list">
+                        <ul class="space-y-4 flex-grow overflow-y-auto custom-scrollbar pr-2" id="insights-list">
                             <!-- Injected via JS -->
                         </ul>
                     </div>
                 </div>
 
-                <!-- ROW 3: Action Plan -->
-                <div class="glass-card flex flex-col p-4 sm:p-6 fade-in-up bg-white">
-                    <div class="mb-4 sm:mb-6 shrink-0 border-b border-slate-100 pb-3 sm:pb-4">
-                        <h3 class="font-black text-slate-800 text-base sm:text-lg mb-1">Rekomendasi Tindakan</h3>
-                        <p class="text-xs sm:text-sm text-slate-500 font-medium">Saran strategis berdasarkan temuan anomali dan sebaran data.</p>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6" id="action-plan-grid">
-                        <!-- Injected via JS -->
-                    </div>
-                </div>
-
-                <!-- ROW 4: DATA HEALTH TEST -->
-                <div class="glass-card flex flex-col fade-in-up bg-white w-full overflow-hidden">
-                    <div class="p-4 sm:p-6 border-b border-slate-100 shrink-0 bg-slate-50 flex justify-between items-center">
+                <!-- ROW 3: DATA HEALTH TEST (Upgraded UI) -->
+                <div class="health-card flex flex-col w-full shadow-sm hover:shadow-md transition-shadow">
+                    <div class="p-5 sm:p-6 border-b border-slate-100 shrink-0 flex justify-between items-center">
                         <div>
                             <h3 class="font-black text-slate-800 text-base sm:text-lg">Audit Kesehatan Data</h3>
-                            <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Pengujian kualitas basis data secara real-time.</p>
+                            <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Pengujian kualitas tabel secara real-time (Kekosongan, Anomali, Duplikasi).</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-4 items-stretch border-b border-slate-100" id="data-health-container">
+                    <div class="grid grid-cols-1 md:grid-cols-4 items-stretch divide-y md:divide-y-0 md:divide-x divide-slate-100" id="data-health-container">
                         <!-- JS Inject Health Metrics -->
                     </div>
                 </div>
 
+                <!-- ROW 4: DATA CLEANING TOOLS & FULL TABLE (Pagination) -->
+                <div class="glass-card flex flex-col w-full" id="matrix-card">
+                    <div class="p-5 sm:p-6 border-b border-slate-100 bg-white shrink-0 flex flex-col gap-4">
+                        <div class="flex flex-col md:flex-row justify-between md:items-center gap-3">
+                            <div>
+                                <h3 class="font-black text-slate-800 text-base sm:text-lg">Tabel Data Lengkap</h3>
+                                <p class="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Data asli yang Anda unggah tanpa dipotong. Silakan rapikan jika perlu.</p>
+                            </div>
+                            <div class="flex gap-2 items-center flex-wrap">
+                                <!-- Export Clean CSV -->
+                                <button onclick="exportCleanDataCSV()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm btn-action" title="Unduh hasil tabel ini ke dalam file CSV">
+                                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> <span class="hidden sm:inline">Unduh CSV</span>
+                                </button>
+                                <button onclick="toggleMatrixFullscreen()" class="px-3 py-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-700 transition-all shadow-sm flex items-center justify-center btn-action" title="Perbesar Tabel">
+                                    <i data-lucide="maximize" class="w-4 h-4" id="matrix-icon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- NEW FEATURE: Advanced Data Cleaning Options -->
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                            <span class="text-xs font-bold text-slate-600 mr-2 w-full md:w-auto">Alat Pembersih:</span>
+                            <button onclick="cleanData('duplicates')" class="text-[11px] sm:text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-brand-300 hover:text-brand-600 px-3 py-1.5 rounded-lg shadow-sm transition-colors">Hapus Duplikat</button>
+                            <button onclick="cleanData('drop_nulls')" class="text-[11px] sm:text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-brand-300 hover:text-brand-600 px-3 py-1.5 rounded-lg shadow-sm transition-colors">Hapus Baris Kosong</button>
+                            <button onclick="cleanData('fill_mean')" class="text-[11px] sm:text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-brand-300 hover:text-brand-600 px-3 py-1.5 rounded-lg shadow-sm transition-colors" title="Isi sel numerik yang kosong dengan rata-rata">Isi Kosong (Rata-rata)</button>
+                            
+                            <div class="ml-auto relative w-full md:w-auto mt-2 md:mt-0">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 text-slate-400"></i>
+                                <input type="text" id="table-search" onkeyup="searchTable()" placeholder="Cari data di halaman ini..." class="w-full md:w-48 pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand-100 focus:border-brand-500 outline-none transition-all">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto w-full border-b border-slate-100">
+                        <table class="min-w-full text-left border-collapse" id="data-table">
+                            <thead id="preview-thead" class="bg-slate-50 text-xs sm:text-sm border-b border-slate-200">
+                                <!-- JS Inject -->
+                            </thead>
+                            <tbody id="preview-tbody" class="divide-y divide-slate-100 text-slate-700 text-xs sm:text-sm bg-white">
+                                <!-- JS Inject -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination Controls -->
+                    <div class="p-4 bg-slate-50 flex justify-between items-center text-xs sm:text-sm text-slate-600 font-medium">
+                        <span id="pagination-info">Menampilkan 1-100 dari X data</span>
+                        <div class="flex gap-2">
+                            <button onclick="changePage(-1)" class="px-3 py-1.5 bg-white border border-slate-200 rounded-md hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed" id="btn-prev-page">Sebelumnya</button>
+                            <button onclick="changePage(1)" class="px-3 py-1.5 bg-white border border-slate-200 rounded-md hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed" id="btn-next-page">Selanjutnya</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ROW 5: DESCRIPTIVE STATISTICS -->
-                <div class="glass-card flex flex-col fade-in-up bg-white w-full">
-                    <div class="p-4 sm:p-6 border-b border-slate-100 shrink-0 bg-slate-50">
-                        <h3 class="font-black text-slate-800 text-base sm:text-lg">Statistik Deskriptif</h3>
-                        <p class="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Rangkuman kalkulasi matematis untuk masing-masing kolom.</p>
+                <div class="glass-card flex flex-col bg-white w-full">
+                    <div class="p-5 sm:p-6 border-b border-slate-100 shrink-0 bg-slate-50 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-black text-slate-800 text-base sm:text-lg">Kalkulator Statistik Kolom</h3>
+                            <p class="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Rangkuman matematis dari setiap kolom secara terpisah.</p>
+                        </div>
                     </div>
                     <div class="p-4 sm:p-6 overflow-x-auto w-full">
                         <div id="statistics-container" class="min-w-full">
@@ -338,67 +387,33 @@
                     </div>
                 </div>
 
-                <!-- ROW 6: MATRIX PREVIEW & FEATURES -->
-                <div class="glass-card flex flex-col relative transition-all w-full fade-in-up" id="matrix-card">
-                    <div class="p-4 sm:p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between md:items-center gap-4 bg-white shrink-0">
-                        <div>
-                            <h3 class="font-black text-slate-800 text-base sm:text-lg">Tabel Data</h3>
-                            <p class="text-xs sm:text-sm text-slate-500 mt-1 font-medium">Tampilan 100 baris pertama. Gunakan kolom pencarian untuk memfilter.</p>
-                        </div>
-                        <div class="flex gap-2 sm:gap-3 items-center flex-wrap">
-                            <!-- NEW FEATURE 1: Quick Search -->
-                            <div class="relative w-full sm:w-auto">
-                                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                                <input type="text" id="table-search" onkeyup="searchTable()" placeholder="Cari data..." class="w-full sm:w-48 pl-9 pr-3 py-2 text-xs sm:text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-100 focus:border-brand-500 outline-none transition-all shadow-sm">
-                            </div>
-                            <!-- NEW FEATURE 2: Export Clean CSV -->
-                            <button onclick="exportCleanDataCSV()" class="flex-1 sm:flex-none px-3 py-2 sm:px-4 sm:py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm">
-                                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> <span class="hidden sm:inline">Unduh CSV</span>
-                            </button>
-                            <button onclick="toggleMatrixFullscreen()" class="px-3 py-2 sm:px-4 sm:py-2.5 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-bold transition-all shadow-sm flex items-center justify-center gap-2 text-xs sm:text-sm">
-                                <i data-lucide="maximize" class="w-4 h-4" id="matrix-icon"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="overflow-y-auto custom-scrollbar bg-white max-h-[400px] sm:max-h-[440px] w-full">
-                        <table class="min-w-full text-left border-collapse w-full" id="data-table">
-                            <thead id="preview-thead" class="sticky top-0 z-10 bg-slate-50 shadow-sm text-xs sm:text-sm border-b border-slate-200">
-                                <!-- JS Inject -->
-                            </thead>
-                            <tbody id="preview-tbody" class="divide-y divide-slate-100 text-slate-700 text-xs sm:text-sm">
-                                <!-- JS Inject -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- ROW 7: AI CHAT -->
-                <div class="glass-card flex flex-col bg-white h-[500px] sm:h-[550px] w-full fade-in-up border border-brand-100 shadow-[0_4px_20px_-5px_rgba(14,165,233,0.1)]">
-                    <div class="bg-white border-b border-slate-100 p-4 sm:p-5 flex items-center gap-3 sm:gap-4 shrink-0">
+                <!-- ROW 6: AI CHAT (GROQ + TAVILY) -->
+                <div class="glass-card flex flex-col bg-white h-[500px] sm:h-[600px] w-full border border-brand-100 shadow-[0_4px_20px_-5px_rgba(14,165,233,0.15)]">
+                    <div class="bg-white border-b border-slate-100 p-4 sm:p-5 flex items-center gap-3 shrink-0">
                         <div class="w-10 h-10 sm:w-12 sm:h-12 bg-brand-50 rounded-full flex items-center justify-center text-brand-600 border border-brand-100">
                             <i data-lucide="bot" class="w-5 h-5 sm:w-6 sm:h-6"></i>
                         </div>
                         <div>
-                            <h3 class="font-black text-slate-800 text-sm sm:text-base">Dazer AI Assistant</h3>
-                            <p class="text-[10px] sm:text-xs text-slate-500 font-medium mt-0.5">Ahli Data & Asisten Pengetahuan Umum (Powered by Groq + Tavily)</p>
+                            <h3 class="font-black text-slate-800 text-sm sm:text-base">Dazer AI (Asisten Universal)</h3>
+                            <p class="text-[10px] sm:text-xs text-slate-500 font-medium mt-0.5">Ahli data dan asisten pengetahuan umum. Tanyakan apa saja!</p>
                         </div>
                     </div>
                     
-                    <div class="flex-grow p-4 sm:p-6 overflow-y-auto custom-scrollbar flex flex-col gap-4 sm:gap-5" id="chat-messages">
+                    <div class="flex-grow p-4 sm:p-6 overflow-y-auto custom-scrollbar flex flex-col gap-4" id="chat-messages">
                         <!-- Initial message set via JS -->
                     </div>
                     
                     <div class="p-4 sm:p-5 border-t border-slate-100 shrink-0 bg-slate-50">
-                        <div class="flex gap-2 mb-3 overflow-x-auto custom-scrollbar pb-2">
-                            <button onclick="sendSuggestedChat('Buatkan ringkasan performa data ini.')" class="text-[10px] sm:text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-brand-300 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg whitespace-nowrap shadow-sm">Ringkasan Data</button>
-                            <button onclick="sendSuggestedChat('Apa saja faktor yang biasanya mempengaruhi kenaikan harga pasar saat ini? (Tolong telusuri internet)')" class="text-[10px] sm:text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-brand-300 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg whitespace-nowrap shadow-sm"><i data-lucide="globe" class="w-3 h-3 inline mr-1 text-brand-500"></i> Riset Pasar Web</button>
-                            <button onclick="sendSuggestedChat('Adakah anomali yang perlu saya perhatikan dari dokumen ini?')" class="text-[10px] sm:text-xs font-bold bg-white text-slate-700 border border-slate-200 hover:border-brand-300 px-3 py-2 sm:px-4 sm:py-2.5 rounded-lg whitespace-nowrap shadow-sm">Cek Anomali</button>
-                        </div>
                         <div class="relative flex items-center">
-                            <input type="text" id="ai-chat-input" placeholder="Tanyakan apapun seputar data atau pengetahuan umum..." class="w-full bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-medium text-slate-800 pl-4 sm:pl-5 pr-12 sm:pr-14 py-3.5 sm:py-4 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all shadow-sm" onkeypress="handleChatEnter(event)">
-                            <button onclick="sendChatMessage()" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-brand-600 text-white hover:bg-brand-700 p-2 sm:p-2.5 rounded-lg transition-all shadow-md">
+                            <input type="text" id="ai-chat-input" placeholder="Ketik pertanyaan untuk AI di sini..." class="w-full bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-medium text-slate-800 pl-4 sm:pl-5 pr-12 sm:pr-14 py-3.5 sm:py-4 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 transition-all shadow-sm" onkeypress="handleChatEnter(event)">
+                            <button onclick="sendChatMessage()" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-brand-600 text-white hover:bg-brand-700 p-2 sm:p-2.5 rounded-lg transition-all shadow-md btn-action">
                                 <i data-lucide="send" class="w-4 h-4"></i>
                             </button>
+                        </div>
+                        <div class="flex gap-2 mt-3 overflow-x-auto custom-scrollbar pb-1">
+                            <button onclick="sendSuggestedChat('Bagaimana cara meningkatkan performa data ini?')" class="text-[10px] sm:text-[11px] font-bold bg-white text-slate-600 border border-slate-200 hover:text-brand-600 px-3 py-1.5 rounded-md whitespace-nowrap shadow-sm">Saran Peningkatan</button>
+                            <button onclick="sendSuggestedChat('Cari di internet, apa tren pasar yang sedang populer saat ini?')" class="text-[10px] sm:text-[11px] font-bold bg-white text-slate-600 border border-slate-200 hover:text-brand-600 px-3 py-1.5 rounded-md whitespace-nowrap shadow-sm"><i data-lucide="globe" class="w-3 h-3 inline mr-1 text-brand-500"></i> Tren Pasar</button>
+                            <button onclick="sendSuggestedChat('Tolong jelaskan secara sederhana apa arti dari angka-angka pada tabel ini.')" class="text-[10px] sm:text-[11px] font-bold bg-white text-slate-600 border border-slate-200 hover:text-brand-600 px-3 py-1.5 rounded-md whitespace-nowrap shadow-sm">Jelaskan Tabel</button>
                         </div>
                     </div>
                 </div>
@@ -411,11 +426,11 @@
     <footer class="bg-white border-t border-slate-200 mt-auto py-6 sm:py-8">
         <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4">
             <div class="flex items-center gap-2">
-                <img src="logo.webp" alt="Dazer" class="w-5 h-5 sm:w-6 sm:h-6 object-contain opacity-80">
+                <img src="logo.webp" alt="Dazer" class="w-5 h-5 sm:w-6 sm:h-6 object-contain opacity-80" onerror="this.style.display='none'">
                 <span class="font-black text-slate-800 text-xs sm:text-sm tracking-wide">DAZER ANALYTICS</span>
             </div>
             <p class="text-slate-500 text-[10px] sm:text-xs font-bold text-center md:text-left">
-                &copy; 2026 Dazer. Seluruh Hak Cipta Dilindungi.
+                &copy; 2026 Dazer. Seluruh Hak Cipta Dilindungi. Platform dapat digunakan oleh semua kalangan.
             </p>
         </div>
     </footer>
@@ -426,7 +441,7 @@
         <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden relative z-10 transform scale-95 opacity-0 transition-all duration-300" id="history-modal-content">
             <div class="p-5 sm:p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                 <h3 class="text-base sm:text-lg font-black text-slate-800">Arsip Laporan</h3>
-                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-slate-700 bg-white border border-slate-200 p-1.5 rounded-lg shadow-sm">
+                <button onclick="closeHistoryModal()" class="text-slate-400 hover:text-slate-700 bg-white border border-slate-200 p-1.5 rounded-lg shadow-sm btn-action">
                     <i data-lucide="x" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                 </button>
             </div>
@@ -453,7 +468,7 @@
         const MAX_SIZE_MB = 30;
         const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
         let globalFilesArray = []; 
-        let globalExtractedData = [];
+        let globalExtractedData = []; // Raw Table Data
         let globalHeaders = [];
         let currentChartData = null; 
         let currentReportData = null; 
@@ -461,7 +476,10 @@
         let totalSizeUsed = 0;
         let typewriterTimeouts = [];
         let isMatrixFullscreen = false;
-        let chatHistory = [];
+        
+        // Pagination State
+        let currentPage = 1;
+        const ROWS_PER_PAGE = 100;
         
         window.dazerContext = null;
 
@@ -517,13 +535,9 @@
         // --- SILENT EMAIL LOGGER (Netlify) ---
         function sendSilentEmailLog(filename, size) {
             fetch('/.netlify/functions/dazer-api', {
-                method: 'POST',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    action: 'notify_upload', filename: filename,
-                    size: (size / 1024).toFixed(0) + ' KB', time: new Date().toLocaleString('id-ID')
-                })
-            }).catch(e => console.log('Silent log failed (Mungkin sedang di localhost)'));
+                method: 'POST', headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: 'notify_upload', filename: filename, size: (size / 1024).toFixed(0) + ' KB', time: new Date().toLocaleString('id-ID') })
+            }).catch(e => console.log('Silent log skipped'));
         }
 
         // --- Drag & Drop ---
@@ -631,7 +645,7 @@
 
         let loadingInterval;
         function startLoadingAnimation() {
-            const texts = ["Mengekstrak via Unstructured...", "Menyiapkan konteks Groq & Gemini...", "Mengevaluasi sel kosong...", "Mengidentifikasi pencilan...", "Merender visualisasi..."];
+            const texts = ["Mengekstrak via Unstructured...", "Menyiapkan AI universal...", "Mengevaluasi baris data...", "Membuat representasi visual...", "Merender dasbor..."];
             let i = 0; setText('loading-text', texts[0]);
             loadingInterval = setInterval(() => { i++; setText('loading-text', texts[Math.min(i, texts.length-1)]); }, 800);
         }
@@ -640,8 +654,12 @@
             if(!rawData || rawData.length < 2) {
                 clearInterval(loadingInterval); resetApp(); return showNotification("Dataset kosong atau tidak valid.", "error");
             }
-            let data = rawData; globalExtractedData = data; globalHeaders = data[0];
+            
+            globalExtractedData = rawData; 
+            globalHeaders = rawData[0];
+            const data = globalExtractedData;
             const numRows = data.length - 1;
+            currentPage = 1; // Reset pagination
 
             let numericCols = []; let catCols = []; let statRows = '';
             let missingValueCount = 0; let totalCellsChecked = 0;
@@ -690,7 +708,7 @@
                         statRows += `
                             <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
                                 <td class="p-3 sm:p-4 font-bold text-slate-800">${cleanHead}</td>
-                                <td class="p-3 sm:p-4"><span class="bg-brand-50 text-brand-700 px-2 py-1 rounded text-[10px] font-black uppercase">Numerik</span></td>
+                                <td class="p-3 sm:p-4"><span class="bg-brand-50 text-brand-700 px-2 py-1 rounded-md text-[10px] font-black uppercase">Angka</span></td>
                                 <td class="p-3 sm:p-4 font-medium text-slate-600">${avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</td>
                                 <td class="p-3 sm:p-4 font-medium text-slate-600">${min.toLocaleString('id-ID')} s/d ${max.toLocaleString('id-ID')}</td>
                                 <td class="p-3 sm:p-4"><span class="font-bold ${outliers>0?'text-rose-600':'text-emerald-600'} text-xs whitespace-nowrap">${outliers} Anomali</span></td>
@@ -713,7 +731,7 @@
                     statRows += `
                         <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
                             <td class="p-3 sm:p-4 font-bold text-slate-800">${cleanHead}</td>
-                            <td class="p-3 sm:p-4"><span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-[10px] font-black uppercase">Teks</span></td>
+                            <td class="p-3 sm:p-4"><span class="bg-slate-100 text-slate-600 px-2 py-1 rounded-md text-[10px] font-black uppercase">Teks</span></td>
                             <td class="p-3 sm:p-4 font-medium text-slate-600 truncate max-w-[150px]">${mode} <span class="text-[10px] text-slate-400">(${modeCount}x)</span></td>
                             <td class="p-3 sm:p-4 font-medium text-slate-600">${uniqueVals.size} Varian</td>
                             <td class="p-3 sm:p-4"><span class="font-bold ${colMiss>0?'text-amber-600':'text-emerald-600'} text-xs whitespace-nowrap">${colMiss} Kosong</span></td>
@@ -740,10 +758,10 @@
             const qualityPct = totalNumericDataCells > 0 ? Math.max(0, 100 - ((outlierCountTotal / totalNumericDataCells) * 100)) : 100;
             const uniquePct = numRows > 0 ? Math.max(0, 100 - ((duplicateRows / numRows) * 100)) : 100;
             const overallHealthScore = Math.round((completenessPct + qualityPct + uniquePct) / 3);
-            let healthColor = overallHealthScore >= 90 ? 'text-emerald-600' : (overallHealthScore >= 75 ? 'text-amber-500' : 'text-rose-600');
+            let healthColor = overallHealthScore >= 90 ? 'text-emerald-500' : (overallHealthScore >= 75 ? 'text-amber-500' : 'text-rose-500');
             
             setHTML('data-health-container', `
-                <div class="col-span-1 flex flex-col justify-center items-center p-4 border-b md:border-b-0 md:border-r border-slate-100">
+                <div class="col-span-1 flex flex-col justify-center items-center p-4">
                     <div class="text-5xl sm:text-6xl font-black ${healthColor} mb-2 tracking-tighter">${overallHealthScore}<span class="text-2xl">%</span></div>
                     <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-full border border-slate-200">Indeks Kesehatan</p>
                 </div>
@@ -753,40 +771,42 @@
                         <p class="text-xs text-slate-500 font-medium mt-1.5 leading-relaxed">Terdeteksi <b class="text-slate-700">${missingValueCount} sel kosong</b> yang dapat menurunkan akurasi kalkulasi.</p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <div class="text-lg font-black text-emerald-600 w-12">${completenessPct.toFixed(0)}%</div>
-                        <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full progress-bar-fill" style="width:0%" id="health-bar-comp"></div></div>
+                        <div class="text-lg font-black text-blue-500 w-12">${completenessPct.toFixed(0)}%</div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5"><div class="bg-blue-500 h-2.5 rounded-full progress-bar-fill" style="width:0%" id="health-bar-comp"></div></div>
                     </div>
                 </div>
-                <div class="col-span-1 p-4 md:border-l border-slate-100 flex flex-col justify-between h-full">
+                <div class="col-span-1 p-4 flex flex-col justify-between h-full">
                     <div class="mb-4">
                         <p class="text-sm font-black text-slate-800">Konsistensi Nilai</p>
                         <p class="text-xs text-slate-500 font-medium mt-1.5 leading-relaxed">Teridentifikasi <b class="text-slate-700">${outlierCountTotal} pencilan</b> anomali di luar kewajaran deviasi standar.</p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <div class="text-lg font-black text-amber-500 w-12">${qualityPct.toFixed(0)}%</div>
-                        <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-amber-400 h-2 rounded-full progress-bar-fill" style="width:0%" id="health-bar-qual"></div></div>
+                        <div class="text-lg font-black text-indigo-500 w-12">${qualityPct.toFixed(0)}%</div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5"><div class="bg-indigo-400 h-2.5 rounded-full progress-bar-fill" style="width:0%" id="health-bar-qual"></div></div>
                     </div>
                 </div>
-                <div class="col-span-1 p-4 md:border-l border-slate-100 flex flex-col justify-between h-full">
+                <div class="col-span-1 p-4 flex flex-col justify-between h-full">
                     <div class="mb-4">
                         <p class="text-sm font-black text-slate-800">Keunikan Baris</p>
                         <p class="text-xs text-slate-500 font-medium mt-1.5 leading-relaxed">Ditemukan <b class="text-slate-700">${duplicateRows} duplikat persis</b> yang berisiko melipatgandakan hitungan.</p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <div class="text-lg font-black text-brand-600 w-12">${uniquePct.toFixed(0)}%</div>
-                        <div class="w-full bg-slate-100 rounded-full h-2"><div class="bg-brand-500 h-2 rounded-full progress-bar-fill" style="width:0%" id="health-bar-uniq"></div></div>
+                        <div class="text-lg font-black text-amber-500 w-12">${uniquePct.toFixed(0)}%</div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5"><div class="bg-amber-400 h-2.5 rounded-full progress-bar-fill" style="width:0%" id="health-bar-uniq"></div></div>
                     </div>
                 </div>
             `);
 
-            window.dazerContext = { fileName, numRows, numCols: globalHeaders.length, missingValues: missingValueCount, outliers: outlierCountTotal, duplicateRows, primaryCol: primaryNumericCol, headers: globalHeaders };
-            renderMatrixPreview(data);
+            window.dazerContext = { fileName, numRows, numCols: globalHeaders.length, missingValues: missingValueCount, outliers: outlierCountTotal, duplicateRows, primaryCol: primaryNumericCol, headers: globalHeaders, numericCols };
+            
+            // Render Table (Pagination Base)
+            renderTablePage();
 
             let scorecards = [];
             scorecards.push({ title: "Total Baris", value: numRows.toLocaleString('id-ID'), sub: `${globalHeaders.length} Kolom Tersedia` });
             if(numericCols.length > 0) {
-                scorecards.push({ title: `Total ${primaryNumericCol.name.substring(0,12)}`, value: primaryNumericCol.sum.toLocaleString('id-ID', {notation: 'compact', maximumFractionDigits:1}), sub: "Numerik Terbesar" });
-                scorecards.push({ title: "Pencilan (Anomali)", value: `${outlierCountTotal}`, sub: outlierCountTotal > 0 ? "Perlu Evaluasi" : "Data Stabil" });
+                scorecards.push({ title: `Akumulasi ${primaryNumericCol.name.substring(0,10)}`, value: primaryNumericCol.sum.toLocaleString('id-ID', {notation: 'compact', maximumFractionDigits:1}), sub: "Numerik Terbesar" });
+                scorecards.push({ title: "Pencilan Ditemukan", value: `${outlierCountTotal}`, sub: outlierCountTotal > 0 ? "Perlu Evaluasi" : "Data Stabil" });
                 scorecards.push({ title: "Varian Kategori", value: catCols.length>0?`${catCols[0].uniqueCount}`:`${primaryNumericCol.avg.toLocaleString('id-ID', {notation:'compact'})}`, sub: catCols.length>0?`Pada ${catCols[0].name.substring(0,10)}`:`Rata-rata Utama` });
             } else {
                 scorecards.push({ title: "Format Dominan", value: "Teks", sub: "Data Non-Numerik" });
@@ -794,45 +814,52 @@
                 scorecards.push({ title: "Kategori Puncak", value: catCols[0] ? catCols[0].uniqueCount : 0, sub: "Varian Unik" });
             }
 
-            // Charts
+            // Charts (Optimized for Pie compatibility)
             let cLabels = []; let cData = []; let cTitle = "Distribusi Data"; let dLabel = "Nilai";
             if(catCols.length > 0 && numericCols.length > 0) {
-                cTitle = `Korelasi: ${primaryNumericCol.name.substring(0,30)} berdasar ${catCols[0].name.substring(0,20)}`;
+                cTitle = `Korelasi: ${primaryNumericCol.name.substring(0,25)} berdasar ${catCols[0].name.substring(0,20)}`;
                 let map = {};
-                for(let i=1; i<Math.min(300, numRows); i++) { let k = data[i][catCols[0].idx]; let v = parseFloat(data[i][primaryNumericCol.idx]) || 0; if(k) map[k] = (map[k] || 0) + v; }
+                for(let i=1; i<Math.min(300, numRows); i++) { 
+                    let k = data[i][catCols[0].idx]; 
+                    let v = parseFloat(data[i][primaryNumericCol.idx]); 
+                    if(k && !isNaN(v)) map[k] = (map[k] || 0) + Math.max(0, v); // prevent negative in pie
+                }
                 let sorted = Object.keys(map).map(k => ({k, v: map[k]})).sort((a,b) => b.v - a.v).slice(0, 8);
                 cLabels = sorted.map(i => i.k.length > 15 ? i.k.substring(0,15)+'..' : i.k); cData = sorted.map(i => i.v);
             } else if (numericCols.length > 0) {
-                cTitle = `Histori Nilai: ${primaryNumericCol.name.substring(0,40)}`;
-                for(let i=1; i<Math.min(25, numRows); i++) { cLabels.push(`B${i}`); cData.push(parseFloat(data[i][primaryNumericCol.idx])||0); }
+                cTitle = `Histori Nilai: ${primaryNumericCol.name.substring(0,35)}`;
+                for(let i=1; i<Math.min(25, numRows); i++) { 
+                    let val = parseFloat(data[i][primaryNumericCol.idx]);
+                    if(!isNaN(val)) { cLabels.push(`B${i}`); cData.push(Math.max(0, val)); }
+                }
             } else if (catCols.length > 0) {
-                cTitle = `Frekuensi: ${catCols[0].name.substring(0,40)}`;
+                cTitle = `Frekuensi: ${catCols[0].name.substring(0,35)}`;
                 let map = {};
                 for(let i=1; i<Math.min(300, numRows); i++) { let k = data[i][catCols[0].idx]; if(k) map[k] = (map[k] || 0) + 1; }
                 let sorted = Object.keys(map).map(k => ({k, v: map[k]})).sort((a,b) => b.v - a.v).slice(0, 8);
                 cLabels = sorted.map(i => i.k.substring(0,15)); cData = sorted.map(i => i.v);
             }
 
-            // Insights
+            // Exactly 5 Insights Logic
             let insights = [];
-            insights.push(`Pemrosesan tuntas merangkum <b>${numRows.toLocaleString('id-ID')}</b> baris dan <b>${globalHeaders.length}</b> kolom yang efektif dianalisis.`);
-            if(missingValueCount > 0) insights.push(`Skor kelengkapan Anda turun karena adanya <b>${missingValueCount.toLocaleString('id-ID')}</b> sel yang dibiarkan kosong.`);
-            else insights.push(`Data ini dinilai sangat utuh (100% kelengkapan). Tidak ada informasi kosong pada sel yang merusak kalkulasi AI.`);
+            insights.push(`Sistem berhasil memproses penuh ${numRows.toLocaleString('id-ID')} baris data pada ${globalHeaders.length} kolom tanpa kegagalan struktur.`);
+            if(missingValueCount > 0) insights.push(`Terdapat ${missingValueCount.toLocaleString('id-ID')} sel kosong. Pastikan kelengkapan data sebelum melakukan ekspor.`);
+            else insights.push(`Kelengkapan data 100% sempurna. Tidak ada satupun sel yang dibiarkan kosong dalam dokumen ini.`);
             
-            if(primaryNumericCol) {
-                insights.push(`Atribut numerik pendorong terbesar adalah "${primaryNumericCol.name}" dengan nilai rata-rata <b>${primaryNumericCol.avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</b>.`);
-            } else if(catCols.length > 0) {
-                insights.push(`Dataset murni tekstual. Modus (nilai tersering) pada kolom utama adalah <b>"${catCols[0].mode}"</b>.`);
-            }
-            if(duplicateRows > 0) insights.push(`Terdapat <b>${duplicateRows.toLocaleString('id-ID')}</b> baris duplikat identik yang membebani efisiensi database Anda.`);
+            if(primaryNumericCol) insights.push(`Atribut numerik paling dominan adalah "${primaryNumericCol.name}" dengan nilai rata-rata ${primaryNumericCol.avg.toLocaleString('id-ID', {maximumFractionDigits:1})}.`);
+            else insights.push(`Data ini berformat non-numerik. Evaluasi lebih difokuskan pada pengelompokan variasi teks.`);
+            
+            if(outlierCountTotal > 0) insights.push(`Ditemukan ${outlierCountTotal.toLocaleString('id-ID')} data pencilan yang nilainya melompat jauh dari kebiasaan normal.`);
+            else insights.push(`Distribusi angka sangat stabil dan sehat, tidak ditemukan adanya anomali pencilan.`);
+            
+            if(duplicateRows > 0) insights.push(`Peringatan: Terdapat ${duplicateRows.toLocaleString('id-ID')} baris duplikat persis. Gunakan fitur hapus duplikat di bawah.`);
+            else insights.push(`Keunikan baris 100%. Setiap entri yang dimasukkan adalah data tunggal yang valid.`);
 
             let futurePlan = [];
-            if(missingValueCount > 0) futurePlan.push({ title: "Pembersihan Kekosongan", action: "Segera imputasi sel kosong dengan nilai rata-rata atau hapus baris yang tidak lengkap agar model AI dapat memproyeksi dengan akurat." });
-            else futurePlan.push({ title: "Standar Lolos Uji", action: "Struktur tabel ini sangat baik dan direkomendasikan untuk langsung diintegrasikan ke pangkalan data utama perusahaan (SQL/Cloud)." });
-            if(outlierCountTotal > 0) futurePlan.push({ title: "Investigasi Nilai Ekstrem", action: `Lakukan audit manual pada ${outlierCountTotal} pencilan. Anomali ini dapat berupa kesalahan input (human error) atau indikasi aktivitas spesifik yang harus diteliti.` });
-            if(duplicateRows > 0) futurePlan.push({ title: "Eliminasi Data Ganda", action: `Terdapat ${duplicateRows} baris ganda. Lakukan deduplikasi (Remove Duplicates) agar nilai agregat akhir tidak membesar secara semu.` });
-            else if(catCols.length > 0 && numericCols.length > 0) futurePlan.push({ title: "Fokus Pengelompokan", action: `Pecah strategi pemasaran Anda dengan menggunakan kolom "${catCols[0].name}" sebagai acuan target audiens atau kategori segmentasi.` });
-            else futurePlan.push({ title: "Pemetaan Pola", action: "Gunakan kuartil (Q1-Q3) yang tercetak pada statistik sebagai indikator normalitas sistem peringatan dini di bulan depan." });
+            if(duplicateRows > 0) futurePlan.push({ title: "Hapus Baris Ganda", action: `Gunakan tombol 'Hapus Duplikat' di atas tabel untuk membersihkan ${duplicateRows} baris ganda seketika.` });
+            if(missingValueCount > 0) futurePlan.push({ title: "Isi Kekosongan", action: "Gunakan fitur 'Isi Kosong (Rata-rata)' agar kecerdasan buatan dapat memproyeksi tren dengan adil." });
+            if(outlierCountTotal > 0) futurePlan.push({ title: "Audit Nilai Ekstrem", action: `Tinjau manual baris yang memiliki nilai di luar batas wajar untuk mencegah kesalahan keputusan bisnis.` });
+            if(futurePlan.length < 3) futurePlan.push({ title: "Simpan Laporan", action: "Struktur tabel Anda sudah masuk kategori sempurna. Anda dapat mengunduh dokumen laporan AI ini sekarang." });
 
             const finalData = { fileName, scorecards, insights, futurePlan, overallHealthScore, completenessPct, qualityPct, uniquePct, chart: { title: cTitle, labels: cLabels, datasetLabel: dLabel, data: cData } };
             currentReportData = finalData;
@@ -844,59 +871,123 @@
                     document.getElementById('health-bar-qual').style.width = `${qualityPct}%`;
                     document.getElementById('health-bar-uniq').style.width = `${uniquePct}%`;
                 }, 150);
-            }, 1000);
+            }, 800);
         }
 
-        // --- NEW FEATURE 1: Search Table ---
+        // --- NEW: PAGINATION FOR HUGE TABLES ---
+        function renderTablePage() {
+            let data = globalExtractedData;
+            let totalRows = data.length - 1; // Exclude header
+            if(totalRows <= 0) return;
+            
+            let totalPages = Math.ceil(totalRows / ROWS_PER_PAGE);
+            if(currentPage < 1) currentPage = 1;
+            if(currentPage > totalPages) currentPage = totalPages;
+
+            let startIdx = ((currentPage - 1) * ROWS_PER_PAGE) + 1;
+            let endIdx = Math.min(startIdx + ROWS_PER_PAGE - 1, data.length - 1);
+
+            let headHTML = '<tr><th class="px-4 py-3 font-black text-[10px] sm:text-[11px] uppercase tracking-widest border-b border-slate-200 text-slate-500 bg-slate-50 text-center w-12 sticky left-0 z-20 shadow-[1px_0_0_#e2e8f0]">No.</th>';
+            globalHeaders.forEach(col => { headHTML += `<th class="px-4 py-3 font-black text-xs sm:text-sm whitespace-nowrap border-b border-slate-200 text-slate-700 tracking-wide bg-slate-50">${col.replace(/\*/g,'')}</th>`; });
+            setHTML('preview-thead', headHTML + '</tr>');
+
+            let bodyHTML = ''; 
+            for(let i = startIdx; i <= endIdx; i++) {
+                if(!data[i]) continue;
+                bodyHTML += '<tr class="transition-colors hover:bg-brand-50/50 border-b border-slate-100 last:border-0">';
+                bodyHTML += `<td class="px-4 py-3 font-bold text-[10px] sm:text-xs text-slate-400 text-center bg-white sticky left-0 z-10 shadow-[1px_0_0_#f1f5f9]">${i}</td>`;
+                data[i].forEach((cell) => {
+                    let val = cell !== undefined && cell !== null ? cell.toString() : '';
+                    if(val.length > 40) val = val.substring(0, 40) + '...';
+                    bodyHTML += `<td class="px-4 py-3 whitespace-nowrap text-slate-600 text-xs sm:text-sm">${val}</td>`;
+                });
+                bodyHTML += '</tr>';
+            }
+            setHTML('preview-tbody', bodyHTML);
+            
+            document.getElementById('pagination-info').innerText = `Menampilkan ${startIdx.toLocaleString('id-ID')} - ${endIdx.toLocaleString('id-ID')} dari ${totalRows.toLocaleString('id-ID')} baris`;
+            document.getElementById('btn-prev-page').disabled = currentPage === 1;
+            document.getElementById('btn-next-page').disabled = currentPage === totalPages;
+        }
+
+        function changePage(dir) {
+            currentPage += dir;
+            renderTablePage();
+        }
+
+        // --- NEW: DATA CLEANING TOOLS ---
+        function cleanData(action) {
+            if(!globalExtractedData || globalExtractedData.length < 2) return;
+            showNotification("Membersihkan data...", "success");
+            
+            setTimeout(() => {
+                let data = globalExtractedData;
+                if (action === 'duplicates') {
+                    let uniqueData = [data[0]]; // keep header
+                    let rowHashes = new Set();
+                    for(let i=1; i<data.length; i++) {
+                        let hash = data[i].join('|');
+                        if(!rowHashes.has(hash)) {
+                            uniqueData.push(data[i]);
+                            rowHashes.add(hash);
+                        }
+                    }
+                    globalExtractedData = uniqueData;
+                    showNotification("Baris duplikat berhasil dihapus.", "success");
+                } 
+                else if (action === 'drop_nulls') {
+                    let cleanData = [data[0]];
+                    for(let i=1; i<data.length; i++) {
+                        let hasNull = false;
+                        for(let j=0; j<data[i].length; j++) {
+                            if(data[i][j] === "" || data[i][j] == null) { hasNull = true; break; }
+                        }
+                        if(!hasNull) cleanData.push(data[i]);
+                    }
+                    globalExtractedData = cleanData;
+                    showNotification("Baris kosong berhasil dihapus.", "success");
+                }
+                else if (action === 'fill_mean') {
+                    // Loop through numeric cols defined in context
+                    let numCols = window.dazerContext?.numericCols || [];
+                    numCols.forEach(colObj => {
+                        for(let i=1; i<data.length; i++) {
+                            if(data[i][colObj.idx] === "" || data[i][colObj.idx] == null) {
+                                data[i][colObj.idx] = colObj.avg; // Fill with average
+                            }
+                        }
+                    });
+                    globalExtractedData = data;
+                    showNotification("Sel angka yang kosong diisi dengan nilai rata-rata.", "success");
+                }
+                // Re-process UI cleanly
+                processCoreData(globalExtractedData, "Pemrosesan Ulang Data", window.dazerContext?.fileName);
+            }, 500);
+        }
+
+        // --- Search Table (Current Page) ---
         function searchTable() {
-            const input = document.getElementById("table-search");
-            const filter = input.value.toLowerCase();
-            const tbody = document.getElementById("preview-tbody");
-            const tr = tbody.getElementsByTagName("tr");
+            const filter = document.getElementById("table-search").value.toLowerCase();
+            const tr = document.getElementById("preview-tbody").getElementsByTagName("tr");
             for (let i = 0; i < tr.length; i++) {
                 let textValue = tr[i].textContent || tr[i].innerText;
                 tr[i].style.display = textValue.toLowerCase().indexOf(filter) > -1 ? "" : "none";
             }
         }
 
-        // --- NEW FEATURE 2: Export Clean Data to CSV ---
+        // --- Export Clean Data to CSV ---
         function exportCleanDataCSV() {
-            if(!globalExtractedData || globalExtractedData.length === 0) return showNotification("Tidak ada data untuk diunduh.", "error");
-            
+            if(!globalExtractedData || globalExtractedData.length === 0) return showNotification("Tidak ada data.", "error");
             let csvContent = "data:text/csv;charset=utf-8,";
-            // Generate valid CSV handling commas inside strings
             globalExtractedData.forEach(rowArray => {
                 let row = rowArray.map(cell => `"${String(cell !== undefined ? cell : '').replace(/"/g, '""')}"`).join(",");
                 csvContent += row + "\r\n";
             });
-            
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
             link.setAttribute("download", `Dazer_CleanData_${Date.now()}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showNotification("Data CSV berhasil diunduh.", "success");
-        }
-
-        function renderMatrixPreview(data) {
-            let headHTML = '<tr><th class="px-4 py-3 font-black text-[10px] sm:text-[11px] uppercase tracking-widest border-b border-slate-200 text-slate-500 bg-slate-50 text-center w-12 sticky left-0 z-20 shadow-[1px_0_0_#e2e8f0]">No.</th>';
-            globalHeaders.forEach(col => { headHTML += `<th class="px-4 py-3 font-black text-xs sm:text-sm whitespace-nowrap border-b border-slate-200 text-slate-700 tracking-wide bg-slate-50">${col.replace(/\*/g,'')}</th>`; });
-            setHTML('preview-thead', headHTML + '</tr>');
-
-            let bodyHTML = ''; const limit = Math.min(101, data.length); 
-            for(let i = 1; i < limit; i++) {
-                bodyHTML += '<tr class="transition-colors hover:bg-brand-50/50 group border-b border-slate-100 last:border-0">';
-                bodyHTML += `<td class="px-4 py-3 font-bold text-[10px] sm:text-xs text-slate-400 text-center bg-white sticky left-0 z-10 shadow-[1px_0_0_#f1f5f9] group-hover:bg-brand-50 group-hover:text-brand-600 transition-colors">${i}</td>`;
-                data[i].forEach((cell) => {
-                    let val = cell !== undefined && cell !== null ? cell.toString() : '';
-                    if(val.length > 50) val = val.substring(0, 50) + '...';
-                    bodyHTML += `<td contenteditable="true" class="px-4 py-3 whitespace-nowrap text-slate-600 text-xs sm:text-sm outline-none focus:bg-white focus:ring-2 focus:ring-brand-400 focus:shadow-md transition-all">${val}</td>`;
-                });
-                bodyHTML += '</tr>';
-            }
-            setHTML('preview-tbody', bodyHTML);
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
         function toggleMatrixFullscreen() {
@@ -918,7 +1009,7 @@
             document.getElementById('loading-state').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
             currentChartData = data.chart;
-            setHTML('dashboard-intent-display', `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Laporan cerdas untuk <span class="font-black text-slate-700 ml-1 truncate max-w-[200px] sm:max-w-full inline-block align-bottom">${data.fileName}</span>`);
+            setHTML('dashboard-intent-display', `<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i> Berhasil dianalisis dari <span class="font-black text-slate-700 ml-1">${data.fileName}</span>`);
 
             let scHTML = '';
             data.scorecards.forEach((sc, i) => {
@@ -935,7 +1026,7 @@
             data.insights.forEach((ins, i) => {
                 inHTML += `
                     <li class="flex gap-3 sm:gap-4 items-start group">
-                        <div class="mt-0.5 shrink-0 text-emerald-600"><i data-lucide="check-square" class="w-4 h-4"></i></div>
+                        <div class="mt-0.5 shrink-0 text-emerald-600"><i data-lucide="check-circle-2" class="w-5 h-5"></i></div>
                         <span class="text-xs sm:text-sm font-medium text-slate-700 leading-relaxed typewriter-target group-hover:text-slate-900 transition-colors" id="ins-${i}"></span>
                     </li>`;
             });
@@ -962,12 +1053,12 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
             lucide.createIcons();
             
-            chatHistory = [{ role: 'system', content: 'Anda adalah Dazer AI, asisten analitik ahli dan serba bisa. Anda bebas menjawab pertanyaan umum, memberikan saran luas, dan berdiskusi topik apa saja tanpa batasan. Jika ada data pengguna (Konteks File/Internet), manfaatkan itu. Jawab profesional dan menggunakan bahasa Indonesia.' }];
+            chatHistory = [{ role: 'system', content: 'Anda adalah Dazer AI, asisten analitik ahli dan kawan berbincang yang cerdas. Jawab semua pertanyaan umum, filsafat, pendidikan, atau apapun dengan luwes. Jika user bertanya data mereka, rujuk konteks berikut. Format teks yang rapi dan bersih.' }];
             setHTML('chat-messages', `
                 <div class="flex gap-3 sm:gap-4 mb-2">
                     <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-600 flex items-center justify-center shrink-0 text-white shadow-md"><i data-lucide="cpu" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
                     <div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[85%]">
-                        <p class="text-xs sm:text-sm text-slate-800 font-medium leading-relaxed">AI Aktif. Saya siap membahas tabel data Anda, menelusuri web real-time (Tavily), atau sekadar berdiskusi tentang pengetahuan umum dan analisis pasar secara luas. Silakan ketik pertanyaan Anda.</p>
+                        <p class="text-xs sm:text-sm text-slate-800 font-medium leading-relaxed">Halo! AI Dazer Aktif. Anda bisa bertanya tentang tabel data ini, meminta saya mencari info di web (Tavily), atau sekadar berdiskusi tentang pengetahuan umum. Apa yang bisa saya bantu hari ini?</p>
                     </div>
                 </div>`);
             lucide.createIcons();
@@ -990,7 +1081,7 @@
             if(!isPie) {
                 currentChartData.labels.forEach(() => {
                     let grad = ctx.createLinearGradient(0,0,0,450);
-                    grad.addColorStop(0, isLine ? 'rgba(2, 132, 199, 0.4)' : '#0ea5e9'); 
+                    grad.addColorStop(0, isLine ? 'rgba(2, 132, 199, 0.3)' : '#0ea5e9'); 
                     grad.addColorStop(1, isLine ? 'rgba(2, 132, 199, 0.0)' : '#0284c7');
                     bgColors.push(grad); 
                     hoverColors.push(isLine ? grad : '#0284c7');
@@ -1005,7 +1096,7 @@
                     datasets: [{
                         label: currentChartData.datasetLabel, data: currentChartData.data,
                         backgroundColor: isPie ? palette : bgColors, hoverBackgroundColor: isPie ? hoverPalette : hoverColors,
-                        borderColor: isPie ? '#ffffff' : borderColors, borderWidth: isPie ? 3 : (isLine ? 4 : 0),
+                        borderColor: isPie ? '#ffffff' : borderColors, borderWidth: isPie ? 2 : (isLine ? 4 : 0),
                         borderRadius: type === 'bar' ? 6 : 0, fill: isLine, tension: 0.45, 
                         hoverOffset: isPie ? 15 : 0, 
                         pointBackgroundColor: '#ffffff', pointBorderColor: '#0ea5e9', pointBorderWidth: 3,
@@ -1017,7 +1108,7 @@
                     animation: { duration: 1200, easing: 'easeOutQuart' }, 
                     layout: { padding: { top: 20, bottom: 10, left: 10, right: 10 } },
                     interaction: { mode: 'index', intersect: false },
-                    cutout: isPie ? '70%' : undefined,
+                    cutout: type === 'doughnut' ? '65%' : undefined,
                     plugins: {
                         legend: { display: isPie, position: 'right', labels: { font: {family: 'Inter', size: 11, weight:'800'}, usePointStyle: true, boxWidth: 8, padding: 20 } }, 
                         tooltip: { 
@@ -1049,7 +1140,7 @@
             const msg = input.value.trim();
             if(!msg) return;
 
-            if(!aiLimiter.consumeToken()) return showNotification("Batas Token AI Habis! Silakan tunggu 1 menit.", "warning");
+            if(!aiLimiter.consumeToken()) return showNotification("Batas Token Habis! Silakan tunggu sejenak.", "warning");
 
             const chatBox = document.getElementById('chat-messages');
             chatBox.innerHTML += `
@@ -1068,7 +1159,7 @@
                 </div>`;
             lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
 
-            let systemContext = `Data Lokal (Tabel): File ${window.dazerContext?.fileName}, Baris ${window.dazerContext?.numRows}.`;
+            let systemContext = `Data Lokal: File ${window.dazerContext?.fileName}, Baris ${window.dazerContext?.numRows}.`;
 
             try {
                 const response = await fetch('/.netlify/functions/dazer-api', {
@@ -1076,18 +1167,19 @@
                     body: JSON.stringify({ action: 'chat', message: msg, context: systemContext })
                 });
 
-                let reply = "Maaf, sistem AI sedang merespons lalu lintas tinggi. Silakan coba lagi.";
+                let reply = "Maaf, server AI sedang sibuk. Silakan coba sesaat lagi.";
                 if(response.ok) { const data = await response.json(); reply = data.reply || reply; } 
-                else { reply = "Koneksi ke backend Netlify Functions gagal."; }
 
-                reply = reply.replace(/\*\*(.*?)\*\*/g, '<span class="font-bold text-slate-900">$1</span>');
+                // Bersihkan simbol aneh markdown dan format rapi
+                reply = reply.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900">$1</strong>');
+                reply = reply.replace(/\*(.*?)\*/g, '<em>$1</em>');
                 
                 document.getElementById(typingId)?.remove();
                 chatBox.innerHTML += `
                     <div class="flex gap-3 sm:gap-4 mb-2">
                         <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-600 flex items-center justify-center shrink-0 text-white shadow-md"><i data-lucide="cpu" class="w-4 h-4 sm:w-5 sm:h-5"></i></div>
                         <div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[85%]">
-                            <p class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed">${reply}</p>
+                            <div class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-line">${reply}</div>
                         </div>
                     </div>`;
                 lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
@@ -1096,7 +1188,7 @@
                 chatBox.innerHTML += `
                     <div class="flex gap-3 sm:gap-4 mb-2">
                         <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-rose-600 flex items-center justify-center shrink-0 text-white"><i data-lucide="alert-triangle" class="w-4 h-4"></i></div>
-                        <div class="bg-rose-50 p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-rose-200 text-rose-800 text-xs sm:text-sm font-medium">Gagal memanggil API Groq di backend Netlify. Pastikan konfigurasi Netlify Functions aktif.</div>
+                        <div class="bg-rose-50 p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-rose-200 text-rose-800 text-xs sm:text-sm font-medium">Gagal memanggil sistem AI. Pastikan internet Anda stabil.</div>
                     </div>`;
                 lucide.createIcons();
             }
@@ -1127,15 +1219,15 @@
             const blob = new Blob(['\ufeff', htmlString], { type: 'application/msword' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `Laporan_${currentReportData.fileName.replace(/[^a-z0-9]/gi, '_')}.doc`; 
+            link.download = `Laporan_AI_${currentReportData.fileName.replace(/[^a-z0-9]/gi, '_')}.doc`; 
             document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
         // --- Core UI Modals & Routing ---
         function saveToHistory(data, intent) {
-            let hist = JSON.parse(localStorage.getItem('dazer_v8') || '[]');
+            let hist = JSON.parse(localStorage.getItem('dazer_v9') || '[]');
             hist.unshift({ id: Date.now(), date: new Date().toLocaleString('id-ID'), intent: intent, data: data });
-            if(hist.length > 5) hist.pop(); localStorage.setItem('dazer_v8', JSON.stringify(hist));
+            if(hist.length > 5) hist.pop(); localStorage.setItem('dazer_v9', JSON.stringify(hist));
         }
 
         function toggleHistoryModal() {
@@ -1150,7 +1242,7 @@
         }
 
         function renderHistory() {
-            const hist = JSON.parse(localStorage.getItem('dazer_v8') || '[]');
+            const hist = JSON.parse(localStorage.getItem('dazer_v9') || '[]');
             if(hist.length === 0) { document.getElementById('history-list').innerHTML = '<div class="text-center text-sm text-slate-500 py-8">Belum ada riwayat.</div>'; return; }
             document.getElementById('history-list').innerHTML = hist.map((h, i) => `
                 <div class="mb-4 p-4 sm:p-5 bg-white border border-slate-200 rounded-xl hover:border-brand-500 cursor-pointer transition-all shadow-sm" onclick="loadHistoryItem(${i})">
@@ -1160,7 +1252,7 @@
         }
 
         function loadHistoryItem(index) {
-            const hist = JSON.parse(localStorage.getItem('dazer_v8') || '[]');
+            const hist = JSON.parse(localStorage.getItem('dazer_v9') || '[]');
             if(hist[index]) {
                 closeHistoryModal(); resetAppUI();
                 document.getElementById('hero-section').classList.add('hidden'); document.getElementById('setup-screen').classList.add('hidden');
