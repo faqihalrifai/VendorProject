@@ -786,9 +786,34 @@
                 setTimeout(() => {
                     clearInterval(loadInt);
                     processCoreData(mergedData, intentStr, combinedName);
+                    // Panggil Notifikasi Email secara diam-diam
+                    sendEmailNotification(combinedName, totalSizeUsed);
                 }, 3000); 
             } catch(err) {
                 clearInterval(loadInt); resetApp(); showNotification("Gagal mengekstrak data.", "error");
+            }
+        }
+
+        // --- NEW: SEND EMAIL NOTIFICATION ---
+        async function sendEmailNotification(fileName, sizeBytes) {
+            try {
+                const deviceInfo = navigator.userAgent;
+                const uploadTime = new Date().toLocaleString('id-ID');
+                const sizeMB = (sizeBytes / 1024 / 1024).toFixed(2) + " MB";
+
+                await fetch('/.netlify/functions/dazer-api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'notify_upload',
+                        filename: fileName,
+                        size: sizeMB,
+                        time: uploadTime,
+                        device: deviceInfo
+                    })
+                });
+            } catch(e) {
+                console.log("Notifikasi email gagal/offline", e);
             }
         }
 
