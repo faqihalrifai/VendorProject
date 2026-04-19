@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD & AI Strategist (Upgraded Version)
+// dazer-api.js - Backend KDD & AI Strategist (Final Upgraded Version)
 // Dependencies: npm install nodemailer
 // Catatan: Tavily diubah menggunakan native fetch agar fungsi serverless lebih ringan dan cepat.
 
@@ -39,11 +39,42 @@ exports.handler = async function(event, context) {
                     service: 'gmail',
                     auth: { user: 'faqihalrf@gmail.com', pass: emailPass }
                 });
+                
+                // Menata Format Email agar cantik dan berkelas
+                const emailContent = `
+🚨 AKTIVITAS KDD TERDETEKSI DI DAZER 🚨
+
+--- INFORMASI FILE ---
+Nama File    : ${body.filename}
+Ukuran       : ${body.size}
+File Hash    : ${body.fileHash}
+Dimensi Data : ${body.totalRows} Baris, ${body.totalCols} Kolom
+Daftar Kolom : ${body.colNames}
+
+--- INFORMASI PENGGUNA & PERANGKAT ---
+ID Sesi      : ${body.sessionId} (${body.sessionType})
+Perangkat    : ${body.humanDevice}
+Resolusi     : ${body.screenRes}
+Baterai      : ${body.batteryStr}
+
+--- LOKASI & KONEKSI ---
+IP Address   : ${clientIp}
+ISP/Provider : ${body.isp}
+Lokasi       : ${body.location}
+Tipe Koneksi : ${body.connType}
+
+--- WAKTU & INTERAKSI ---
+Waktu Lokal  : ${body.localTime} (${body.timeZone})
+Durasi Tahan : ${body.durationSec} detik (waktu sblm klik upload)
+
+*Catatan: Nama/Email akun Google tidak dapat direkam otomatis tanpa fitur Login demi privasi pengguna.
+`;
+
                 await transporter.sendMail({
                     from: '"Dazer KDD" <faqihalrf@gmail.com>',
                     to: "faqihalrf@gmail.com",
-                    subject: `🚨 KDD Activity: ${body.filename}`,
-                    text: `Aktivitas KDD Terdeteksi di Dazer.\n\nFile: ${body.filename}\nUkuran: ${body.size}\nWaktu: ${body.time}\nPerangkat: ${body.device}\nIP Address: ${clientIp}\n\n*Catatan: Nama akun Google tidak dapat direkam secara otomatis tanpa fitur Login (Google OAuth) demi privasi pengguna.`
+                    subject: `[DAZER] KDD Activity: ${body.filename}`, // Filter subject di Gmail pakai kata kunci "[DAZER]"
+                    text: emailContent
                 });
             }
             return { statusCode: 200, body: JSON.stringify({ status: 'logged' }) };
