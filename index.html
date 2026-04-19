@@ -269,6 +269,27 @@
         @keyframes shimmer { 
             to { background-position: -200% 0; } 
         }
+        
+        /* Modern Compact Table Styles (Statistik Atribut) */
+        .compact-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .compact-table td {
+            padding: 10px 16px;
+            font-size: 0.8rem;
+            color: #1e293b;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+        .compact-table tr:last-child td { border-bottom: none; }
+        .compact-table tr:hover td { background-color: #f8fafc; }
     </style>
 </head>
 <body class="text-brand-900 antialiased selection:bg-brand-200 selection:text-brand-900">
@@ -278,21 +299,21 @@
         <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-3 cursor-pointer group" onclick="resetApp()">
-                    <div class="flex items-center justify-center transition-transform group-hover:scale-105 bg-gradient-to-br from-brand-500 to-brand-700 rounded-lg p-1.5 shadow-md">
-                        <i data-lucide="bar-chart-2" class="w-5 h-5 text-white"></i>
+                    <div class="flex items-center justify-center transition-transform group-hover:scale-105 bg-gradient-to-br from-brand-500 to-brand-700 rounded-xl p-1.5 shadow-md w-9 h-9">
+                        <img src="logo.webp" alt="Dazer Logo" class="w-6 h-6 object-contain" onerror="this.outerHTML='<i data-lucide=\'bar-chart-2\' class=\'w-5 h-5 text-white\'></i>'">
                     </div>
                     <span class="font-black text-xl tracking-tight text-slate-800 group-hover:text-brand-600 transition-colors">Dazer</span>
                 </div>
-                <div class="flex items-center gap-2 sm:gap-4">
-                    <button onclick="selfDestruct()" class="hidden md:flex text-xs font-bold items-center gap-1.5 text-rose-600 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg transition-all border border-rose-100" title="Hapus Semua Data Permanen">
-                        <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i> Hapus Jejak
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="selfDestruct()" class="hidden md:flex text-[11px] font-bold items-center gap-1.5 text-rose-600 bg-rose-50/80 hover:bg-rose-100/80 px-3.5 py-1.5 rounded-full transition-all border border-rose-200/50 shadow-sm" title="Hapus Semua Data Permanen">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Hapus Jejak
                     </button>
-                    <div class="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200" title="Keamanan Sistem AI">
-                        <i data-lucide="zap" class="w-4 h-4 text-brand-500"></i>
-                        <span class="text-[11px] sm:text-xs font-bold text-slate-700" id="ai-token-display">Token: 30</span>
+                    <div class="flex items-center gap-1.5 bg-brand-50/80 px-3.5 py-1.5 rounded-full border border-brand-200/50 shadow-sm" title="Keamanan Sistem AI">
+                        <i data-lucide="zap" class="w-3.5 h-3.5 text-brand-500 fill-brand-500"></i>
+                        <span class="text-[11px] font-bold text-brand-700" id="ai-token-display">Token: 30</span>
                     </div>
-                    <button onclick="toggleHistoryModal()" class="text-sm font-bold flex items-center gap-2 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-3 py-2 sm:px-4 sm:py-2 rounded-lg transition-all shadow-sm">
-                        <i data-lucide="folder-clock" class="w-4 h-4"></i> <span class="hidden sm:inline">Arsip</span>
+                    <button onclick="toggleHistoryModal()" class="text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full transition-all shadow-sm">
+                        <i data-lucide="history" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Arsip</span>
                     </button>
                 </div>
             </div>
@@ -314,7 +335,7 @@
                 </p>
                 
                 <!-- Security Notification Label -->
-                <div class="mt-6 text-[10px] sm:text-xs text-slate-500 font-bold flex items-center justify-center gap-1.5 bg-slate-100/50 py-2 px-4 rounded-full max-w-fit mx-auto border border-slate-200 shadow-sm">
+                <div class="mt-6 text-[10px] sm:text-xs text-slate-500 font-bold flex items-center justify-center gap-1.5 bg-slate-100/50 py-2.5 px-5 rounded-full max-w-fit mx-auto border border-slate-200 shadow-sm text-left sm:text-center">
                     <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 shrink-0"></i> 
                     <span>Dazer menggunakan enkripsi SSL tingkat tinggi. Data Anda diproses secara anonim oleh sistem KDD kami dan tidak disimpan secara permanen.</span>
                 </div>
@@ -451,8 +472,8 @@
                             <canvas id="mainChart"></canvas>
                         </div>
                         
-                        <!-- Custom Legend Container for Doughnut Style -->
-                        <div id="customLegend" class="flex flex-wrap justify-center gap-2 sm:gap-3 w-full pt-4 hidden"></div>
+                        <!-- Custom Legend Container for Doughnut Style (No Crop) -->
+                        <div id="customLegend" class="flex flex-wrap justify-center gap-2.5 sm:gap-3 w-full pt-6 hidden"></div>
 
                         <div class="mt-4 pt-4 border-t border-slate-200 shrink-0">
                             <p class="text-[11px] sm:text-xs md:text-sm text-slate-700 font-medium leading-relaxed italic border-l-4 border-brand-500 pl-3 bg-slate-50 p-3 rounded-r-lg" id="storytelling-text">Memuat narasi data...</p>
@@ -482,22 +503,21 @@
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 border-b border-slate-200 pb-3 sm:pb-4 gap-3">
                         <div class="flex flex-col">
                             <h3 class="font-black text-slate-900 text-sm sm:text-lg flex items-center gap-2"><i data-lucide="trending-up" class="w-5 h-5 text-brand-500"></i> Prediksi & Proyeksi (KDD)</h3>
-                            <p class="text-[11px] sm:text-xs text-slate-600 font-semibold mt-1">Estimasi berbasis tren histori masa lalu untuk pengambilan keputusan.</p>
+                            <p class="text-[11px] sm:text-xs text-slate-600 font-semibold mt-1">Estimasi berbasis tren historis dan kalkulasi probabilitas data mining.</p>
                         </div>
-                        <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-brand-100 text-brand-700 px-2 py-1 rounded-md border border-brand-200 shadow-sm shrink-0 self-start sm:self-center">Estimasi AI</span>
+                        <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-brand-100 text-brand-700 px-2 py-1 rounded-md border border-brand-200 shadow-sm shrink-0 self-start sm:self-center">Analisis Ahli</span>
                     </div>
-                    <div class="flex flex-col lg:flex-row gap-6 items-center">
-                        <div class="w-full lg:w-2/3 h-[250px] sm:h-[300px] relative">
+                    <div class="flex flex-col lg:flex-row gap-6 items-stretch">
+                        <div class="w-full lg:w-2/3 h-[280px] sm:h-[350px] relative">
                             <canvas id="predictionChart"></canvas>
                         </div>
                         <div class="w-full lg:w-1/3 flex flex-col justify-center">
-                            <div class="bg-brand-50 border border-brand-200 p-4 sm:p-5 rounded-2xl shadow-sm">
-                                <h4 class="font-black text-brand-900 text-xs sm:text-sm mb-2">Analisis Arah Masa Depan</h4>
-                                <p class="text-[11px] sm:text-xs text-brand-800 font-medium leading-relaxed mb-4" id="prediction-insight-text">Menghitung proyeksi...</p>
-                                <div class="flex flex-wrap items-center gap-3 text-[10px] sm:text-[11px] font-bold text-brand-700 bg-white p-2 rounded-lg border border-brand-100">
-                                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-500 block"></span> Historis</span>
-                                    <span class="text-slate-300 hidden sm:inline">|</span>
-                                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 block"></span> Proyeksi</span>
+                            <div class="bg-slate-50 border border-slate-200 p-5 sm:p-6 rounded-2xl shadow-sm h-full flex flex-col">
+                                <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 flex items-center gap-2"><i data-lucide="microscope" class="w-4 h-4 text-brand-500"></i> Deep Insight</h4>
+                                <div class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed mb-5" id="prediction-insight-text">Mengkalkulasi model proyeksi...</div>
+                                <div class="mt-auto pt-4 border-t border-slate-200 flex flex-wrap items-center gap-4 text-[10px] sm:text-[11px] font-bold text-slate-600">
+                                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-500 block"></span> Data Historis</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 block"></span> Proyeksi Sistem</span>
                                 </div>
                             </div>
                         </div>
@@ -567,9 +587,10 @@
                     </div>
                     
                     <div class="overflow-y-auto overflow-x-auto max-h-[400px] sm:max-h-[500px] w-full bg-white custom-scrollbar relative" id="table-scroll-container">
-                        <div id="table-loading-overlay" class="hidden absolute inset-0 bg-white/70 backdrop-loading z-50 flex flex-col items-center justify-center">
-                            <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-brand-600 mb-2"></i>
-                            <span class="text-sm font-bold text-slate-800">Menyaring data...</span>
+                        <!-- Loading State dalam Tabel (Memenuhi Req 3) -->
+                        <div id="table-loading-overlay" class="hidden absolute inset-0 bg-white/80 backdrop-loading z-50 flex flex-col items-center justify-center transition-all duration-300">
+                            <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-brand-600 mb-3"></i>
+                            <span class="text-sm font-black text-slate-800" id="table-loading-text">Menyaring data...</span>
                         </div>
                         <table class="min-w-full text-left border-collapse w-full relative" id="data-table">
                             <thead id="preview-thead" class="sticky-header text-[11px] sm:text-xs md:text-sm border-b border-slate-200 shadow-sm">
@@ -587,16 +608,14 @@
                     </div>
                 </div>
 
-                <!-- ROW 7: RINGKASAN ANGKA UTAMA -->
+                <!-- ROW 7: RINGKASAN ANGKA UTAMA (Compact Table Design) -->
                 <div class="glass-card flex flex-col bg-white w-full">
                     <div class="p-4 sm:p-6 border-b border-slate-200 shrink-0 bg-slate-50">
                         <h3 class="font-black text-slate-900 text-sm sm:text-lg">Statistik Atribut (Data Selection)</h3>
                         <p class="text-[11px] sm:text-xs md:text-sm text-slate-600 mt-1 font-semibold">Mendukung Atribut Numerik maupun Kategorikal/Nominal.</p>
                     </div>
-                    <div class="overflow-x-auto w-full custom-scrollbar bg-white">
-                        <div id="statistics-container" class="min-w-[850px] p-4 sm:p-6">
-                            <!-- JS Inject -->
-                        </div>
+                    <div class="overflow-x-auto w-full custom-scrollbar bg-white p-4 sm:p-6" id="statistics-container">
+                        <!-- JS Inject Compact Table -->
                     </div>
                 </div>
 
@@ -657,10 +676,10 @@
         </div>
     </div>
 
-    <!-- Notification Banner -->
-    <div id="notification" class="hidden fixed top-4 sm:top-6 left-1/2 transform -translate-x-1/2 z-[999999] max-w-sm w-[90%] px-4 py-3 rounded-xl flex items-center gap-3 shadow-2xl transition-all duration-400 border text-xs sm:text-sm font-bold">
-        <i data-lucide="info" class="w-4 h-4 shrink-0" id="notification-icon"></i>
-        <p id="notification-text" class="line-clamp-2"></p>
+    <!-- Modern Single Line Notification -->
+    <div id="notification" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 z-[999999] bg-slate-900 text-white max-w-max w-auto px-5 py-3 rounded-full flex items-center justify-center gap-2.5 shadow-[0_10px_40px_rgb(0,0,0,0.2)] transition-all duration-400 border border-slate-700 text-xs font-medium whitespace-nowrap">
+        <i data-lucide="info" class="w-4 h-4 shrink-0 text-brand-400" id="notification-icon"></i>
+        <p id="notification-text" class="m-0 tracking-wide"></p>
     </div>
 
     <!-- Set up PDF.js Global Worker -->
@@ -672,7 +691,6 @@
 
     <!-- Application Logic -->
     <script>
-        // DOM Helpers
         function setHTML(id, html) { 
             const el = document.getElementById(id); 
             if (el) el.innerHTML = html; 
@@ -683,11 +701,9 @@
             if (el) el.innerText = text; 
         }
 
-        // Chart.js Setup Global & Plugins
         Chart.defaults.font.family = "'Inter', sans-serif";
         Chart.defaults.color = '#64748b';
 
-        // CENTER TEXT PLUGIN
         const centerTextPlugin = {
             id: 'centerText',
             beforeDraw: function(chart) {
@@ -718,31 +734,27 @@
         Chart.register(ChartDataLabels, centerTextPlugin);
         lucide.createIcons();
 
-        // Constants & State
         const MAX_SIZE_MB = 100;
         const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
         
         let globalFilesArray = []; 
-        let globalExtractedData = [];
+        let globalExtractedData = []; 
         let filteredViewData = []; 
-        let globalHeaders = [];
+        let globalHeaders = []; 
         let dataHistory = []; 
         let globalOutlierRows = new Set(); 
         
         let currentChartData = null; 
         let currentReportData = null; 
-        let chartInstance = null;
+        let chartInstance = null; 
         let predictionChartInstance = null;
-        let totalSizeUsed = 0;
-        let typewriterTimeouts = [];
+        let totalSizeUsed = 0; 
+        let typewriterTimeouts = []; 
         let isMatrixFullscreen = false;
-        
-        // Infinite Scroll State
-        let observer;
-        let currentlyRendered = 0;
+        let observer; 
+        let currentlyRendered = 0; 
         const CHUNK_SIZE = 50;
 
-        // Rate Limiter
         class RateLimiter {
             constructor(maxTokens = 30) { 
                 this.maxTokens = maxTokens; 
@@ -766,7 +778,6 @@
         }
         const aiLimiter = new RateLimiter();
 
-        // Drag & Drop
         const uploadZone = document.getElementById('upload-zone');
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => uploadZone.addEventListener(e, preventDefaults, false));
         
@@ -797,7 +808,6 @@
             }
         }
 
-        // --- UNSTRUCTURED LOCAL READER ---
         class UnstructuredLocal {
             static async processFile(file, ext) {
                 return new Promise((resolve, reject) => {
@@ -979,13 +989,12 @@
 
                 const aiData = await response.json();
                 
-                // Render 5 Temuan dari Gemini
                 let inHTML = '';
                 (aiData.insights || []).slice(0, 5).forEach((ins, i) => {
                     inHTML += `
-                        <li class="flex gap-2 sm:gap-3 items-start group p-2 rounded-xl hover:bg-slate-50 transition-colors">
-                            <div class="mt-0.5 shrink-0 text-brand-600"><i data-lucide="zap" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div>
-                            <span class="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed typewriter-target" id="ins-${i}"></span>
+                        <li class="flex gap-3 items-start group p-2.5 rounded-xl hover:bg-slate-50 transition-colors">
+                            <div class="mt-0.5 shrink-0 text-brand-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 leading-relaxed typewriter-target" id="ins-${i}"></span>
                         </li>`;
                 });
                 setHTML('insights-list', inHTML);
@@ -1000,22 +1009,21 @@
                 document.getElementById('insights-loader').classList.add('hidden');
             } catch (e) {
                 console.error("AI Insight Error:", e);
-                // Fallback jika API belum siap
                 document.getElementById('insights-loader').classList.add('hidden');
                 
                 let fallbackInsights = [
-                    `<b>Klasifikasi Dominan:</b> Dalam kolom metrik utama, terdapat rentang nilai ekstrem yang patut ditelusuri.`,
-                    `<b>Aturan Asosiasi:</b> Pengelompokan data memperlihatkan dominasi kuat pada kategori puncak, menandakan tren kecenderungan yang stabil di ranah tersebut.`,
-                    `<b>Deteksi Anomali:</b> Algoritma KDD mendeteksi lonjakan nilai tak wajar (pencilan). Investigasi apakah ini peluang pasar tersembunyi atau eror.`,
-                    `<b>Kualitas Data:</b> Pastikan baris-baris berduplikat dibersihkan di Klinik Data agar algoritma memberikan prediksi akurat.`,
+                    `<b>Klasifikasi Dominan:</b> Dalam metrik utama, terdapat rentang nilai ekstrem yang patut ditelusuri.`,
+                    `<b>Aturan Asosiasi:</b> Pengelompokan data memperlihatkan dominasi kuat pada kategori puncak, menandakan tren yang stabil.`,
+                    `<b>Deteksi Anomali:</b> Algoritma KDD mendeteksi lonjakan tak wajar. Investigasi apakah ini peluang pasar atau eror.`,
+                    `<b>Kualitas Data:</b> Pastikan baris berduplikat dibersihkan di Klinik Data agar algoritma memberikan prediksi akurat.`,
                     `<b>Evaluasi AI:</b> <i>[Simulasi offline aktif. API host belum terhubung di mode pratinjau ini.]</i>`
                 ];
                 let inHTML = '';
                 fallbackInsights.forEach((ins, i) => {
                     inHTML += `
-                        <li class="flex gap-2 sm:gap-3 items-start group p-2 rounded-xl hover:bg-slate-50 transition-colors">
-                            <div class="mt-0.5 shrink-0 text-brand-600"><i data-lucide="zap" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div>
-                            <span class="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed typewriter-target" id="ins-${i}"></span>
+                        <li class="flex gap-3 items-start group p-2.5 rounded-xl hover:bg-slate-50 transition-colors">
+                            <div class="mt-0.5 shrink-0 text-brand-600"><i data-lucide="zap" class="w-4 h-4"></i></div>
+                            <span class="text-sm font-semibold text-slate-700 leading-relaxed typewriter-target" id="ins-${i}"></span>
                         </li>`;
                 });
                 setHTML('insights-list', inHTML);
@@ -1095,38 +1103,49 @@
 
         function cleanData(type) {
             saveToDataHistory();
-            let initialRows = globalExtractedData.length - 1;
             
-            if(type === 'tidy') {
-                let changedCells = 0;
-                globalExtractedData = globalExtractedData.map((row, rIdx) => {
-                    if (rIdx === 0) return row;
-                    return row.map(cell => {
-                        if (typeof cell === 'string') {
-                            let trimmed = cell.trim().replace(/\s+/g, ' ');
-                            if (trimmed !== cell) changedCells++;
-                            return trimmed;
-                        }
-                        return cell;
+            // Loading State UI for Action
+            const overlay = document.getElementById('table-loading-overlay');
+            const loadingText = document.getElementById('table-loading-text');
+            loadingText.innerText = type === 'tidy' ? "Merapikan data..." : "Membersihkan duplikat...";
+            overlay.classList.remove('hidden');
+
+            setTimeout(() => {
+                let initialRows = globalExtractedData.length - 1;
+                
+                if(type === 'tidy') {
+                    let changedCells = 0;
+                    globalExtractedData = globalExtractedData.map((row, rIdx) => {
+                        if (rIdx === 0) return row;
+                        return row.map(cell => {
+                            if (typeof cell === 'string') {
+                                let trimmed = cell.trim().replace(/\s+/g, ' ');
+                                if (trimmed !== cell) changedCells++;
+                                return trimmed;
+                            }
+                            return cell;
+                        });
                     });
-                });
-                showNotification(`Perapihan Sukses! Data: ${initialRows} baris. Memperbaiki ${changedCells} sel.`, "success");
-            } else if (type === 'remove_dups') {
-                let uniqueSet = new Set();
-                let cleanDataArr = [globalExtractedData[0]]; 
-                for(let i = 1; i < globalExtractedData.length; i++) {
-                    let str = globalExtractedData[i].join('|');
-                    if(!uniqueSet.has(str) && str.replace(/\|/g, '').trim() !== "") {
-                        uniqueSet.add(str);
-                        cleanDataArr.push(globalExtractedData[i]);
+                    showNotification(`Perapihan Sukses! Memperbaiki ${changedCells} sel.`, "success");
+                } else if (type === 'remove_dups') {
+                    let uniqueSet = new Set();
+                    let cleanDataArr = [globalExtractedData[0]]; 
+                    for(let i = 1; i < globalExtractedData.length; i++) {
+                        let str = globalExtractedData[i].join('|');
+                        if(!uniqueSet.has(str) && str.replace(/\|/g, '').trim() !== "") {
+                            uniqueSet.add(str);
+                            cleanDataArr.push(globalExtractedData[i]);
+                        }
                     }
+                    let finalRows = cleanDataArr.length - 1;
+                    let removed = initialRows - finalRows;
+                    globalExtractedData = cleanDataArr;
+                    showNotification(`Pembersihan Sukses! Dihapus: ${removed} baris ganda.`, "success");
                 }
-                let finalRows = cleanDataArr.length - 1;
-                let removed = initialRows - finalRows;
-                globalExtractedData = cleanDataArr;
-                showNotification(`Pembersihan Sukses! Dihapus: ${removed} baris ganda. Sisa: ${finalRows} baris.`, "success");
-            }
-            initFilterView(document.getElementById('table-search').value);
+                
+                initFilterView(document.getElementById('table-search').value);
+                overlay.classList.add('hidden');
+            }, 800); // Simulate processing time for UX
         }
 
         function triggerFilter(keyword) {
@@ -1134,6 +1153,7 @@
             window.scrollTo({top: card.offsetTop - 80, behavior: 'smooth'});
             
             const overlay = document.getElementById('table-loading-overlay');
+            document.getElementById('table-loading-text').innerText = "Menyaring data...";
             if(overlay) overlay.classList.remove('hidden');
             
             setTimeout(() => {
@@ -1218,37 +1238,30 @@
                         numericCols.push({ idx: colIdx, name: header, min, max, avg, sum, count, outliers });
                         let cleanHead = header.replace(/\*/g,'').substring(0, 30);
                         
+                        // Compact Stats Row for Numeric
                         statRows += `
-                            <tr class="hover:bg-brand-50/40 transition-colors group">
-                                <td class="p-3 sm:p-4 align-top border-r border-slate-100 min-w-[200px]">
-                                    <div class="flex items-start gap-3">
-                                        <div class="p-1.5 sm:p-2 bg-blue-50 text-blue-600 rounded-lg shrink-0 mt-0.5 border border-blue-100 shadow-sm"><i data-lucide="hash" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div>
-                                        <div>
-                                            <p class="font-black text-slate-900 text-xs sm:text-sm leading-tight line-clamp-2">${cleanHead}</p>
-                                            <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 mt-1">${count.toLocaleString('id-ID')} Valid</p>
-                                        </div>
-                                    </div>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="py-2.5 px-4 border-b border-slate-100">
+                                    <span class="font-bold text-xs text-slate-800">${cleanHead}</span>
                                 </td>
-                                <td class="p-3 sm:p-4 text-center align-top border-r border-slate-100">
-                                    <span class="bg-white text-slate-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wide border border-slate-200 shadow-sm inline-block">Numerik</span>
+                                <td class="py-2.5 px-4 border-b border-slate-100 text-center">
+                                    <span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Numerik</span>
                                 </td>
-                                <td class="p-3 sm:p-4 align-top border-r border-slate-100">
-                                    <p class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-1">RATA-RATA</p>
-                                    <p class="font-black text-slate-800 text-xs sm:text-sm">${avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</p>
+                                <td class="py-2.5 px-4 border-b border-slate-100">
+                                    <span class="text-xs font-semibold text-slate-700">${avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</span>
+                                    <span class="text-[10px] text-slate-400 block">Rata-rata</span>
                                 </td>
-                                <td class="p-3 sm:p-4 align-top border-r border-slate-100 min-w-[150px]">
-                                    <div class="flex flex-col gap-1 sm:gap-2">
-                                        <div class="flex justify-between items-center"><span class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-500">MIN</span><span class="font-bold text-slate-800 text-xs">${min.toLocaleString('id-ID')}</span></div>
-                                        <div class="flex justify-between items-center"><span class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-500">MAX</span><span class="font-bold text-slate-800 text-xs">${max.toLocaleString('id-ID')}</span></div>
-                                    </div>
+                                <td class="py-2.5 px-4 border-b border-slate-100">
+                                    <span class="text-xs text-slate-600">Min: ${min.toLocaleString('id-ID')} | Max: ${max.toLocaleString('id-ID')}</span>
                                 </td>
-                                <td class="p-3 sm:p-4 align-top">
-                                    <div class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold shadow-sm ${outliers>0?'bg-rose-50 text-rose-700 border border-rose-200':'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
-                                        ${outliers>0?'<i data-lucide="alert-triangle" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>':'<i data-lucide="check-circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>'}
-                                        ${outliers} Anomali
-                                    </div>
+                                <td class="py-2.5 px-4 border-b border-slate-100">
+                                    ${outliers > 0 ? 
+                                        `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded"><i data-lucide="alert-triangle" class="w-3 h-3"></i> ${outliers} Anomali</span>` : 
+                                        `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded"><i data-lucide="check-circle" class="w-3 h-3"></i> Bersih</span>`
+                                    }
                                 </td>
-                            </tr>`;
+                            </tr>
+                        `;
                     }
                 } else {
                     let uniqueVals = new Set(); let colMiss = 0;
@@ -1265,50 +1278,47 @@
                     catCols.push({ idx: colIdx, name: header.replace(/\*/g,''), uniqueCount: uniqueVals.size, mode, missing: colMiss });
                     let cleanHead = header.replace(/\*/g,'').substring(0, 30);
                     
+                    // Compact Stats Row for Categorical
                     statRows += `
-                        <tr class="hover:bg-brand-50/40 transition-colors group">
-                            <td class="p-3 sm:p-4 align-top border-r border-slate-100 min-w-[200px]">
-                                <div class="flex items-start gap-3">
-                                    <div class="p-1.5 sm:p-2 bg-amber-50 text-amber-600 rounded-lg shrink-0 mt-0.5 border border-amber-200 shadow-sm"><i data-lucide="type" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div>
-                                    <div>
-                                        <p class="font-black text-slate-900 text-xs sm:text-sm leading-tight line-clamp-2">${cleanHead}</p>
-                                        <p class="text-[10px] sm:text-[11px] font-bold text-slate-500 mt-1">${(numRows - colMiss).toLocaleString('id-ID')} Valid</p>
-                                    </div>
-                                </div>
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="py-2.5 px-4 border-b border-slate-100">
+                                <span class="font-bold text-xs text-slate-800">${cleanHead}</span>
                             </td>
-                            <td class="p-3 sm:p-4 text-center align-top border-r border-slate-100">
-                                <span class="bg-white text-slate-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-wide border border-slate-200 shadow-sm inline-block">Kategorikal</span>
+                            <td class="py-2.5 px-4 border-b border-slate-100 text-center">
+                                <span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Kategori</span>
                             </td>
-                            <td class="p-3 sm:p-4 align-top border-r border-slate-100">
-                                <p class="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-slate-500 mb-1">DOMINAN (MODUS)</p>
-                                <p class="font-black text-slate-800 text-xs sm:text-sm truncate max-w-[120px] sm:max-w-[150px]" title="${mode}">${mode}</p>
+                            <td class="py-2.5 px-4 border-b border-slate-100">
+                                <span class="text-xs font-semibold text-slate-700 truncate max-w-[120px] block" title="${mode}">${mode}</span>
+                                <span class="text-[10px] text-slate-400 block">Modus Dominan</span>
                             </td>
-                            <td class="p-3 sm:p-4 align-top border-r border-slate-100">
-                                <div><span class="text-[9px] sm:text-[10px] uppercase font-bold text-slate-500 block mb-0.5">VARIAN DATA</span><span class="font-bold text-slate-800 text-xs sm:text-sm">${uniqueVals.size.toLocaleString('id-ID')} Unik</span></div>
+                            <td class="py-2.5 px-4 border-b border-slate-100">
+                                <span class="text-xs text-slate-600">${uniqueVals.size.toLocaleString('id-ID')} Varian Unik</span>
                             </td>
-                            <td class="p-3 sm:p-4 align-top">
-                                <div class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold shadow-sm ${colMiss>0?'bg-amber-50 text-amber-700 border border-amber-200':'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
-                                    ${colMiss>0?'<i data-lucide="help-circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>':'<i data-lucide="check-circle" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>'}
-                                    ${colMiss} Kosong
-                                </div>
+                            <td class="py-2.5 px-4 border-b border-slate-100">
+                                ${colMiss > 0 ? 
+                                    `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded"><i data-lucide="alert-circle" class="w-3 h-3"></i> ${colMiss} Kosong</span>` : 
+                                    `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded"><i data-lucide="check-circle" class="w-3 h-3"></i> Lengkap</span>`
+                                }
                             </td>
-                        </tr>`;
+                        </tr>
+                    `;
                 }
             });
             
+            // Clean Compact Table Assembly
             setHTML('statistics-container', statRows ? `
-                <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-slate-100 border-b border-slate-200">
+                <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-left border-collapse whitespace-nowrap">
+                        <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
-                                <th class="p-3 sm:p-4 text-[10px] sm:text-[11px] font-black text-slate-600 uppercase tracking-widest border-r border-slate-200">Detail Kolom Atribut</th>
-                                <th class="p-3 sm:p-4 text-[10px] sm:text-[11px] font-black text-slate-600 uppercase tracking-widest text-center w-20 sm:w-24 border-r border-slate-200">Tipe</th>
-                                <th class="p-3 sm:p-4 text-[10px] sm:text-[11px] font-black text-slate-600 uppercase tracking-widest border-r border-slate-200">Metrik Utama</th>
-                                <th class="p-3 sm:p-4 text-[10px] sm:text-[11px] font-black text-slate-600 uppercase tracking-widest border-r border-slate-200">Distribusi KDD</th>
-                                <th class="p-3 sm:p-4 text-[10px] sm:text-[11px] font-black text-slate-600 uppercase tracking-widest w-28 sm:w-36">Status Anomali</th>
+                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Atribut / Kolom</th>
+                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider text-center">Tipe</th>
+                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Metrik Utama</th>
+                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Distribusi</th>
+                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Kesehatan</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200">${statRows}</tbody>
+                        <tbody>${statRows}</tbody>
                     </table>
                 </div>
             ` : '<div class="text-center text-xs sm:text-sm font-bold text-slate-600 py-12 bg-slate-50 rounded-xl border border-slate-200">Kalkulasi statistik KDD tidak tersedia untuk data ini.</div>');
@@ -1408,7 +1418,7 @@
                     if(k) map[k] = (map[k] || 0) + v; 
                 }
                 let sorted = Object.keys(map).map(k => ({k, v: map[k]})).sort((a,b) => b.v - a.v).slice(0, 6);
-                cLabels = sorted.map(i => i.k.length > 15 ? i.k.substring(0,15)+'..' : i.k); 
+                cLabels = sorted.map(i => i.k); 
                 cData = sorted.map(i => i.v);
                 storyText = `<b>Temuan Klastering:</b> Kategori dominan mewakili kontributor utama metrik <i>${primaryNumericCol.name}</i>. Fokuskan strategi pada segmen terkuat ini.`;
                 cData.forEach(v => totalChartVal += v);
@@ -1420,7 +1430,7 @@
                     if(k) map[k] = (map[k] || 0) + 1; 
                 }
                 let sorted = Object.keys(map).map(k => ({k, v: map[k]})).sort((a,b) => b.v - a.v).slice(0, 6);
-                cLabels = sorted.map(i => i.k.substring(0,15)); 
+                cLabels = sorted.map(i => i.k); 
                 cData = sorted.map(i => i.v);
                 storyText = `<b>Temuan Pengelompokan:</b> Visualisasi mendemonstrasikan kategori mana di kolom <i>${catCols[0].name}</i> yang paling mendominasi pangkalan data.`;
                 cData.forEach(v => totalChartVal += v);
@@ -1546,9 +1556,18 @@
                 }
             });
             
-            const trend = avgDiff > 0 ? '<span class="text-emerald-600">positif</span>' : '<span class="text-rose-600">menurun</span>';
+            // Detail Explanation for Future Insight
+            const trend = avgDiff > 0 ? '<span class="text-emerald-600 font-bold">Positif (Naik)</span>' : '<span class="text-rose-600 font-bold">Negatif (Turun)</span>';
             const futureVal = Math.round(projData[projData.length-1] || 0).toLocaleString('id-ID');
-            document.getElementById('prediction-insight-text').innerHTML = `Tren saat ini terlihat <b>${trend}</b>. Jika pola stabil, proyeksi menargetkan angka <b>${futureVal}</b> pada 3 periode ke depan.`;
+            const percentage = Math.abs((avgDiff / (lastVal || 1)) * 100).toFixed(1);
+
+            document.getElementById('prediction-insight-text').innerHTML = `
+                <div class="space-y-3">
+                    <p><b>Apa yang terjadi?</b> Tren dari model saat ini terdeteksi <b>${trend}</b> dengan estimasi rasio deviasi rata-rata <b>${percentage}%</b> per siklus.</p>
+                    <p><b>Mengapa?</b> Pola komputasi KDD menemukan akumulasi metrik yang konsisten bergerak searah seiring waktu pada data historis Anda.</p>
+                    <p><b>Bagaimana kedepannya?</b> Jika variabel tetap dijaga stabil, proyeksi menargetkan angka masa depan sebesar <b>${futureVal}</b> pada 3 periode ke depan. Siapkan langkah antisipasi Anda!</p>
+                </div>
+            `;
         }
 
         // --- INFINITE SCROLLING NATIVE TABLE ---
@@ -1722,7 +1741,7 @@
             changeChartType(document.getElementById('chart-type-selector')?.value || 'doughnut'); 
         }
 
-        // --- UPDATED CHART DESIGN ENGINE ---
+        // --- UPDATED CHART DESIGN ENGINE (No crop legend) ---
         function changeChartType(type) {
             if(!currentChartData) return;
             const ctx = document.getElementById('mainChart')?.getContext('2d');
@@ -1757,13 +1776,16 @@
                 legendContainer.innerHTML = '';
                 currentChartData.labels.forEach((label, i) => {
                     const item = document.createElement('div');
-                    item.className = 'custom-legend-item flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-white rounded-xl cursor-pointer border border-slate-100 shadow-sm transition-transform hover:scale-105';
+                    // Style to ensure NO CROP (words break normally, sizes flexibly)
+                    item.className = 'custom-legend-item flex items-center justify-between gap-3 px-4 py-2 bg-slate-50/80 rounded-xl border border-slate-100 shadow-sm w-full sm:w-[calc(50%-0.5rem)]';
                     const color = baseColors[i % baseColors.length];
                     const percent = currentChartData.total > 0 ? Math.round((currentChartData.data[i] / currentChartData.total) * 100) : 0;
                     item.innerHTML = `
-                        <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0 shadow-sm" style="background-color: ${color}"></span>
-                        <span class="text-[10px] sm:text-xs font-bold text-slate-600 truncate max-w-[70px] sm:max-w-[90px]" title="${label}">${label}</span>
-                        <span class="text-[10px] sm:text-xs font-black text-slate-800 ml-0.5 sm:ml-1">${percent}%</span>
+                        <div class="flex items-start gap-2.5 overflow-visible">
+                            <span class="w-3 h-3 rounded-full shrink-0 shadow-sm mt-0.5" style="background-color: ${color}"></span>
+                            <span class="text-xs font-bold text-slate-700 whitespace-normal text-left leading-tight break-words">${label}</span>
+                        </div>
+                        <span class="text-xs font-black text-slate-900 shrink-0 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100">${percent}%</span>
                     `;
                     legendContainer.appendChild(item);
                 });
@@ -1799,7 +1821,7 @@
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     animation: { duration: 1000, easing: 'easeOutQuart' }, 
-                    layout: { padding: { top: isPie ? 10 : 20, bottom: 10, left: 10, right: 10 } },
+                    layout: { padding: { top: isPie ? 20 : 30, bottom: 20, left: 10, right: 10 } },
                     cutout: isPie ? '65%' : undefined,
                     interaction: { mode: isLine ? 'index' : 'nearest', intersect: !isLine },
                     plugins: {
@@ -1820,8 +1842,8 @@
                             color: isPie ? '#ffffff' : (isBar ? '#334155' : '#0ea5e9'),
                             align: isPie ? 'center' : (isBar ? 'end' : 'top'), 
                             anchor: isPie ? 'center' : (isBar ? 'end' : 'center'),
-                            offset: isPie ? 0 : 4,
-                            font: { family: 'Inter', weight: '700', size: 10 }, 
+                            offset: isPie ? 0 : 6,
+                            font: { family: 'Inter', weight: '800', size: 11 }, 
                             formatter: (value, context) => {
                                 if(isPie && currentChartData.total > 0) return Math.round((value / currentChartData.total) * 100) + '%';
                                 if(typeof value === 'number') {
@@ -2067,17 +2089,24 @@
             const n = document.getElementById('notification'); 
             const i = document.getElementById('notification-icon');
             
-            n.className = `fixed top-4 sm:top-6 left-1/2 transform -translate-x-1/2 z-[9999999] max-w-sm w-[90%] px-4 py-3 rounded-xl flex items-center gap-2 sm:gap-3 shadow-2xl transition-all duration-400 border text-xs sm:text-sm font-bold ${type==='error'?'bg-rose-50 border-rose-200 text-rose-700':(type==='warning'?'bg-amber-50 border-amber-200 text-amber-700':'bg-emerald-50 border-emerald-200 text-emerald-800')}`;
-            i.setAttribute('data-lucide', type==='error'?'alert-circle':(type==='warning'?'alert-triangle':'check-circle'));
+            // Notification Dark Sleek Modern Styling
+            let iconColor = type === 'error' ? 'text-rose-400' : (type === 'warning' ? 'text-amber-400' : 'text-emerald-400');
+            let iconName = type === 'error' ? 'alert-circle' : (type === 'warning' ? 'alert-triangle' : 'check-circle');
+            
+            i.className = `w-4 h-4 shrink-0 ${iconColor}`;
+            i.setAttribute('data-lucide', iconName);
             
             document.getElementById('notification-text').innerText = msg; 
-            n.classList.remove('hidden'); 
+            
+            n.classList.remove('hidden', 'opacity-0', '-translate-y-4'); 
+            n.classList.add('opacity-100', 'translate-y-0');
             lucide.createIcons();
             
             setTimeout(() => { 
+                n.classList.remove('opacity-100', 'translate-y-0');
                 n.classList.add('opacity-0', '-translate-y-4'); 
                 setTimeout(() => n.classList.add('hidden'), 400); 
-            }, 4500);
+            }, 4000);
         }
 
         function resetApp() { 
