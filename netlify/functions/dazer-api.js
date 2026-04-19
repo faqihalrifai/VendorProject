@@ -1,6 +1,5 @@
 // dazer-api.js - Backend KDD & AI Strategist (Final Upgraded Version)
 // Dependencies: npm install nodemailer
-// Catatan: Tavily diubah menggunakan native fetch agar fungsi serverless lebih ringan dan cepat.
 
 const nodemailer = require('nodemailer');
 
@@ -40,34 +39,34 @@ exports.handler = async function(event, context) {
                     auth: { user: 'faqihalrf@gmail.com', pass: emailPass }
                 });
                 
-                // Menata Format Email agar cantik dan berkelas
+                // Menata Format Email agar cantik, detail, dan berkelas
                 const emailContent = `
 🚨 AKTIVITAS KDD TERDETEKSI DI DAZER 🚨
 
 --- INFORMASI FILE ---
-Nama File    : ${body.filename}
-Ukuran       : ${body.size}
-File Hash    : ${body.fileHash}
-Dimensi Data : ${body.totalRows} Baris, ${body.totalCols} Kolom
-Daftar Kolom : ${body.colNames}
+Nama File    : ${body.filename || '-'}
+Ukuran       : ${body.size || '-'}
+File Hash    : ${body.fileHash || '-'}
+Dimensi Data : ${body.totalRows || '0'} Baris, ${body.totalCols || '0'} Kolom
+Daftar Kolom : ${body.colNames || '-'}
 
 --- INFORMASI PENGGUNA & PERANGKAT ---
-ID Sesi      : ${body.sessionId} (${body.sessionType})
-Perangkat    : ${body.humanDevice}
-Resolusi     : ${body.screenRes}
-Baterai      : ${body.batteryStr}
+ID Sesi      : ${body.sessionId || '-'} (${body.sessionType || '-'})
+Perangkat    : ${body.humanDevice || '-'}
+Resolusi     : ${body.screenRes || '-'}
+Baterai      : ${body.batteryStr || '-'}
 
 --- LOKASI & KONEKSI ---
 IP Address   : ${clientIp}
-ISP/Provider : ${body.isp}
-Lokasi       : ${body.location}
-Tipe Koneksi : ${body.connType}
+ISP/Provider : ${body.isp || '-'}
+Lokasi       : ${body.location || '-'}
+Tipe Koneksi : ${body.connType || '-'}
 
 --- WAKTU & INTERAKSI ---
-Waktu Lokal  : ${body.localTime} (${body.timeZone})
-Durasi Tahan : ${body.durationSec} detik (waktu sblm klik upload)
+Waktu Lokal  : ${body.localTime || '-'} (${body.timeZone || '-'})
+Durasi Tahan : ${body.durationSec || '0'} detik (waktu user di web sebelum klik upload)
 
-*Catatan: Nama/Email akun Google tidak dapat direkam otomatis tanpa fitur Login demi privasi pengguna.
+*Catatan: Sistem diproses anonim. Nama/Email akun Google tidak dapat direkam otomatis tanpa fitur Login (OAuth) demi privasi pengguna.
 `;
 
                 await transporter.sendMail({
