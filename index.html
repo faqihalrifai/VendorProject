@@ -1017,6 +1017,73 @@
             }
         }
 
+        async function startAnalysis() {
+            if(globalFilesArray.length === 0) return;
+            
+            // Validasi Kategori Wajib Diisi (atau Auto)
+            for(let i=0; i<globalFilesArray.length; i++) {
+                const f = globalFilesArray[i];
+                if(!f.autoDetect && (!f.category || f.category === "")) {
+                    showNotification(`Harap konfirmasi kategori atau centang 'Lewati' untuk file: ${f.name}`, "warning");
+                    return;
+                }
+            }
+
+            const multiAction = globalFilesArray.length > 1 ? document.getElementById('multi-action-select').value : 'Tunggal';
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('loading-state').classList.remove('hidden');
+
+            let texts = [
+                "Unstructured.io: Memvalidasi Skema Data...", 
+                "Pre-processing & Pembersihan Data...", 
+                "Transformasi Fitur Multi-dimensi...", 
+                "Data Mining: Kolaborasi Algoritma Nalar...", 
+                "Menyusun Visualisasi Pola Eksekutif..."
+            ];
+            let i = 0; 
+            setText('loading-text', texts[0]);
+            let loadInt = setInterval(() => { 
+                i++; 
+                if(i<texts.length) setText('loading-text', texts[i]); 
+            }, 600);
+
+            try {
+                let mergedData = []; let masterHeader = null;
+                
+                // Construct logic categories string
+                let categoryNames = globalFilesArray.map(f => {
+                    if(f.autoDetect) return "Deteksi Otomatis (Auto)";
+                    return `${f.category}${f.subCategory ? ' - ' + f.subCategory : ''}`;
+                });
+                let combinedCategories = [...new Set(categoryNames)].join(" | ");
+
+                for(let j=0; j<globalFilesArray.length; j++) {
+                    let parsedArr = await UnstructuredLocal.processFile(globalFilesArray[j].fileObj, globalFilesArray[j].extension);
+                    if(parsedArr && parsedArr.length > 0) {
+                        if(!masterHeader) { 
+                            masterHeader = parsedArr[0]; 
+                            mergedData = mergedData.concat(parsedArr); 
+                        } else { 
+                            mergedData = mergedData.concat(parsedArr.slice(1)); 
+                        }
+                    }
+                }
+                
+                let combinedName = globalFilesArray.length === 1 ? globalFilesArray[0].name : `Koleksi ${globalFilesArray.length} Laporan Data`;
+                let intentStr = `Fokus Analisa KDD: ${combinedCategories}`;
+                
+                setTimeout(() => {
+                    clearInterval(loadInt);
+                    processCoreData(mergedData, intentStr, combinedName, combinedCategories, multiAction);
+                }, 3000); 
+            } catch(err) {
+                clearInterval(loadInt); 
+                resetApp(); 
+                showNotification("Gagal mengekstrak data. Skema korup.", "error");
+            }
+        }
+
         function renderDashboard(data) {
             document.getElementById('loading-state').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
