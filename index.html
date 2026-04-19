@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dazer | Platform Analitik Data & KDD Profesional</title>
     
-    <meta name="description" content="Dazer: Platform analitik data terintegrasi AI Groq, Tavily, Gemini, dan DeepSeek menggunakan pendekatan KDD.">
+    <meta name="description" content="Dazer: Platform analitik data terintegrasi Dazer AI menggunakan pendekatan KDD.">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -282,7 +282,6 @@
     <nav class="w-full bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm" id="main-nav">
         <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <!-- Poin 12: Perbaikan Logo Clean -->
                 <div class="flex items-center gap-3 cursor-pointer group" onclick="resetApp()">
                     <img src="logo.webp" alt="Dazer Logo" class="w-8 h-8 object-contain transition-transform group-hover:scale-105" onerror="this.outerHTML='<i data-lucide=\'bar-chart-2\' class=\'w-7 h-7 text-brand-600\'></i>'">
                     <span class="font-black text-xl tracking-tight text-slate-800 group-hover:text-brand-600 transition-colors">Dazer</span>
@@ -423,7 +422,6 @@
                     <button id="btn-export-csv" onclick="exportCleanDataCSV(this)" class="w-full sm:w-auto text-[11px] sm:text-sm font-bold flex items-center justify-center gap-2 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl shadow-sm transition-all hover:-translate-y-0.5" title="Data Bersih">
                         <i data-lucide="file-spreadsheet" class="w-4 h-4 shrink-0"></i> Unduh CSV
                     </button>
-                    <!-- Poin 10: White Label MS Word Export -->
                     <button id="btn-export-word" onclick="exportToWord(this)" class="w-full sm:w-auto text-[11px] sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-800 bg-white hover:bg-slate-50 border border-slate-300 px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl shadow-sm transition-all hover:-translate-y-0.5">
                         <i data-lucide="download" class="w-4 h-4 shrink-0"></i> Ekspor Laporan
                     </button>
@@ -432,7 +430,6 @@
 
             <div class="flex flex-col gap-5 sm:gap-8" id="report-container">
                 
-                <!-- Poin 4: UI Highlighter diatur dari JS renderDashboard -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6" id="scorecards-container"></div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
@@ -464,12 +461,11 @@
                         </div>
                     </div>
 
-                    <!-- Poin 3 & 11: Executive Action Intelligence (Merge Card + What-If Button) -->
                     <div class="glass-card flex flex-col p-4 sm:p-6 bg-white min-h-[400px] lg:h-[550px] border-t-4 border-brand-500 relative">
                         <div class="flex items-center justify-between mb-4 sm:mb-5 pb-3 sm:pb-4 border-b border-slate-200 shrink-0">
                             <div>
                                 <h3 class="font-black text-slate-900 text-sm sm:text-lg">Executive Action Intelligence</h3>
-                                <p class="text-[10px] sm:text-[11px] text-slate-500 font-bold mt-1">DeepSeek x Gemini Logic</p>
+                                <p class="text-[10px] sm:text-[11px] text-slate-500 font-bold mt-1">Dazer Cognitive Engine</p>
                             </div>
                             <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-brand-100 text-brand-700 px-2 py-1 rounded-md border border-brand-200 shrink-0">Mandat Eksekutif</span>
                         </div>
@@ -481,7 +477,6 @@
 
                         <ul class="space-y-4 sm:space-y-5 flex-grow overflow-y-auto custom-scrollbar pr-2 pb-4" id="insights-list"></ul>
                         
-                        <!-- Tombol Simulasi What-If -->
                         <div class="mt-auto pt-4 border-t border-slate-100 shrink-0">
                             <button onclick="runSimulation()" id="btn-simulate" class="w-full bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 text-slate-700 hover:text-brand-700 px-4 py-3 rounded-xl text-[11px] sm:text-xs font-black shadow-sm transition-all flex items-center justify-center gap-2 group">
                                 <i data-lucide="flask-conical" class="w-4 h-4 group-hover:rotate-12 transition-transform text-brand-500"></i>
@@ -491,7 +486,6 @@
                     </div>
                 </div>
 
-                <!-- Poin 11: Prediction Card untuk What-If -->
                 <div class="glass-card flex flex-col p-4 sm:p-6 bg-white" id="prediction-card" style="display: none;">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 border-b border-slate-200 pb-3 sm:pb-4 gap-3">
                         <div class="flex flex-col">
@@ -506,7 +500,7 @@
                         </div>
                         <div class="w-full lg:w-1/3 flex flex-col justify-center">
                             <div class="bg-slate-50 border border-slate-200 p-5 sm:p-6 rounded-2xl shadow-sm h-full flex flex-col">
-                                <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 flex items-center gap-2"><i data-lucide="microscope" class="w-4 h-4 text-brand-500"></i> Deep Insight</h4>
+                                <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 flex items-center gap-2"><i data-lucide="microscope" class="w-4 h-4 text-brand-500"></i> Dazer Insight</h4>
                                 <div class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed mb-5" id="prediction-insight-text">Mengkalkulasi model proyeksi...</div>
                                 <div class="mt-auto pt-4 border-t border-slate-200 flex flex-wrap items-center gap-4 text-[10px] sm:text-[11px] font-bold text-slate-600">
                                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-500 block"></span> Data Historis</span>
@@ -533,7 +527,6 @@
                         </div>
                         
                         <div class="flex flex-col md:flex-row w-full xl:w-auto gap-3 items-stretch md:items-center">
-                            <!-- Dokter Data Tools -->
                             <div class="flex flex-wrap gap-2 items-center bg-slate-50 p-2 rounded-xl border border-slate-200 w-full md:w-auto justify-center md:justify-start">
                                 <span class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 mr-1 sm:mr-2 hidden md:block">Aksi:</span>
                                 <button onclick="cleanData('tidy')" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-brand-50 border border-slate-200 text-slate-800 hover:text-brand-700 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
@@ -542,7 +535,9 @@
                                 <button onclick="cleanData('remove_dups')" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-amber-50 border border-slate-200 text-slate-800 hover:text-amber-700 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
                                     <i data-lucide="eraser" class="w-3.5 h-3.5 shrink-0"></i> Ganda
                                 </button>
-                                <!-- Poin 2: Privacy Mode Toggle -->
+                                <button onclick="toggleEditMode()" id="btn-edit" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-blue-50 border border-slate-200 text-slate-800 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5" title="Edit Tabel Manual">
+                                    <i data-lucide="edit-3" class="w-3.5 h-3.5 shrink-0"></i> Edit Tabel
+                                </button>
                                 <button onclick="togglePrivacyMode()" id="btn-privacy" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5" title="Sembunyikan data sensitif">
                                     <i data-lucide="eye-off" class="w-3.5 h-3.5 shrink-0"></i> Privacy
                                 </button>
@@ -564,11 +559,14 @@
                     </div>
                     
                     <div class="overflow-y-auto overflow-x-auto max-h-[400px] sm:max-h-[500px] w-full bg-white custom-scrollbar relative" id="table-scroll-container">
-                        <div id="table-loading-overlay" class="hidden absolute inset-0 bg-white/80 backdrop-loading z-50 flex flex-col items-center justify-center transition-all duration-300">
-                            <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-brand-600 mb-3"></i>
-                            <span class="text-sm font-black text-slate-800" id="table-loading-text">Memproses data...</span>
+                        <div id="table-loading-overlay" class="hidden absolute inset-0 bg-white/90 backdrop-loading z-50 flex flex-col items-center justify-center transition-all duration-300">
+                            <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-brand-600 mb-4"></i>
+                            <span class="text-sm font-black text-slate-800 mb-3" id="table-loading-text">Memproses data...</span>
+                            <div class="w-48 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-brand-500 w-0 transition-all duration-300 ease-out" id="table-loading-progress"></div>
+                            </div>
                         </div>
-                        <table class="min-w-full text-left border-collapse w-full relative" id="data-table">
+                        <table class="min-w-full text-left border-collapse w-full relative" style="table-layout: auto;" id="data-table">
                             <thead id="preview-thead" class="sticky-header text-[11px] sm:text-xs md:text-sm border-b border-slate-200 shadow-sm"></thead>
                             <tbody id="preview-tbody" class="divide-y divide-slate-200 text-slate-800 text-[11px] sm:text-xs md:text-sm font-medium"></tbody>
                         </table>
@@ -580,7 +578,6 @@
                     </div>
                 </div>
 
-                <!-- Poin 5: Tabel Statistik Atribut Ramah Industri -->
                 <div class="glass-card flex flex-col bg-white w-full">
                     <div class="p-4 sm:p-6 border-b border-slate-200 shrink-0 bg-slate-50">
                         <h3 class="font-black text-slate-900 text-sm sm:text-lg">Statistik Atribut & Skema Data</h3>
@@ -596,7 +593,7 @@
                         </div>
                         <div>
                             <h3 class="font-black text-slate-900 text-sm sm:text-base">Dazer AI Assistant</h3>
-                            <p class="text-[10px] sm:text-[11px] md:text-xs text-slate-600 font-bold mt-0.5 line-clamp-1">Groq & Tavily World Brain Integrator</p>
+                            <p class="text-[10px] sm:text-[11px] md:text-xs text-slate-600 font-bold mt-0.5 line-clamp-1">Dazer Global Intelligence</p>
                         </div>
                     </div>
                     
@@ -727,8 +724,9 @@
         let totalSizeUsed = 0; 
         let typewriterTimeouts = []; 
         let isMatrixFullscreen = false;
-        let isPrivacyMode = false; // Poin 2: Privacy Mode State
-        let isSimulated = false; // Poin 11: What-If State
+        let isPrivacyMode = false;
+        let isEditMode = false;
+        let isSimulated = false;
         let observer; 
         let currentlyRendered = 0; 
         const CHUNK_SIZE = 50;
@@ -749,7 +747,6 @@
         ['dragleave', 'drop'].forEach(e => uploadZone.addEventListener(e, () => uploadZone.classList.remove('border-brand-400', 'bg-brand-50'), false));
         uploadZone.addEventListener('drop', e => { if(e.dataTransfer.files.length) { handleFileSelection(Array.from(e.dataTransfer.files), false); } }, false);
 
-        // Poin 1: Smart Categorization Function (Mock 10 baris pertama via nama/tipe file untuk Instant UI Feedback)
         function autoSuggestCategory(fileName) {
             let n = fileName.toLowerCase();
             if(n.includes('hr') || n.includes('karyawan') || n.includes('pegawai') || n.includes('absensi')) return "Data SDM (HR Analytics)";
@@ -757,7 +754,7 @@
             if(n.includes('keuangan') || n.includes('finance') || n.includes('budget')) return "Keuangan & Pengeluaran (Finance)";
             if(n.includes('stok') || n.includes('inventory') || n.includes('logistik')) return "Operasional & Logistik (Supply Chain)";
             if(n.includes('medis') || n.includes('pasien') || n.includes('kesehatan')) return "Kesehatan & Akademik (Scientific)";
-            return "Data Transaksional (Backbone)"; // Default fallback AI
+            return "Data Transaksional (Backbone)";
         }
 
         function renderFileList() {
@@ -774,7 +771,6 @@
                 const isAuto = f.autoDetect ? 'checked' : '';
                 const disabledState = f.autoDetect ? 'disabled opacity-50' : '';
                 
-                // Poin 1: UI Saran AI
                 let aiSuggestionHTML = '';
                 if(f.suggested && !f.category && !f.autoDetect) {
                     aiSuggestionHTML = `
@@ -830,15 +826,14 @@
             updateStorageIndicator();
         }
 
-        // Poin 1: Handler Saran AI
         function acceptAISuggestion(idx, category) {
             globalFilesArray[idx].category = category;
-            globalFilesArray[idx].suggested = ""; // Hilangkan banner
+            globalFilesArray[idx].suggested = "";
             renderFileList();
             showNotification("Kategori berhasil diatur oleh AI.", "success");
         }
         function rejectAISuggestion(idx) {
-            globalFilesArray[idx].suggested = ""; // Hilangkan banner
+            globalFilesArray[idx].suggested = "";
             renderFileList();
         }
 
@@ -846,7 +841,7 @@
             if(!globalFilesArray[idx]) return;
             if(type === 'main') { globalFilesArray[idx].category = value; globalFilesArray[idx].subCategory = ""; } 
             else { globalFilesArray[idx].subCategory = value; }
-            globalFilesArray[idx].suggested = ""; // User input overrides AI
+            globalFilesArray[idx].suggested = "";
             renderFileList(); 
         }
 
@@ -868,7 +863,6 @@
             if(badge) badge.innerText = `${globalFilesArray.length} File`;
         }
 
-        // --- UNSTRUCTURED LOCAL READER (Poin 9: PDF Contextual Extraction Enhancements) ---
         class UnstructuredLocal {
             static async processFile(file, ext) {
                 return new Promise((resolve, reject) => {
@@ -905,10 +899,8 @@
                                 for(let i = 1; i <= pdf.numPages; i++) {
                                     const page = await pdf.getPage(i);
                                     const textContent = await page.getTextContent();
-                                    // Poin 9: Mempertahankan narasi kalimat PDF lebih utuh dengan spasi
                                     fullText += textContent.items.map(item => item.str).join(' ') + "\n";
                                 }
-                                // Split based on sentence/paragraph breaks for better AI contextual awareness later
                                 const lines = fullText.replace(/([.?!])\s*(?=[A-Z])/g, "$1|").split('|').map(l => [l.trim()]).filter(l => l[0] !== "");
                                 resolve(lines.length > 0 ? lines : [["Dokumen PDF tidak memiliki teks yang terbaca"]]);
                             } catch(err) { reject(new Error("Gagal mengekstrak teks PDF")); }
@@ -932,7 +924,6 @@
                 if ((totalSizeUsed + file.size) > MAX_SIZE_BYTES) {
                     showNotification(`Kapasitas Penuh! Mengabaikan sisa file.`, "error"); break;
                 }
-                // Poin 1: Trigger Auto Suggestion
                 let suggestedCat = autoSuggestCategory(file.name);
                 globalFilesArray.push({ name: file.name, extension: ext, size: file.size, fileObj: file, category: "", subCategory: "", autoDetect: false, suggested: suggestedCat });
                 totalSizeUsed += file.size;
@@ -950,7 +941,6 @@
             window.scrollTo({top:0, behavior: 'smooth'});
         }
 
-        // Poin 2: Privacy Mode Toggle Function
         function togglePrivacyMode() {
             isPrivacyMode = !isPrivacyMode;
             const btn = document.getElementById('btn-privacy');
@@ -966,48 +956,68 @@
                 showNotification("Privacy Mode NONAKTIF. Tampilan tabel kembali normal.", "info");
             }
             lucide.createIcons();
-            // Render ulang tabel
             const container = document.getElementById('table-scroll-container');
             if(container) container.scrollTop = 0;
             renderTableChunk(true);
         }
 
-        // Poin 11: What-If Simulation Function
-        function runSimulation() {
-            if(!predictionChartInstance || !currentChartData || !currentChartData.data) {
-                return showNotification("Gagal memuat simulasi. Data proyeksi tidak tersedia.", "error");
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const btn = document.getElementById('btn-edit');
+            if(isEditMode) {
+                btn.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                btn.classList.remove('bg-white', 'text-slate-800', 'hover:bg-blue-50');
+                showNotification("Mode Edit AKTIF. Klik pada sel tabel untuk mengubah data.", "info");
+            } else {
+                btn.classList.remove('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                btn.classList.add('bg-white', 'text-slate-800', 'hover:bg-blue-50');
+                showNotification("Mode Edit NONAKTIF. Perubahan telah disimpan ke sesi saat ini.", "success");
             }
-            const btnText = document.getElementById('simulate-btn-text');
-            const icon = document.querySelector('#btn-simulate i');
+            const container = document.getElementById('table-scroll-container');
+            if(container) container.scrollTop = 0;
+            renderTableChunk(true);
+        }
+
+        function handleCellEdit(rIdx, cIdx, val) {
+            if(globalExtractedData[rIdx]) {
+                globalExtractedData[rIdx][cIdx] = val;
+            }
+        }
+
+        function runSimulation() {
+            if(!predictionChartInstance) {
+                return showNotification("Gagal memuat simulasi. Grafik proyeksi tidak tersedia.", "error");
+            }
+            
+            const btn = document.getElementById('btn-simulate');
             
             if(isSimulated) {
-                // Reset ke data asli
                 renderPredictionChart();
                 isSimulated = false;
-                btnText.innerText = 'Simulasi Dampak "What-If"';
-                icon.setAttribute('data-lucide', 'flask-conical');
+                btn.innerHTML = `<i data-lucide="flask-conical" class="w-4 h-4 group-hover:rotate-12 transition-transform text-brand-500"></i> <span id="simulate-btn-text">Simulasi Dampak "What-If"</span>`;
                 showNotification("Simulasi direset ke data historis asli.", "info");
+                
+                const simBox = document.getElementById('sim-box-active');
+                if(simBox) simBox.remove();
                 lucide.createIcons();
                 return;
             }
 
-            // Aktifkan Simulasi: Naikkan 15% pada node proyeksi masa depan
             const datasets = predictionChartInstance.data.datasets;
             const projDataset = datasets.find(d => d.label === 'Proyeksi Bayesian KDD');
             if(projDataset) {
                 for(let i = 0; i < projDataset.data.length; i++) {
                     if(projDataset.data[i] !== null && i >= currentChartData.labels.length - 1) {
-                        projDataset.data[i] *= 1.15; // 15% Boost
+                        projDataset.data[i] *= 1.15; 
                     }
                 }
                 predictionChartInstance.update();
                 isSimulated = true;
-                btnText.innerText = 'Kembalikan ke Data Asli';
-                icon.setAttribute('data-lucide', 'rotate-ccw');
+                btn.innerHTML = `<i data-lucide="rotate-ccw" class="w-4 h-4 group-hover:-rotate-12 transition-transform text-brand-500"></i> <span id="simulate-btn-text">Kembalikan ke Data Asli</span>`;
                 
-                // Update text insight
                 const insightBox = document.getElementById('prediction-insight-text');
                 const simBox = document.createElement('div');
+                simBox.id = 'sim-box-active';
                 simBox.className = "mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg animate-[fadeInUp_0.3s_ease-out]";
                 simBox.innerHTML = `<p class="text-xs text-emerald-800 font-bold"><i data-lucide="zap" class="w-3.5 h-3.5 inline"></i> SIMULASI AKTIF: Jika mandat aksi KDD dijalankan, potensi lintasan metrik meningkat signifikan sebesar ~15% di luar tren organik.</p>`;
                 insightBox.appendChild(simBox);
@@ -1020,7 +1030,6 @@
         async function startAnalysis() {
             if(globalFilesArray.length === 0) return;
             
-            // Validasi Kategori Wajib Diisi (atau Auto)
             for(let i=0; i<globalFilesArray.length; i++) {
                 const f = globalFilesArray[i];
                 if(!f.autoDetect && (!f.category || f.category === "")) {
@@ -1035,10 +1044,10 @@
             document.getElementById('loading-state').classList.remove('hidden');
 
             let texts = [
-                "Unstructured.io: Memvalidasi Skema Data...", 
+                "Sistem Memvalidasi Skema Data...", 
                 "Pre-processing & Pembersihan Data...", 
                 "Transformasi Fitur Multi-dimensi...", 
-                "Data Mining: Kolaborasi Algoritma Nalar...", 
+                "Data Mining: Algoritma Nalar...", 
                 "Menyusun Visualisasi Pola Eksekutif..."
             ];
             let i = 0; 
@@ -1050,8 +1059,6 @@
 
             try {
                 let mergedData = []; let masterHeader = null;
-                
-                // Construct logic categories string
                 let categoryNames = globalFilesArray.map(f => {
                     if(f.autoDetect) return "Deteksi Otomatis (Auto)";
                     return `${f.category}${f.subCategory ? ' - ' + f.subCategory : ''}`;
@@ -1091,13 +1098,11 @@
             const intentDisplay = document.getElementById('dashboard-intent-display');
             if (intentDisplay) intentDisplay.innerHTML = `<i data-lucide="file-check" class="w-4 h-4 text-brand-500"></i> Analisis Selesai: <b>${data.fileName}</b>`;
 
-            // Render Scorecards (Poin 4: UI Highlighter di implementasi disini)
             const scorecardsContainer = document.getElementById('scorecards-container');
             if (scorecardsContainer) {
                 let scHTML = '';
                 data.scorecards.forEach(sc => {
                     let btnClasses = "mt-2 text-[10px] font-bold px-3 py-1.5 rounded transition-all shadow-sm w-max self-start flex items-center gap-1.5 ";
-                    // Poin 4: Highlight Color
                     if(sc.filter === 'anomali') {
                         btnClasses += "bg-rose-500 hover:bg-rose-600 text-white animate-[pulse_2s_ease-in-out_infinite]";
                     } else if (sc.filter === 'kosong') {
@@ -1122,7 +1127,6 @@
             document.getElementById('chart-title').innerText = data.chart.title;
             changeChartType(document.getElementById('chart-type-selector')?.value || 'doughnut');
 
-            // Reset What-If State
             isSimulated = false;
             document.getElementById('simulate-btn-text').innerText = 'Simulasi Dampak "What-If"';
             
@@ -1139,7 +1143,6 @@
             const data = globalExtractedData;
             const numRows = data.length - 1;
 
-            // Poin 8: Data Volume Warning
             if(numRows >= 10000) {
                 setTimeout(() => showNotification("Data sangat besar. Dazer mengaktifkan mode 'Stream' untuk menjaga kecepatan browser Anda.", "info"), 1000);
             }
@@ -1154,7 +1157,6 @@
                 if(rowHashes.has(hash)) duplicateRows++; else rowHashes.add(hash);
             }
             
-            // Poin 5: Industry-Aware Labels
             let categoryContext = combinedCategoriesStr.toLowerCase();
             let dominanLabel = "Modus Dominan";
             if (categoryContext.includes('sdm') || categoryContext.includes('hr')) dominanLabel = "Kelompok Mayoritas";
@@ -1255,7 +1257,6 @@
             let primaryNumericCol = numericCols.length > 0 ? numericCols.sort((a,b) => b.sum - a.sum)[0] : null;
             let outlierCountTotal = numericCols.reduce((a,c) => a + c.outliers, 0);
             
-            // Health Calc
             const totalActualCells = totalCellsChecked || (numRows * globalHeaders.length);
             const completenessPct = totalActualCells > 0 ? Math.max(0, 100 - ((missingValueCount / totalActualCells) * 100)) : 0;
             let totalNumericDataCells = numericCols.reduce((acc, c) => acc + c.count, 0);
@@ -1320,7 +1321,6 @@
             scorecards.push({ title: "Deteksi Deviasi / Anomali", value: `${outlierCountTotal}`, sub: "Saring anomali", filter: 'anomali' });
             scorecards.push({ title: "Kekosongan (Missing Values)", value: missingValueCount.toLocaleString('id-ID'), sub: "Saring sel kosong", filter: 'kosong' });
 
-            // Charts
             let cLabels = []; let cData = []; let cTitle = "Pemetaan Relasi KDD & Distribusi"; let storyText = "";
             let totalChartVal = 0;
             if(catCols.length > 0 && numericCols.length > 0) {
@@ -1364,11 +1364,9 @@
                  document.getElementById('prediction-card').style.display = 'none';
             }
 
-            // PANGGIL GEMINI + DEEPSEEK UNTUK INSIGHTS (Poin 3 Blueprint)
             getAIInsights({ fileName, numRows, overallHealthScore, primaryCol: primaryNumericCol?.name, outliers: outlierCountTotal }, combinedCategoriesStr, multiActionStr, primaryNumericCol, catCols);
         }
 
-        // --- PREDICTION & PROJECTION CHART ---
         function renderPredictionChart() {
             const ctx = document.getElementById('predictionChart')?.getContext('2d');
             if(!ctx || !currentChartData || currentChartData.data.length === 0) return;
@@ -1422,20 +1420,18 @@
 
             document.getElementById('prediction-insight-text').innerHTML = `
                 <div class="space-y-3">
-                    <p><b>🔍 Apa yang terdeteksi?</b> Analisis mendeteksi arah yang <b>${trend}</b> dengan estimasi lonjakan volatilitas sekitar <b>${percentage}%</b> per periode.</p>
-                    <p><b>🧠 Basis Nalar Logika:</b> Algoritma prediksi DeepSeek x Gemini menemukan momentum yang terikat kuat pada kepadatan data historis Anda.</p>
+                    <p><b>🔍 Apa yang terdeteksi?</b> Sistem mendeteksi arah yang <b>${trend}</b> dengan estimasi lonjakan volatilitas sekitar <b>${percentage}%</b> per periode.</p>
+                    <p><b>🧠 Basis Nalar Logika:</b> Algoritma prediksi Dazer AI menemukan momentum yang terikat kuat pada kepadatan data historis Anda.</p>
                     <p><b>📈 Keputusan Strategis:</b> Tanpa mitigasi eksternal, lintasan metrik Anda akan menyentuh margin <b>${futureVal}</b> pada tiga putaran siklus ke depan.</p>
                 </div>
             `;
         }
 
-        // --- Poin 7: INFINITE SCROLLING & SEMANTIC SEARCH ---
         function initFilterView(query = "") {
             filteredViewData = [];
             let matchRegex = null; let threshold = null; 
             let qLow = query.toLowerCase().trim();
             
-            // Poin 7: Semantic rules
             let isKosong = qLow === "kosong";
             let isAnomali = qLow === "anomali";
             let isGanjil = qLow === "tampilkan yang ganjil" || qLow === "ganjil";
@@ -1456,7 +1452,6 @@
                 else if (isGanjil) { keep = row.some(c => { let n=parseFloat(String(c).replace(/,/g,'')); return !isNaN(n) && n%2 !== 0 && n!==0; }); }
                 else if (isGenap) { keep = row.some(c => { let n=parseFloat(String(c).replace(/,/g,'')); return !isNaN(n) && n%2 === 0 && n!==0; }); }
                 else if (isAtasRata) {
-                    // Cek jika ada cell numeric yg > avg (Simulasi Semantic)
                     keep = row.some(c => { let n=parseFloat(String(c).replace(/,/g,'')); return !isNaN(n) && n > 50; }); 
                 }
                 else if (matchRegex) {
@@ -1481,8 +1476,8 @@
                 document.getElementById('row-count-display').innerHTML = `Menampilkan <b class="text-brand-600">${filteredViewData.length.toLocaleString('id-ID')}</b> dari <b class="text-slate-900">${totalOriginal.toLocaleString('id-ID')}</b> baris asli.`;
             }
             
-            let headHTML = '<tr><th class="px-3 sm:px-4 py-3 font-black uppercase text-slate-500 w-10 sm:w-12 border-r border-slate-200">No.</th>';
-            globalHeaders.forEach(col => { headHTML += `<th class="px-3 sm:px-4 py-3 font-black whitespace-nowrap text-slate-800">${col.replace(/\*/g,'')}</th>`; });
+            let headHTML = '<tr><th class="px-2 sm:px-3 py-2.5 font-black uppercase text-slate-500 w-8 sm:w-10 border-r border-slate-200 text-[10px] sm:text-xs">No.</th>';
+            globalHeaders.forEach(col => { headHTML += `<th class="px-2 sm:px-3 py-2.5 font-black break-words text-slate-800 text-[10px] sm:text-xs leading-tight">${col.replace(/\*/g,'')}</th>`; });
             setHTML('preview-thead', headHTML + '</tr>');
 
             const container = document.getElementById('table-scroll-container');
@@ -1508,26 +1503,26 @@
                 const rowData = globalExtractedData[actualIndex];
                 
                 html += `<tr class="hover:bg-brand-50/50 transition-colors group border-b border-slate-200 last:border-0">`;
-                html += `<td data-label="No." class="px-3 sm:px-4 py-3 font-bold text-slate-500 w-10 sm:w-12 md:border-r border-slate-200 group-hover:text-brand-600 bg-white md:sticky left-0 z-10 md:text-center text-left">${actualIndex}</td>`;
+                html += `<td data-label="No." class="px-2 sm:px-3 py-2.5 font-bold text-slate-500 w-8 sm:w-10 border-r border-slate-200 group-hover:text-brand-600 bg-white md:sticky left-0 z-10 md:text-center text-left text-[10px] sm:text-xs">${actualIndex}</td>`;
                 
                 rowData.forEach((cell, cellIdx) => {
                     let val = cell !== undefined && cell !== null ? cell.toString() : '';
-                    if(val.length > 50) val = val.substring(0, 50) + '...';
+                    if(val.length > 80 && !isEditMode) val = val.substring(0, 80) + '...';
                     
-                    // Poin 2: Privacy Mode Masking Logic (Email & Phone/Numbers > 8 digits)
                     if(isPrivacyMode && val) {
                         if(val.includes('@')) {
                             val = `<span class="mask-text">${val.replace(/(.{2})(.*)(@.*)/, '$1***$3')}</span>`;
                         } else if (/^\+?\d{8,14}$/.test(val.replace(/\s|-/g, ''))) {
                             val = `<span class="mask-text">${val.replace(/\s|-/g, '').replace(/^(\+?\d{3})\d+(\d{3})$/, '$1****$2')}</span>`;
                         } else if (cellIdx === 0 || globalHeaders[cellIdx].toLowerCase().includes('nama') || globalHeaders[cellIdx].toLowerCase().includes('name')) {
-                            // Masking nama
                             if(val.length > 3 && isNaN(val)) val = `<span class="mask-text">${val.substring(0,2)}***</span>`;
                         }
                     }
 
                     let headerName = globalHeaders[cellIdx] ? globalHeaders[cellIdx].replace(/\*/g,'').replace(/"/g, '&quot;') : '';
-                    html += `<td data-label="${headerName}" class="px-3 sm:px-4 py-3 md:whitespace-nowrap text-slate-700">${val}</td>`;
+                    let editAttr = isEditMode ? `contenteditable="true" onblur="handleCellEdit(${actualIndex}, ${cellIdx}, this.innerText)" class="px-2 sm:px-3 py-2.5 break-words text-slate-700 text-[10px] sm:text-xs leading-tight outline-none focus:bg-blue-50 focus:ring-1 ring-inset ring-blue-400 cursor-text"` : `class="px-2 sm:px-3 py-2.5 break-words text-slate-700 text-[10px] sm:text-xs leading-tight"`;
+                    
+                    html += `<td data-label="${headerName}" ${editAttr}>${val}</td>`;
                 });
                 html += '</tr>';
             }
@@ -1626,11 +1621,9 @@
             }, 800);
         }
 
-        // Poin 10: White Label MS Word
         function exportToWord(btnElement) {
             if(!currentReportData) return; 
             
-            // Opsi White Label
             let companyName = prompt("Fitur White-Label: Masukkan Nama Perusahaan/Instansi Anda untuk cover Laporan (Kosongkan jika default Dazer):", "");
             companyName = companyName && companyName.trim() !== "" ? companyName.toUpperCase() : "DAZER";
 
@@ -1664,28 +1657,24 @@
             }, 1200);
         }
 
-        // --- Poin 3: Logika Blueprint AI (Executive Action Intelligence) ---
         async function getAIInsights(statsSummary, combinedCategoriesStr, multiActionStr, primaryCol, catCols) {
-            // Simulasi Strict Blueprint: Jika API gagal atau di mode frontend
             let mainVarName = primaryCol ? primaryCol.name : (catCols.length > 0 ? catCols[0].name : "Data Terfokus");
             let mainVarCat = catCols.length > 0 ? catCols[0].mode : "Nilai Sentral";
-            let mainVal = primaryCol ? `${Math.round(primaryCol.max/1000)}K` : "Signifikan";
             let redFlagVal = statsSummary.anomalies > 0 ? statsSummary.anomalies : "-";
             
             let fallbackInsights = [
-                `<b>1. Pola Inti & Dominasi (The Core Pulse):</b> Ditemukan bahwa variabel <b>${mainVarName}</b> mendominasi dataset dengan rasio konsentrasi tinggi. Dalam konteks industri <b>${combinedCategoriesStr}</b>, ini menunjukkan konsentrasi pada titik <b>${mainVarCat}</b>.`,
-                `<b>2. Korelasi Silang DeepSeek (Relational Logic):</b> ${primaryCol ? `Logika DeepSeek mendeteksi volatilitas pada metrik <b>${primaryCol.name}</b> yang berbanding lurus dengan siklus pencatatan. Ada hubungan sebab-akibat yang relevan jika mandat aksi dieksekusi.` : `-`}`,
-                `<b>3. Audit Anomali & Integritas (The Red Flag):</b> ${redFlagVal !== "-" ? `Terdeteksi sejumlah <b>${redFlagVal}</b> titik anomali ekstrem. Ini bukan sekadar eror, melainkan gangguan input (Noise) yang bisa membiaskan proyeksi analitik Anda.` : `-`}`,
-                `<b>4. Proyeksi Probabilitas (Future Path):</b> ${primaryCol ? `Berdasarkan siklus historis di data ini, terdapat probabilitas matematis bahwa rentang nilai <b>${primaryCol.name}</b> akan mengalami eskalasi (kenaikan) pada periode pemantauan berikutnya.` : `-`}`,
-                `<b>5. Mandat Aksi Strategis (The Executive Move):</b> <b>Rekomendasi Utama:</b> Segera lakukan audit mendalam atau kalibrasi pada sektor metrik dominan untuk mengoptimalkan performa keseluruhan, karena pola <i>${combinedCategoriesStr}</i> menunjukkan sentralisasi yang sangat tajam.`
+                `Ditemukan bahwa variabel <b>${mainVarName}</b> mendominasi dataset dengan rasio konsentrasi tinggi. Dalam konteks industri <b>${combinedCategoriesStr}</b>, ini menunjukkan konsentrasi pada titik <b>${mainVarCat}</b>.`,
+                `${primaryCol ? `Sistem mendeteksi volatilitas pada metrik <b>${primaryCol.name}</b> yang berbanding lurus dengan siklus pencatatan. Ada hubungan sebab-akibat yang relevan jika mandat aksi dieksekusi.` : `-`}`,
+                `${redFlagVal !== "-" ? `Terdeteksi sejumlah <b>${redFlagVal}</b> titik anomali ekstrem. Ini bukan sekadar eror, melainkan gangguan input (Noise) yang bisa membiaskan proyeksi analitik Anda.` : `-`}`,
+                `${primaryCol ? `Berdasarkan siklus historis di data ini, terdapat probabilitas matematis bahwa rentang nilai <b>${primaryCol.name}</b> akan mengalami eskalasi (kenaikan) pada periode pemantauan berikutnya.` : `-`}`,
+                `<b>Rekomendasi Utama:</b> Segera lakukan audit mendalam atau kalibrasi pada sektor metrik dominan untuk mengoptimalkan performa keseluruhan, karena pola <i>${combinedCategoriesStr}</i> menunjukkan sentralisasi yang sangat tajam.`
             ];
 
             try {
                 document.getElementById('insights-loader').classList.add('hidden');
                 let inHTML = '';
                 fallbackInsights.forEach((ins, i) => {
-                    // Poin 6: Handling '-' cleanly
-                    let isDash = ins.endsWith(">-");
+                    let isDash = ins.trim() === "-";
                     let iconHTML = isDash ? `<i data-lucide="minus-circle" class="w-4 h-4 text-slate-400"></i>` : `<i data-lucide="zap" class="w-4 h-4 text-brand-600"></i>`;
                     let textClass = isDash ? `text-slate-400 italic` : `text-slate-700`;
                     
@@ -1699,14 +1688,10 @@
                 lucide.createIcons();
                 fallbackInsights.forEach((ins, i) => { setTimeout(() => { const t = document.getElementById(`ins-${i}`); if(t) typeWriterEffect(t, ins, 15); }, i*300); });
                 
-                // Set data to currentReportData so Export Word captures it
                 if(currentReportData) currentReportData.insights = fallbackInsights;
-            } catch (e) {
-                console.error(e);
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Klinik Data Action
         function saveToDataHistory() {
             if (dataHistory.length > 5) dataHistory.shift(); dataHistory.push(JSON.parse(JSON.stringify(globalExtractedData)));
             document.getElementById('btn-undo').disabled = false; document.getElementById('btn-undo').classList.remove('bg-slate-100', 'text-slate-400', 'cursor-not-allowed'); document.getElementById('btn-undo').classList.add('bg-white', 'text-slate-800', 'hover:bg-slate-50');
@@ -1720,33 +1705,50 @@
 
         function cleanData(type) {
             if(!globalExtractedData || globalExtractedData.length === 0) return;
-            const overlay = document.getElementById('table-loading-overlay'); const loadingText = document.getElementById('table-loading-text'); overlay.classList.remove('hidden');
-            const stepsTidy = ["Menganalisa struktur...", "Membersihkan spasi...", "Menyelesaikan transformasi..."];
-            const stepsDups = ["Menganalisa hash...", "Menghapus duplikasi...", "Menyelesaikan pembersihan..."];
+            const overlay = document.getElementById('table-loading-overlay'); const loadingText = document.getElementById('table-loading-text'); const progress = document.getElementById('table-loading-progress');
+            overlay.classList.remove('hidden'); progress.style.width = '0%';
+            
+            const stepsTidy = ["Menganalisa struktur baris...", "Membersihkan spasi kotor...", "Menyelesaikan transformasi KDD..."];
+            const stepsDups = ["Menganalisa hash identik...", "Menghapus duplikasi baris...", "Menyelesaikan pembersihan..."];
             const steps = type === 'tidy' ? stepsTidy : stepsDups;
+            
             let stepIdx = 0; loadingText.innerText = steps[stepIdx];
             let stepIntv = setInterval(() => {
-                stepIdx++; if(stepIdx < steps.length) { loadingText.innerText = steps[stepIdx]; } else {
+                stepIdx++; progress.style.width = `${(stepIdx / steps.length) * 100}%`;
+                if(stepIdx < steps.length) { loadingText.innerText = steps[stepIdx]; } else {
                     clearInterval(stepIntv); saveToDataHistory(); let initialRows = globalExtractedData.length - 1;
                     if(type === 'tidy') {
                         let changedCells = 0;
-                        globalExtractedData = globalExtractedData.map((row, rIdx) => { if (rIdx === 0) return row; return row.map(cell => { if (typeof cell === 'string') { let trimmed = cell.trim().replace(/\s+/g, ' '); if (trimmed !== cell) changedCells++; return trimmed; } return cell; }); });
+                        globalExtractedData = globalExtractedData.map((row, rIdx) => { 
+                            if (rIdx === 0) return row; 
+                            return row.map(cell => { 
+                                if (typeof cell === 'string') { 
+                                    let trimmed = cell.trim().replace(/\s+/g, ' '); 
+                                    if (trimmed !== cell) changedCells++; 
+                                    return trimmed; 
+                                } return cell; 
+                            }); 
+                        });
                         showNotification(`Perapihan Sukses! Memperbaiki ${changedCells} sel kotor.`, "success");
                     } else if (type === 'remove_dups') {
                         let uniqueSet = new Set(); let cleanDataArr = [globalExtractedData[0]]; 
-                        for(let i = 1; i < globalExtractedData.length; i++) { let str = globalExtractedData[i].join('|'); if(!uniqueSet.has(str) && str.replace(/\|/g, '').trim() !== "") { uniqueSet.add(str); cleanDataArr.push(globalExtractedData[i]); } }
+                        for(let i = 1; i < globalExtractedData.length; i++) { 
+                            let str = globalExtractedData[i].join('|'); 
+                            if(!uniqueSet.has(str) && str.replace(/\|/g, '').trim() !== "") { uniqueSet.add(str); cleanDataArr.push(globalExtractedData[i]); } 
+                        }
                         let removed = initialRows - (cleanDataArr.length - 1); globalExtractedData = cleanDataArr;
                         showNotification(`Pembersihan Ganda Sukses! Dihapus: ${removed} duplikat identik.`, "success");
                     }
-                    initFilterView(document.getElementById('table-search').value); overlay.classList.add('hidden');
+                    initFilterView(document.getElementById('table-search').value); overlay.classList.add('hidden'); progress.style.width = '0%';
                 }
             }, 600);
         }
 
         function triggerFilter(keyword) {
             const card = document.getElementById('matrix-card'); window.scrollTo({top: card.offsetTop - 80, behavior: 'smooth'});
-            const overlay = document.getElementById('table-loading-overlay'); document.getElementById('table-loading-text').innerText = "Menyaring klasifikasi data..."; if(overlay) overlay.classList.remove('hidden');
-            setTimeout(() => { const searchInput = document.getElementById('table-search'); searchInput.value = keyword; initFilterView(keyword); if(overlay) overlay.classList.add('hidden'); lucide.createIcons(); showNotification(`Tabel difilter untuk kueri: ${keyword}`, "success"); }, 800); 
+            const overlay = document.getElementById('table-loading-overlay'); const progress = document.getElementById('table-loading-progress');
+            document.getElementById('table-loading-text').innerText = "Menyaring klasifikasi data..."; if(overlay) overlay.classList.remove('hidden'); if(progress) progress.style.width = '50%';
+            setTimeout(() => { const searchInput = document.getElementById('table-search'); searchInput.value = keyword; initFilterView(keyword); if(progress) progress.style.width = '100%'; setTimeout(()=>{if(overlay) overlay.classList.add('hidden'); lucide.createIcons(); showNotification(`Tabel difilter untuk kueri: ${keyword}`, "success");}, 300); }, 800); 
         }
 
         async function sendChatMessage() {
@@ -1761,7 +1763,7 @@
 
             setTimeout(() => {
                 document.getElementById(typingId)?.remove();
-                let reply = `Kueri Anda: "${msg}". <br><br><i>[Integrasi chat Groq x Tavily dalam mode Standby lokal. Jawaban spesifik tertaut pada file Netlify Anda].</i>`;
+                let reply = `Kueri Anda: "${msg}". <br><br><i>[Integrasi Dazer AI dalam mode Standby lokal. Jawaban spesifik tertaut pada file Cloud/Server Anda].</i>`;
                 chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="cpu" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><div class="bg-brand-50/50 border-l-4 border-brand-400 p-2 sm:p-3 rounded-r-lg mb-1 sm:mb-2"><p class="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed">${reply}</p></div></div></div>`;
                 lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
             }, 1000);
