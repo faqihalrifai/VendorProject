@@ -643,36 +643,63 @@
         </div>
     </div>
 
-    <!-- Upgrade Modal -->
-    <div id="upgrade-modal" class="fixed inset-0 z-[999999] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeUpgradeModal()"></div>
-        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md relative z-10 modal-enter border border-slate-200 overflow-hidden">
-            <div class="bg-gradient-to-br from-brand-600 to-brand-800 p-6 text-center relative">
-                <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-1.5 rounded-full transition-colors">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
-                <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-md border border-white/20">
-                    <i data-lucide="gem" class="w-8 h-8 text-white fill-white/20"></i>
+    <!-- Upgraded Upgrade Modal -->
+    <div id="upgrade-modal" class="fixed inset-0 z-[999999] hidden flex items-center justify-center p-4 sm:p-6">
+        <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onclick="closeUpgradeModal()"></div>
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md relative z-10 modal-enter border border-slate-100 overflow-hidden group">
+            
+            <!-- Decorative Backgrounds -->
+            <div class="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-brand-400/20 blur-3xl pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-blue-400/20 blur-3xl pointer-events-none"></div>
+
+            <button onclick="closeUpgradeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 bg-slate-100/50 hover:bg-slate-100 p-2 rounded-full transition-all z-20">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+
+            <div class="p-8 relative z-10">
+                <div class="flex justify-center mb-5">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-brand-400 blur-lg opacity-40 rounded-full"></div>
+                        <div class="w-16 h-16 bg-gradient-to-br from-brand-600 to-blue-800 rounded-2xl flex items-center justify-center relative shadow-lg transform rotate-3">
+                            <i data-lucide="crown" class="w-8 h-8 text-white transform -rotate-3"></i>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl sm:text-2xl font-black text-white mb-1">Dazer Premium</h3>
-                <p class="text-brand-100 text-xs sm:text-sm font-medium" id="upgrade-reason">Buka seluruh potensi analitik kelas enterprise.</p>
-            </div>
-            <div class="p-6">
-                <div class="flex items-end justify-center gap-1 mb-6">
-                    <span class="text-3xl font-black text-slate-900">Rp149.000</span>
-                    <span class="text-sm font-bold text-slate-500 mb-1">/bulan</span>
+                
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-2">Dazer <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-blue-700">Premium</span></h3>
+                    <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed" id="upgrade-reason">Akses kapabilitas analitik AI tanpa batas.</p>
                 </div>
-                <ul class="space-y-3 mb-8">
-                    <li class="flex items-center gap-3 text-sm font-semibold text-slate-700"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 shrink-0"></i> Analisis Data Tanpa Batas (Unlimited)</li>
-                    <li class="flex items-center gap-3 text-sm font-semibold text-slate-700"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 shrink-0"></i> Dazer Asisten Chat Pro Tanpa Batas</li>
-                    <li class="flex items-center gap-3 text-sm font-semibold text-slate-700"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 shrink-0"></i> Kapasitas Unggah Ekstra (Hingga 10GB/File)</li>
-                    <li class="flex items-center gap-3 text-sm font-semibold text-slate-700"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 shrink-0"></i> Ekspor Laporan PDF, Word, & PPT Lengkap</li>
-                    <li class="flex items-center gap-3 text-sm font-semibold text-slate-700"><i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-500 shrink-0"></i> Prioritas Antrean Server Utama (Anti-Lemot)</li>
+
+                <div class="flex items-end justify-center gap-1 mb-6 bg-slate-50 py-4 rounded-2xl border border-slate-100">
+                    <span class="text-3xl font-black text-slate-900">Rp149k</span>
+                    <span class="text-sm font-bold text-slate-500 mb-1">/bln</span>
+                </div>
+
+                <ul class="space-y-3.5 mb-8">
+                    <li class="flex items-start gap-3">
+                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i></div>
+                        <span class="text-sm font-semibold text-slate-700 leading-snug">Siklus Analisis Data Tanpa Batas (Unlimited)</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i></div>
+                        <span class="text-sm font-semibold text-slate-700 leading-snug">Dazer Universal Chatbot Tanpa Batas</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i></div>
+                        <span class="text-sm font-semibold text-slate-700 leading-snug">Kapasitas Unggah Skala Besar (Hingga 10GB/File)</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i></div>
+                        <span class="text-sm font-semibold text-slate-700 leading-snug">Ekspor Dokumen Eksekutif Lanjutan (PPTX/PDF/Word)</span>
+                    </li>
                 </ul>
-                <button onclick="closeUpgradeModal(); showNotification('Mengarahkan ke Secure Payment Gateway...', 'info')" class="w-full bg-slate-900 hover:bg-black text-white font-bold text-sm py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
-                    Tingkatkan ke Premium Sekarang
+
+                <button onclick="closeUpgradeModal(); showNotification('Mengarahkan ke Secure Payment Gateway...', 'info')" class="w-full bg-slate-900 hover:bg-black text-white font-bold text-sm py-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:-translate-y-1 relative overflow-hidden group/btn">
+                    <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"></div>
+                    <span class="relative flex items-center justify-center gap-2">Tingkatkan Sekarang <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
                 </button>
-                <p class="text-center text-[10px] text-slate-400 mt-4 font-medium">Batalkan kapan saja. Keamanan pembayaran 100% terjamin.</p>
+                <p class="text-center text-[10px] text-slate-400 mt-4 font-semibold flex items-center justify-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Pembayaran dienkripsi 256-bit SSL</p>
             </div>
         </div>
     </div>
@@ -1167,7 +1194,7 @@
                         </div>
                         <div>
                             <h5 class="text-xs font-black text-emerald-800 uppercase tracking-wide mb-1">Simulasi Skenario Aktif</h5>
-                            <p class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed">Jika rekomendasi strategis diimplementasikan, rasio akselerasi untuk variabel <i>${currentReportData.primaryColName || 'metrik operasional'}</i> berpotensi melonjak kuat, melampaui trajektori historisnya hingga batas 15-25% lebih tinggi.</p>
+                            <p class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed">Jika rekomendasi strategis diimplementasikan, rasio akselerasi untuk variabel <i>${currentReportData.primaryColName || 'metrik operasional'}</i> berpotensi melonjak kuat, melampaui trajektori historisnya hingga batas ~15-25% lebih tinggi.</p>
                         </div>
                     </div>
                 `;
