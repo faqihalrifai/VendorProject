@@ -1892,42 +1892,38 @@
         }
 
         async function getAIInsights(statsSummary, combinedCategoriesStr, primaryCol, catCols) {
-            let insights = [];
-            
-            if(statsSummary.completenessPct < 100) {
-                insights.push(`Integritas Basis Data: Ditemukan defisit keterisian sebesar ${100 - statsSummary.completenessPct}%. Dalam manajemen basis data komersial, hilangnya sel ini bisa melemahkan akurasi agregasi finansial maupun operasional.`);
-            } else {
-                insights.push(`Validasi Formasi: Matriks data Anda beroperasi pada tingkat kelengkapan absolut (100%). Komputasi algoritma berjalan lancar tanpa risiko bias kekosongan nilai.`);
-            }
-
-            if(statsSummary.anomalies > 0) {
-                insights.push(`Peringatan Deviasi: Terdapat ${statsSummary.anomalies} anomali (outlier) yang menembus batas deviasi standar. Hal ini seringkali mencerminkan lonjakan transaksi tajam atau anomali sensor yang memerlukan investigasi audit forensik.`);
-            } else {
-                insights.push(`Konsistensi Numerik: Sebaran kuantitatif dikonfirmasi solid tanpa lonjakan ekstrem (anomali 0). Asumsi linier bisa diterapkan dengan rasio kepercayaan tinggi.`);
-            }
-
-            if (primaryCol && catCols.length > 0) {
-                insights.push(`Sintesis Korelasi Makro: Variabel utama ${primaryCol.name} terkonsentrasi sangat berat pada klaster kategori dominan. Mengalihkan fokus sumber daya ke klaster ini menjanjikan konversi optimasi tertinggi.`);
-            } else if (catCols.length > 0) {
-                insights.push(`Dominasi Sektor: Secara struktural, klaster ${catCols[0].mode} memegang hegemoni pada keseluruhan tabel. Kehilangan daya cengkram pada sektor ini ekuivalen dengan penurunan sistemik.`);
-            } else {
-                insights.push("-");
-            }
-
-            if (primaryCol) {
-                insights.push(`Eskalasi Sentral: Parameter analitik untuk metrik ${primaryCol.name} mengindikasikan akumulasi pada kuartil atas. Pertimbangkan kalibrasi kapasitas untuk mengakomodasi tren peningkatan ini.`);
-            } else {
-                insights.push("-");
-            }
-
-            let acts = [
-                "Mandat Eksekutif: Eksekusi segera rasionalisasi beban pada segmen yang mendominasi bagan untuk memaksimalkan utilitas dan mereduksi kendala operasional.",
-                "Mandat Eksekutif: Susun skenario kontinjensi (Plan B). Data historis mengindikasikan kurva yang sensitif terhadap pergeseran momentum kecil.",
-                "Mandat Eksekutif: Lakukan audit interaktif dengan menyaring tabel matriks untuk mengisolasi selang data yang saling tumpang tindih."
-            ];
-            insights.push(acts[Math.floor(Math.random() * acts.length)]); 
+            document.getElementById('insights-loader').classList.remove('hidden');
+            document.getElementById('insights-list').innerHTML = '';
+            document.getElementById('insights-list').classList.add('hidden');
 
             try {
+                // Siapkan data statistik untuk backend
+                const statsData = {
+                    numRows: statsSummary.numRows,
+                    health: statsSummary.overallHealthScore,
+                    completeness: statsSummary.completenessPct,
+                    anomalies: statsSummary.anomalies,
+                    primaryColumn: primaryCol ? primaryCol.name : '-',
+                    dominantCategory: catCols.length > 0 ? catCols[0].mode : '-'
+                };
+                const payloadContext = `Kategori Data: ${combinedCategoriesStr}. Kolom Utama: ${globalHeaders.join(', ')}`;
+
+                // MENGHUBUNGKAN KE BACKEND DAZER-API.JS (URL bawaan Netlify Functions)
+                const response = await fetch('/.netlify/functions/dazer-api', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'analyze_data',
+                        context: payloadContext,
+                        data: JSON.stringify(statsData)
+                    })
+                });
+
+                if (!response.ok) throw new Error("API Error");
+
+                const result = await response.json();
+                let insights = result.insights || ["-", "-", "-", "-", "-"];
+
                 document.getElementById('insights-loader').classList.add('hidden');
                 let inHTML = '';
                 const listEl = document.getElementById('insights-list');
@@ -1962,7 +1958,14 @@
                 });
                 
                 if(currentReportData) currentReportData.insights = insights;
-            } catch (e) { console.error(e); }
+
+            } catch (e) { 
+                console.error("Analysis API Error:", e); 
+                document.getElementById('insights-loader').classList.add('hidden');
+                const listEl = document.getElementById('insights-list');
+                listEl.classList.remove('hidden');
+                setHTML('insights-list', `<li class="p-3 text-rose-600 text-xs font-bold bg-rose-50 rounded-lg">Gagal memuat wawasan AI. Pastikan backend dazer-api.js sudah berjalan di Netlify.</li>`);
+            }
         }
 
         function saveToDataHistory() {
@@ -2047,8 +2050,8 @@
                 const contextData = globalExtractedData.slice(0, 15).map(row => row.join(", ")).join("\n");
                 const payloadContext = `File: ${currentReportData?.fileName || 'Data Tabel'}\nKolom: ${globalHeaders.join(', ')}\nSampel Isi:\n${contextData}`;
 
-                // MENGHUBUNGKAN KE BACKEND DAZER-API.JS (Ganti URL dengan endpoint backend Anda jika sudah di-hosting)
-                const response = await fetch('/api/dazer-api', { 
+                // MENGHUBUNGKAN KE BACKEND DAZER-API.JS (Menggunakan URL bawaan Netlify Functions)
+                const response = await fetch('/.netlify/functions/dazer-api', { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -2070,7 +2073,7 @@
             } catch (error) {
                 console.error("Chat API Error:", error);
                 document.getElementById(typingId)?.remove();
-                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="alert-circle" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-rose-50 p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-rose-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><p class="text-xs sm:text-sm text-rose-800 font-semibold leading-relaxed">Gagal terhubung ke backend AI. Pastikan dazer-api.js sudah di-deploy/berjalan.</p></div></div>`;
+                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="alert-circle" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-rose-50 p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-rose-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><p class="text-xs sm:text-sm text-rose-800 font-semibold leading-relaxed">Gagal terhubung ke backend AI. Pastikan dazer-api.js sudah di-deploy/berjalan di Netlify.</p></div></div>`;
                 lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
             }
         }
