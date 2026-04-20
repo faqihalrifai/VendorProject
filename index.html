@@ -2015,19 +2015,37 @@
             chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2" id="${typingId}"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm typing-indicator flex items-center h-8 sm:h-10"><span></span><span></span><span></span></div></div>`;
             lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
 
-            const variationReplies = [
-                `Pertanyaan Anda terkait "${msg}" sedang diproses oleh sistem. Sistem sedia dihubungkan dengan endpoint backend yang Anda siapkan. Data analitik siap diakses kapanpun.`,
-                `Sistem menerima kueri Anda: "${msg}". Kami memahami instruksi tersebut. Silakan periksa Kamus Metrik untuk data selengkapnya.`,
-                `Instruksi diproses: "${msg}"... Gunakan data spasial pada tabel grafik di atas jika Anda ingin menarik simpulan manual yang cepat dan akurat.`
-            ];
-            
-            let chosenReply = variationReplies[Math.floor(Math.random() * variationReplies.length)];
+            try {
+                // Menyiapkan sampel data untuk diberikan ke backend
+                const contextData = globalExtractedData.slice(0, 15).map(row => row.join(", ")).join("\n");
+                const payloadContext = `File: ${currentReportData?.fileName || 'Data Tabel'}\nKolom: ${globalHeaders.join(', ')}\nSampel Isi:\n${contextData}`;
 
-            setTimeout(() => {
+                // MENGHUBUNGKAN KE BACKEND DAZER-API.JS (Ganti URL dengan endpoint backend Anda jika sudah di-hosting)
+                const response = await fetch('/api/dazer-api', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'chat',
+                        message: msg,
+                        context: payloadContext
+                    })
+                });
+
+                if (!response.ok) throw new Error("Network response was not ok");
+                
+                const result = await response.json();
+                let chosenReply = result.reply || "Sistem telah memproses instruksi dengan sukses.";
+
                 document.getElementById(typingId)?.remove();
-                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><div class="bg-brand-50/50 border-l-4 border-brand-400 p-2 sm:p-3 rounded-r-lg mb-1 sm:mb-2"><p class="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed">${chosenReply}</p></div></div></div>`;
+                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><div class="bg-brand-50/50 border-l-4 border-brand-400 p-2 sm:p-3 rounded-r-lg mb-1 sm:mb-2"><p class="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-wrap">${chosenReply}</p></div></div></div>`;
                 lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
-            }, 1200 + Math.random() * 800);
+
+            } catch (error) {
+                console.error("Chat API Error:", error);
+                document.getElementById(typingId)?.remove();
+                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-rose-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="alert-circle" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-rose-50 p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-rose-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><p class="text-xs sm:text-sm text-rose-800 font-semibold leading-relaxed">Gagal terhubung ke backend AI. Pastikan dazer-api.js sudah di-deploy/berjalan.</p></div></div>`;
+                lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
+            }
         }
         function handleChatEnter(e) { if(e.key === 'Enter') sendChatMessage(); }
         function toggleMatrixFullscreen() {
