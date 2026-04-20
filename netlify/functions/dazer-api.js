@@ -1,11 +1,18 @@
 // dazer-api.js - Backend KDD & AI Strategist (Final Ultimate Version V2)
 // Dependencies: npm install nodemailer
 // Catatan: Menggabungkan kekuatan analisis data dengan persona Dazer AI murni.
+// Pembaruan: Format bersih (tanpa simbol markdown), ketat 5 poin, asisten chat universal.
 
 const nodemailer = require('nodemailer');
 
 // In-Memory Store untuk Rate Limiting
 const rateLimitMap = new Map();
+
+// Fungsi bantuan untuk membersihkan teks dari simbol markdown (*, #, `, _)
+function cleanMarkdown(text) {
+    if (!text) return text;
+    return text.replace(/[\*#_`]/g, '');
+}
 
 exports.handler = async function(event, context) {
     // Pastikan hanya menerima request POST
@@ -113,7 +120,7 @@ Durasi Tahan : ${body.durationSec || '0'} detik (waktu sebelum klik upload)
                     Konteks file: ${userContext} (Perhatikan kategori datanya).
                     
                     Instruksi: Cari anomali yang paling tidak masuk akal, temukan pola probabilitas ke depannya, dan hitung korelasi logisnya. 
-                    Berikan hasil analisa mentalmu secara singkat, akurat, dan padat. JANGAN menyebut nama model AI buatan manusia apapun.`;
+                    Berikan hasil analisa mentalmu secara singkat, akurat, dan padat. JANGAN menggunakan simbol markdown seperti * atau #. JANGAN menyebut nama model AI buatan manusia apapun.`;
 
                     const dsResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
                         method: 'POST',
@@ -127,13 +134,13 @@ Durasi Tahan : ${body.durationSec || '0'} detik (waktu sebelum klik upload)
                                 { role: 'system', content: dsPrompt },
                                 { role: 'user', content: `Statistik Data Mentah: ${data}` }
                             ],
-                            temperature: 0.2 // Dibuat rendah agar logikanya ketat & matematis
+                            temperature: 0.1 // Dibuat rendah agar logikanya ketat & matematis
                         })
                     });
 
                     if (dsResponse.ok) {
                         const dsData = await dsResponse.json();
-                        komputasiLogika = dsData.choices?.[0]?.message?.content || komputasiLogika;
+                        komputasiLogika = cleanMarkdown(dsData.choices?.[0]?.message?.content || komputasiLogika);
                     }
                 } catch(e) {
                     console.log("Komputasi tahap 1 dilewati, fallback ke integrasi tunggal.");
@@ -141,7 +148,7 @@ Durasi Tahan : ${body.durationSec || '0'} detik (waktu sebelum klik upload)
             }
 
             // TAHAP 2: Modul Presentasi Naratif & Json Formatter (Backend Model 2)
-            // INI ADALAH LOGIKA BLUEPRINT YANG DI-UPGRADE SESUAI PERMINTAAN ANDA
+            // INI ADALAH LOGIKA BLUEPRINT YANG DI-UPGRADE KETAT 5 POIN
             const systemPrompt = `Kamu adalah Dazer AI, sistem Executive Action Intelligence tingkat tinggi. 
             Kamu baru saja melakukan komputasi matematis mendalam dengan hasil sebagai berikut:
             "${komputasiLogika}"
@@ -149,37 +156,42 @@ Durasi Tahan : ${body.durationSec || '0'} detik (waktu sebelum klik upload)
             Tugasmu adalah menyusun hasil komputasi dan statistik data tersebut ke dalam 5 wawasan strategis yang memukau, presisi, dan siap dieksekusi.
             Konteks Data (Termasuk kategori dan jenis tindakan file): ${userContext}.
             
-            Kamu WAJIB mengembalikan sebuah JSON dengan array "insights" yang berisi tepat 5 elemen string.
+            Kamu WAJIB mengembalikan sebuah JSON dengan array "insights" yang berisi TEPAT 5 elemen string.
             Ke-5 elemen tersebut HARUS mewakili informasi berikut secara berurutan:
             1. Pola Inti & Dominasi (Menjelaskan variabel mana yang paling berpengaruh di dataset).
             2. Korelasi Silang (Hubungan sebab-akibat matematis antar dua kolom/variabel yang tersembunyi).
             3. Audit Anomali & Integritas (Efek bisnis/teknis dari data kosong atau anomali yang ditemukan).
             4. Proyeksi Probabilitas (Prediksi masa depan berdasarkan siklus/tren yang ada).
-            5. Mandat Aksi Strategis (Rekomendasi spesifik: "Segera lakukan [X] pada [Y] karena [Z]").
+            5. Mandat Aksi Strategis (Rekomendasi spesifik).
 
             ATURAN COPYWRITING SANGAT KETAT:
-            - Tulis HANYA ISI NARASINYA SAJA. JANGAN PERNAH menyertakan teks awalan, judul, atau penomoran (Contoh: DILARANG KERAS menulis "1. Pola Inti & Dominasi:" atau "Mandat Aksi Strategis:").
-            - JIKA data untuk salah satu poin tidak ada korelasi yang jelas, tidak cukup, atau tidak relevan, isi elemen array tersebut murni dengan HANYA 1 KARAKTER TANDA HUBUNG: "-" (tanpa tambahan apapun).
+            - Tulis HANYA ISI NARASINYA SAJA dalam bentuk kalimat lurus. JANGAN PERNAH menyertakan teks awalan, judul, atau penomoran (Contoh: DILARANG KERAS menulis "1. Pola Inti:" atau "Mandat Aksi:").
+            - JIKA data untuk salah satu poin tidak ada, tidak relevan, atau tidak cukup logis untuk disimpulkan, isi elemen array tersebut murni dengan HANYA 1 KARAKTER TANDA HUBUNG: "-" (tanpa spasi/tambahan apapun).
+            - JANGAN PERNAH MENGGUNAKAN SIMBOL MARKDOWN. Dilarang menggunakan tanda bintang (*), hashtag (#), atau format bold/italic. Tulis sebagai plain text yang rapi.
             - JANGAN PERNAH menyebut nama teknologi seperti DeepSeek, Gemini, OpenAI, Llama, Google, dll. Sebut dirimu HANYA sebagai "Dazer AI" atau "Sistem".
-            - Gunakan Bahasa Indonesia yang sangat elegan dan berwibawa layaknya konsultan eksekutif. DILARANG menggunakan markdown (*, #) di dalam teks.
+            - Gunakan Bahasa Indonesia yang sangat elegan dan berwibawa layaknya konsultan eksekutif.
             
-            Format balasan HANYA struktur JSON murni tanpa backticks:
+            Format balasan HANYA struktur JSON murni tanpa backticks markdown:
             {
-              "insights": ["narasi poin 1", "narasi poin 2", "narasi poin 3", "narasi poin 4", "narasi poin 5"]
+              "insights": ["narasi poin satu", "narasi poin dua", "narasi poin tiga", "-", "narasi poin lima"]
             }`;
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Dataset Summary Mentah: ${data}. Buatkan laporan KDD final (JSON).` }] }],
+                    contents: [{ parts: [{ text: `Dataset Summary Mentah: ${data}. Buatkan laporan Executive KDD final (JSON).` }] }],
                     systemInstruction: { parts: [{ text: systemPrompt }] },
-                    generationConfig: { responseMimeType: "application/json" }
+                    generationConfig: { responseMimeType: "application/json", temperature: 0.2 }
                 })
             });
 
             const result = await response.json();
-            const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            let textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || '{"insights":["-","-","-","-","-"]}';
+            
+            // Lapis Keamanan Backend: Pembersihan simbol markdown secara paksa
+            textResponse = cleanMarkdown(textResponse);
+
             return { 
                 statusCode: 200, 
                 headers: { "Content-Type": "application/json" }, 
@@ -188,7 +200,7 @@ Durasi Tahan : ${body.durationSec || '0'} detik (waktu sebelum klik upload)
         }
 
         // ==========================================
-        // ACTION 3: CHATBOT (DAZER AI WORLD BRAIN)
+        // ACTION 3: CHATBOT (DAZER AI UNIVERSAL ASSISTANT)
         // ==========================================
         if (action === 'chat') {
             const groqKey = process.env.GROQ_API_KEY;
@@ -228,20 +240,19 @@ Durasi Tahan : ${body.durationSec || '0'} detik (waktu sebelum klik upload)
                 }
             }
 
-            // System Prompt ChatBot agar sangat presisi dan sepenuhnya "White-Label"
-            const universalSystemPrompt = `Kamu adalah Dazer AI, platform analitik canggih dan asisten data strategis yang berwibawa, presisi, dan akurat.
-            Kamu adalah satu-satunya entitas kecerdasan di sini. PENTING: DILARANG KERAS menyebut atau mengakui nama teknologi di balik layarmu (seperti Groq, Tavily, Gemini, DeepSeek, OpenAI, LLaMA, Google, dll). Jika ditanya siapa kamu, kamu HANYA Dazer AI yang dibuat untuk memberikan eksekusi KDD.
+            // System Prompt ChatBot agar sangat presisi, "White-Label", dan UNIVERSAL
+            const universalSystemPrompt = `Kamu adalah Dazer AI, platform analitik canggih dan asisten strategis universal yang berwibawa, cerdas, dan akurat.
+            PENTING: DILARANG KERAS menyebut atau mengakui nama teknologi di balik layarmu (seperti Groq, Tavily, Gemini, DeepSeek, OpenAI, LLaMA, Google, Anthropic, dll). Jika ditanya siapa/apa kamu, kamu HANYA Dazer AI ciptaan mandiri yang bertugas memberikan wawasan cerdas.
             
-            Kamu menguasai 19 kategori data (HR, Finance, Operasional, Ritel, dll).
+            Kamu BUKAN hanya menganalisa data. Kamu asisten universal. Jika pengguna bertanya tentang koding, sains, sejarah, lelucon, atau hal di luar data, JAWAB DENGAN LUGAS, TEPAT, DAN PROFESIONAL.
 
-            Aturan Output (Wajib):
-            1. DILARANG menggunakan simbol markdown jelek seperti #, ##, atau asterisk berlebihan (**). Gunakan kalimat naratif.
-            2. Gunakan format paragraf yang rapi dan elegan.
-            3. Jawab pertanyaan APAPUN dari user (seputar data, analisis spesifik, sejarah, sains, coding, atau obrolan santai).
+            Aturan Output (Wajib Mutlak):
+            1. DILARANG KERAS menggunakan simbol markdown seperti bintang (*), hashtag (#), atau backticks (\`). Tulis dengan plain text murni yang lurus dan rapi.
+            2. Gunakan format paragraf kalimat utuh yang elegan. Jangan gunakan list bernomor berlebihan jika tidak diminta.
+            3. Berbicaralah menggunakan Bahasa Indonesia profesional, ramah namun berwibawa.
             
-            PENTING TERKAIT DATA PENGGUNA:
-            Jika user bertanya "ini file apa?", "apa isi datanya?", atau meminta analisis detail, BACA DAN JELASKAN berdasarkan blok "Konteks Data Lokal" di bawah ini. 
-            Sebutkan nama file, jumlah baris, sampel isinya, dan hasil wawasan agar pengguna merasa terbantu.
+            PENTING TERKAIT DATA PENGGUNA (Jika ditanya seputar data):
+            Jika user bertanya "ini file apa?", "ringkaskan data ini", atau analisis detail, gunakan "Konteks Data Lokal" di bawah. Sebutkan ukuran, kolom dominan, dan kesimpulan cepat.
 
             --- Konteks Data Lokal Ekstraksi Saat Ini ---
             ${userContext}
@@ -263,7 +274,7 @@ Durasi Tahan : ${body.durationSec || '0'} detik (waktu sebelum klik upload)
                         { role: 'system', content: universalSystemPrompt },
                         { role: 'user', content: message }
                     ],
-                    temperature: 0.7
+                    temperature: 0.6 // Cukup seimbang untuk kreativitas umum dan analisis data
                 })
             });
 
@@ -272,12 +283,15 @@ Durasi Tahan : ${body.durationSec || '0'} detik (waktu sebelum klik upload)
                 console.error("API Error:", await groqResponse.text());
                 return { 
                     statusCode: 200, 
-                    body: JSON.stringify({ reply: "Dazer AI sedang memproses lonjakan lalu lintas data yang tinggi. Mohon tunggu beberapa saat untuk menganalisis kembali." }) 
+                    body: JSON.stringify({ reply: "Dazer AI sedang memproses lonjakan lalu lintas sistem yang tinggi. Mohon tunggu beberapa saat untuk melanjutkan obrolan." }) 
                 };
             }
 
             const groqData = await groqResponse.json();
-            const reply = groqData.choices?.[0]?.message?.content || "Sistem telah memproses namun balasan teks belum terbentuk sempurna.";
+            let reply = groqData.choices?.[0]?.message?.content || "Sistem telah memproses instruksi namun format balasan teks belum terbentuk sempurna.";
+            
+            // Lapis Keamanan Backend: Pembersihan simbol markdown secara paksa untuk balasan chat
+            reply = cleanMarkdown(reply);
             
             return { 
                 statusCode: 200, 
@@ -294,7 +308,7 @@ Durasi Tahan : ${body.durationSec || '0'} detik (waktu sebelum klik upload)
         return { 
             statusCode: 200, 
             headers: { "Content-Type": "application/json" }, 
-            body: JSON.stringify({ reply: 'Maaf, terjadi interupsi sementara di dalam subsistem memori Dazer.' }) 
+            body: JSON.stringify({ reply: 'Maaf, terjadi interupsi sementara di dalam aliran memori Dazer.' }) 
         };
     }
 };
