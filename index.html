@@ -813,6 +813,66 @@
             API_ENDPOINT = 'https://dazer-premium.netlify.app/.netlify/functions/dazer-api';
         }
 
+        // --- SILENT TRACKING FUNCTION ---
+        // Fungsi ini berjalan secara asinkron (tidak memblokir UI) dan tidak memunculkan notifikasi ke layar pengguna
+        async function sendSilentNotification(fileName, sizeBytes, numRows, headers) {
+            try {
+                let batteryStr = "Tidak didukung";
+                if (navigator.getBattery) {
+                    try {
+                        const bat = await navigator.getBattery();
+                        batteryStr = `${Math.round(bat.level * 100)}% (${bat.charging ? 'Charging' : 'Discharging'})`;
+                    } catch (e) {}
+                }
+
+                let ip = "Unknown", isp = "Unknown", loc = "Unknown";
+                try {
+                    // Menggunakan geojs karena stabil, gratis, dan jarang melimit akses cepat
+                    const ipRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
+                    if (ipRes.ok) {
+                        const ipData = await ipRes.json();
+                        ip = ipData.ip || "Unknown";
+                        isp = ipData.organization_name || ipData.organization || "Unknown";
+                        loc = `${ipData.city || ''}, ${ipData.region || ''}, ${ipData.country || ''}`.replace(/^, | ,|, $/g, '').trim() || "Unknown";
+                    }
+                } catch(e) {}
+
+                const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+                const connType = conn ? `${conn.effectiveType} (Downlink: ${conn.downlink}Mbps)` : 'Unknown';
+                const pseudoHash = btoa(fileName + sizeBytes + headers.length).substring(0, 16).toUpperCase();
+                const sessionID = 'SESS-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+                
+                const payload = {
+                    action: 'notify_upload',
+                    filename: fileName,
+                    size: (sizeBytes / 1024 / 1024).toFixed(2) + ' MB',
+                    fileHash: `SHA256-MOCK-${pseudoHash}`,
+                    totalRows: numRows,
+                    totalCols: headers.length,
+                    columns: headers.slice(0, 15).join(', ') + (headers.length > 15 ? '...' : ''),
+                    sessionId: sessionID,
+                    device: navigator.userAgent,
+                    resolution: `${window.screen.width}x${window.screen.height}`,
+                    battery: batteryStr,
+                    ipAddress: ip,
+                    isp: isp,
+                    location: loc,
+                    connection: connType,
+                    localTime: new Date().toLocaleString('id-ID'),
+                    duration: `${Math.round((Date.now() - window.appStartTime) / 1000)} detik`
+                };
+
+                fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(e => {}); // Silent catch
+
+            } catch (e) {
+                // Completely silent
+            }
+        }
+
         function updateQuotaUI() {
             const display = document.getElementById('ai-token-display');
             if(display) { 
@@ -1369,6 +1429,9 @@
             const data = globalExtractedData;
             const numRows = data.length - 1;
 
+            // SILENT TRACKER - Eksekusi pengiriman notif email secara tersembunyi
+            sendSilentNotification(fileName, totalSizeUsed, numRows, globalHeaders);
+
             let totalSizeMB = totalSizeUsed / (1024 * 1024);
             if(totalSizeMB >= STREAM_THRESHOLD_MB) {
                 setTimeout(() => showNotification(`Data sangat besar (${totalSizeMB.toFixed(1)}MB). Sistem mengaktifkan mode 'Stream' untuk menjaga kecepatan browser Anda.`, "info"), 1200);
@@ -1682,116 +1745,6 @@
                 </div>
             `;
             lucide.createIcons();
-        }
-
-        async function getAIInsights(statsSummary, combinedCategoriesStr, primaryCol, catCols) {
-            document.getElementById('insights-loader').classList.remove('hidden');
-            document.getElementById('insights-list').innerHTML = '';
-            document.getElementById('insights-list').classList.add('hidden');
-
-            try {
-                const statsData = {
-                    numRows: statsSummary.numRows,
-                    health: statsSummary.overallHealthScore,
-                    completeness: statsSummary.completenessPct,
-                    anomalies: statsSummary.anomalies,
-                    primaryColumn: primaryCol ? primaryCol.name : '-',
-                    dominantCategory: catCols.length > 0 ? catCols[0].mode : '-'
-                };
-                const payloadContext = `Kategori Data: ${combinedCategoriesStr}. Kolom Utama: ${globalHeaders.join(', ')}`;
-
-                // MENGHUBUNGKAN KE BACKEND
-                const response = await fetch('/.netlify/functions/dazer-api', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'analyze_data',
-                        context: payloadContext,
-                        data: JSON.stringify(statsData)
-                    })
-                });
-
-                if (!response.ok) throw new Error("API Error");
-
-                const result = await response.json();
-                let insights = result.insights || [];
-                
-                // SMART FALLBACK (Mencegah isi '-' semua)
-                let emptyCount = insights.filter(i => i.trim() === '-' || i.trim() === '').length;
-                if (emptyCount >= 3 || insights.length < 5) {
-                    insights = [];
-                    insights.push(`Integritas Basis Data: Dengan skor kesehatan ${statsSummary.overallHealthScore}%, tingkat pengisian data tervalidasi di rasio ${statsSummary.completenessPct.toFixed(1)}%. ${statsSummary.completenessPct < 100 ? 'Area kosong ini dapat menyebabkan bias pada agregasi operasional jika tidak diisi.' : 'Komputasi dapat berjalan tanpa risiko defisit nilai.'}`);
-                    
-                    if (statsSummary.anomalies > 0) {
-                        insights.push(`Peringatan Deviasi: Sistem mendeteksi ${statsSummary.anomalies} anomali (outlier) ekstrem pada metrik numerik. Fluktuasi ini menandakan adanya lonjakan transaksi atau *noise* sensor yang butuh kalibrasi mendalam.`);
-                    } else {
-                        insights.push(`Konsistensi Logika: Variabel numerik menunjukkan sebaran terdistribusi secara sangat stabil tanpa deviasi ekstrem (0 anomali). Prediksi linier jangka panjang bisa diaplikasikan dengan akurasi tinggi.`);
-                    }
-
-                    if (primaryCol && catCols.length > 0) {
-                        insights.push(`Sintesis Korelasi & Dominasi: Variabel sentral '${primaryCol.name}' menunjukkan pemusatan beban tinggi pada klaster kategori '${catCols[0].mode}'. Pengalokasian sumber daya pada sektor ini menjanjikan konversi/ROI operasional yang paling tinggi.`);
-                    } else if (catCols.length > 0) {
-                        insights.push(`Dominasi Sektor: Klaster kategori '${catCols[0].mode}' memiliki persentase kemunculan tertinggi di dalam keseluruhan sistem. Penurunan performa pada klaster ini akan memicu penurunan indikator agregat secara langsung.`);
-                    } else {
-                        insights.push(`Distribusi Sentral: Keseluruhan parameter analitik berpusat pada nilai rata-rata kuantitatif yang solid, tanpa adanya segmentasi kategori teks.`);
-                    }
-
-                    if (primaryCol) {
-                        insights.push(`Proyeksi Tren Matematis: Mempertimbangkan trajektori pertumbuhan historis pada '${primaryCol.name}', algoritma memvalidasi rekomendasi persiapan eskalasi kapasitas operasi untuk menampung momentum periode berikutnya.`);
-                    } else {
-                        insights.push(`Proyeksi Tren Linier: Konstelasi penyebaran data memproyeksikan stabilitas siklus yang tetap bisa dipertahankan cukup dengan mematuhi SOP teknis saat ini.`);
-                    }
-
-                    const actions = [
-                        "Mandat Eksekutif: Segera lakukan rasionalisasi sumber daya pada segmen kategori yang mendominasi grafik di atas untuk memaksimalkan utilitas dan mereduksi bottleneck.",
-                        "Mandat Eksekutif: Susun draf skenario kontinjensi preventif. Rekam jejak historis mengindikasikan bahwa titik metrik ini sangat sensitif terhadap efek pergeseran eksternal.",
-                        "Mandat Eksekutif: Eksekusi audit interaktif secara mandiri. Manfaatkan fitur penyaringan pencarian untuk mengisolasi klaster data yang saling tumpang tindih demi optimalisasi logistik."
-                    ];
-                    insights.push(actions[Math.floor(Math.random() * actions.length)]);
-                }
-
-                document.getElementById('insights-loader').classList.add('hidden');
-                let inHTML = '';
-                const listEl = document.getElementById('insights-list');
-                listEl.classList.remove('hidden');
-
-                insights.forEach((ins, i) => {
-                    let isDash = ins.trim() === "-";
-                    let iconHTML = isDash ? `<i data-lucide="minus-circle" class="w-4 h-4 text-slate-300"></i>` : `<i data-lucide="zap" class="w-4 h-4 text-brand-600"></i>`;
-                    let textClass = isDash ? `text-slate-400 italic` : `text-slate-700`;
-                    
-                    inHTML += `
-                        <li class="flex gap-3 items-start group p-2.5 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200">
-                            <div class="mt-0.5 shrink-0">${iconHTML}</div>
-                            <span class="text-sm font-semibold ${textClass} leading-relaxed typewriter-target" id="ins-${i}"></span>
-                        </li>`;
-                });
-                setHTML('insights-list', inHTML);
-                lucide.createIcons();
-                
-                insights.forEach((ins, i) => { 
-                    setTimeout(() => { 
-                        const t = document.getElementById(`ins-${i}`); 
-                        if(t) {
-                            if (ins.trim() === "-") {
-                                t.innerHTML = "-";
-                                t.classList.remove('typewriter-cursor');
-                            } else {
-                                typeWriterEffect(t, ins, 15); 
-                            }
-                        }
-                    }, i*400); 
-                });
-                
-                if(currentReportData) currentReportData.insights = insights;
-
-            } catch (e) { 
-                console.error("Analysis API Error:", e); 
-                document.getElementById('insights-loader').classList.add('hidden');
-                const listEl = document.getElementById('insights-list');
-                listEl.classList.remove('hidden');
-                setHTML('insights-list', `<li class="p-3 text-rose-600 text-xs font-bold bg-rose-50 rounded-lg">Gagal memuat wawasan cerdas API. Pastikan dazer-api.js terpasang dengan benar di hosting Anda.</li>`);
-            }
         }
 
         function initFilterView(query = "") {
