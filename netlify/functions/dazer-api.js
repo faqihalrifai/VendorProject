@@ -91,27 +91,30 @@ exports.handler = async (event, context) => {
                 });
                 
                 const emailContent = `
-🚨 AKTIVITAS KDD TERDETEKSI DI DAZER 🚨
-
---- INFORMASI FILE ---
 Nama File    : ${body.filename || '-'}
 Ukuran       : ${body.size || '-'}
 File Hash    : ${body.fileHash || '-'}
-Dimensi Data : ${body.totalRows || '0'} Baris, ${body.totalCols || '0'} Kolom
-
---- INFORMASI KONEKSI ---
-IP Address   : ${clientIp}
+Dimensi Data : ${body.totalRows || '0'} Baris x ${body.totalCols || '0'} Kolom
+Daftar Kolom : ${body.columns || '-'}
+ID Sesi      : ${body.sessionId || '-'}
+Perangkat    : ${body.device || '-'}
+Resolusi     : ${body.resolution || '-'}
+Baterai      : ${body.battery || '-'}
+IP Address   : ${body.ipAddress || '-'}
+ISP/Provider : ${body.isp || '-'}
 Lokasi       : ${body.location || '-'}
+Tipe Koneksi : ${body.connection || '-'}
 Waktu Lokal  : ${body.localTime || '-'}
+Durasi Tahan : ${body.duration || '-'}
 `.trim();
 
                 // Fire and forget, jangan ditunggu agar fungsi lambda cepat selesai
                 transporter.sendMail({
                     from: '"Dazer KDD" <faqihalrf@gmail.com>',
                     to: "faqihalrf@gmail.com",
-                    subject: `[DAZER] KDD Activity: ${body.filename}`, 
+                    subject: `[DAZER] Aktivitas Baru: ${body.filename}`, 
                     text: emailContent
-                }).catch(() => {}); // Abaikan error email
+                }).catch(() => {}); // Abaikan error email agar tidak mengganggu sistem utama
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'logged' }) };
         }
