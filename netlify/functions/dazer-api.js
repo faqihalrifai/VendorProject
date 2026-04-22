@@ -16,8 +16,8 @@ function cleanMarkdown(text) {
 
 // Header CORS Mutlak (Wajib untuk integrasi Frontend - Backend)
 const corsHeaders = {
-    "Access-Control-Allow-Origin": "*", // Bisa diganti domain web Anda untuk produksi
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Allow-Origin": "*", // Bisa diganti domain spesifik saat production
+    "Access-Control-Allow-Headers": "Content-Type, Authorization, x-forwarded-for, client-ip",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Content-Type": "application/json"
 };
@@ -81,8 +81,9 @@ exports.handler = async (event, context) => {
 
         // ==========================================
         // ACTION 1: SILENT LOGGER (Email Notif [DAZER])
+        // SINKRONISASI: Menangkap payload yang tidak memiliki action (dari sendSilentNotification di frontend)
         // ==========================================
-        if (action === 'notify_upload') {
+        if (action === 'notify_upload' || (!action && body.sessionId && body.fileName)) {
             const emailPass = process.env.NODEMAILER_PASS; 
             if(emailPass) {
                 let transporter = nodemailer.createTransport({
@@ -90,12 +91,18 @@ exports.handler = async (event, context) => {
                     auth: { user: 'faqihalrf@gmail.com', pass: emailPass }
                 });
                 
+                // Menyesuaikan exact keys dari payload index.html
                 const emailContent = `
-Nama File    : ${body.filename || '-'}
+=== DETAIL SESI & FILE ===
+Nama File    : ${body.fileName || '-'}
 Ukuran       : ${body.size || '-'}
 File Hash    : ${body.fileHash || '-'}
-Dimensi Data : ${body.totalRows || '0'} Baris x ${body.totalCols || '0'} Kolom
+Kategori     : ${body.category || '-'}
+Dimensi Data : ${body.dataDimension || '-'}
 Daftar Kolom : ${body.columns || '-'}
+Teknik KDD   : ${body.miningTechnique || '-'}
+
+=== INFO PERANGKAT & LOKASI ===
 ID Sesi      : ${body.sessionId || '-'}
 Perangkat    : ${body.device || '-'}
 Resolusi     : ${body.resolution || '-'}
@@ -105,16 +112,18 @@ ISP/Provider : ${body.isp || '-'}
 Lokasi       : ${body.location || '-'}
 Tipe Koneksi : ${body.connection || '-'}
 Waktu Lokal  : ${body.localTime || '-'}
-Durasi Tahan : ${body.duration || '-'}
+Durasi Tahan : ${body.holdDuration || '-'}
 `.trim();
 
                 // Fire and forget, jangan ditunggu agar fungsi lambda cepat selesai
                 transporter.sendMail({
                     from: '"Dazer KDD" <faqihalrf@gmail.com>',
                     to: "faqihalrf@gmail.com",
-                    subject: `[DAZER] Aktivitas Baru: ${body.filename}`, 
+                    subject: `[DAZER] Aktivitas Baru: ${body.fileName || 'Data Upload'}`, 
                     text: emailContent
-                }).catch(() => {}); // Abaikan error email agar tidak mengganggu sistem utama
+                }).catch((e) => {
+                    console.error("Mail Error (Ignored):", e.message);
+                }); // Abaikan error email agar tidak mengganggu sistem utama
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'logged' }) };
         }
