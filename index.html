@@ -328,7 +328,7 @@
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400">Visualisasi Presisi</span>
                 </h1>
                 <p class="text-sm sm:text-base text-slate-700 font-semibold max-w-2xl mx-auto leading-relaxed mt-2">
-                    Memurnikan data untuk menangkap pola kritis dan menyajikan wawasan pertumbuhan dalam satu tampilan elegan dengan Pendekatan Orkestrasi Multi-Model.
+                    Memurnikan data untuk menangkap pola kritis dan menyajikan wawasan pertumbuhan dalam satu tampilan elegan dengan Pendekatan Orkestrasi Cerdas Dazer.
                 </p>
                 
                 <div class="mt-6 text-[10px] sm:text-xs text-slate-500 font-bold flex items-center justify-center gap-1.5 bg-slate-100/50 py-2.5 px-5 rounded-full max-w-fit mx-auto border border-slate-200 shadow-sm text-left sm:text-center">
@@ -360,27 +360,74 @@
         <div id="setup-screen" class="hidden w-full max-w-4xl mx-auto flex flex-col gap-6 animate-[fadeInUp_0.4s_ease-out]">
             <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 flex flex-col shadow-md">
                 
-                <div class="flex flex-col mb-4 border-b border-slate-100 pb-4 gap-2">
+                <!-- NEW ARCHITECTURE FLOW: 3 Setup Dropdowns -->
+                <div class="flex flex-col mb-6 pb-6 border-b border-slate-100 gap-4">
+                    <div>
+                        <h3 class="font-black text-slate-900 text-lg flex items-center gap-2">
+                            <i data-lucide="settings-2" class="w-5 h-5 text-brand-500"></i> Setup Orkestrasi Analisis
+                        </h3>
+                        <p class="text-xs text-slate-500 font-medium mt-1">Sesuaikan konteks bagaimana mesin AI kami (DeepSeek & Gemini) memproses data Anda.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                        <!-- Dropdown 1 -->
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Sektor Industri</label>
+                            <select id="setup-industry" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
+                                <option value="Finansial dan Keuangan">Finansial dan Keuangan</option>
+                                <option value="Retail dan E-Commerce">Retail dan E-Commerce</option>
+                                <option value="Sumber Daya Manusia">Sumber Daya Manusia</option>
+                                <option value="Pendidikan dan Akademik">Pendidikan dan Akademik</option>
+                                <option value="Kesehatan dan Medis">Kesehatan dan Medis</option>
+                                <option value="Manufaktur dan Logistik">Manufaktur dan Logistik</option>
+                                <option value="Pemasaran dan Digital">Pemasaran dan Digital</option>
+                                <option value="Teknologi Informasi">Teknologi Informasi</option>
+                                <option value="Real Estate dan Properti">Real Estate dan Properti</option>
+                                <option value="Transportasi dan Distribusi">Transportasi dan Distribusi</option>
+                                <option value="Pariwisata dan Perhotelan">Pariwisata dan Perhotelan</option>
+                                <option value="Pertanian dan Pangan">Pertanian dan Pangan</option>
+                                <option value="Umum / Lintas Sektor" selected>Umum / Lintas Sektor</option>
+                            </select>
+                        </div>
+                        <!-- Dropdown 2 -->
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Tujuan Analisis</label>
+                            <select id="setup-purpose" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
+                                <option value="Identifikasi Tren Waktu">Identifikasi Tren Waktu</option>
+                                <option value="Perbandingan Antar Variabel">Perbandingan Antar Variabel</option>
+                                <option value="Pencarian Hubungan Sebab-Akibat">Pencarian Hubungan Sebab-Akibat</option>
+                                <option value="Distribusi Sebaran Data" selected>Distribusi Sebaran Data</option>
+                            </select>
+                        </div>
+                        <!-- Dropdown 3 -->
+                        <div class="flex flex-col gap-1.5">
+                            <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Tingkat Kedetailan</label>
+                            <select id="setup-detail" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
+                                <option value="Ringkasan Eksekutif" selected>Ringkasan Eksekutif</option>
+                                <option value="Eksplorasi Mendalam">Eksplorasi Mendalam</option>
+                                <option value="Fokus Proyeksi Prediktif">Fokus Proyeksi Prediktif</option>
+                                <option value="Investigasi Anomali Data">Investigasi Anomali Data</option>
+                                <option value="Segmentasi Kelompok">Segmentasi Kelompok</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 mb-1 -mt-2">
+                    <input type="checkbox" id="setup-default-checkbox" onchange="toggleSetupDefault(this.checked)" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 cursor-pointer">
+                    <label for="setup-default-checkbox" class="text-xs font-bold text-slate-700 cursor-pointer select-none">Gunakan konfigurasi cerdas default (Otomatis)</label>
+                </div>
+
+                <!-- File List Section -->
+                <div class="flex flex-col gap-2 mb-4 mt-2">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-black text-slate-900 text-base sm:text-lg">Daftar Data & Identifikasi</h3>
+                        <h3 class="font-black text-slate-900 text-sm sm:text-base">File Antrean Ekstraksi</h3>
                         <span class="text-xs font-black text-brand-600 bg-brand-50 px-3 py-1.5 rounded-lg border border-brand-200" id="file-count-badge">1 File</span>
                     </div>
-                    <p class="text-xs text-slate-500 font-medium">Bantu sistem memahami data Anda dengan mengkonfirmasi kategori deteksi pintar kami.</p>
                 </div>
                 
-                <div id="file-list-container" class="flex flex-col gap-4 mb-5 max-h-[350px] overflow-y-auto custom-scrollbar pr-2">
+                <div id="file-list-container" class="flex flex-col gap-3 mb-5 max-h-[250px] overflow-y-auto custom-scrollbar pr-2">
                     <!-- Injected by JS -->
-                </div>
-                
-                <!-- Multi-file Action -->
-                <div id="multi-file-options" class="hidden flex-col gap-2 mb-5 p-4 bg-brand-50 border border-brand-200 rounded-xl">
-                    <label class="block text-xs font-bold text-brand-900"><i data-lucide="git-merge" class="w-4 h-4 inline-block mr-1"></i> Strategi Konsolidasi File:</label>
-                    <select id="multi-action-select" class="w-full text-xs sm:text-sm font-semibold text-slate-700 border border-slate-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-brand-200 shadow-sm bg-white cursor-pointer">
-                        <option value="Gabungkan (Merge)">Gabungkan (Merge): Jadikan semua file ini satu laporan besar.</option>
-                        <option value="Bandingkan (Compare)">Bandingkan (Compare): Cari perbedaan tren antar file.</option>
-                        <option value="Relasikan (Connect)">Relasikan (Connect): Cari hubungan sebab-akibat antar file.</option>
-                        <option value="Audit (Reconcile)">Audit (Reconcile): Cari ketidaksinkronan angka antar file.</option>
-                    </select>
                 </div>
 
                 <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4 border-t border-slate-100">
@@ -399,7 +446,7 @@
 
             <div class="glass-card p-4 sm:p-8 bg-white border-t-4 border-t-brand-500">
                 <button onclick="startAnalysis()" class="w-full bg-brand-600 text-white px-6 py-4 rounded-xl text-sm sm:text-base font-black shadow-md hover:bg-brand-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group">
-                    Jalankan Siklus Analitik <i data-lucide="cpu" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
+                    Jalankan Mesin Analitik AI <i data-lucide="cpu" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
                 </button>
             </div>
         </div>
@@ -411,9 +458,9 @@
                 <div class="circle-progress"></div>
                 <div class="icon-center"><i data-lucide="brain-circuit" class="w-8 h-8"></i></div>
             </div>
-            <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-3">Mesin Analitik Bekerja...</h3>
+            <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-3">Orkestrasi Multi-Model Berjalan...</h3>
             <p class="text-[11px] sm:text-xs font-bold text-slate-700 bg-white px-4 sm:px-5 py-2.5 rounded-full shadow-sm border border-slate-200 inline-flex items-center gap-2 break-all max-w-full">
-                <span id="loading-text" class="truncate">Membaca Struktur Data Terintegrasi...</span>
+                <span id="loading-text" class="truncate">Menginisiasi pipeline data...</span>
             </p>
         </div>
 
@@ -425,23 +472,22 @@
                     <h2 class="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Laporan Eksekutif</h2>
                     <p class="text-slate-600 text-[11px] sm:text-xs md:text-sm mt-1 sm:mt-2 font-bold flex items-center gap-2 flex-wrap" id="dashboard-intent-display"></p>
                 </div>
-                <div class="flex flex-col sm:flex-row w-full lg:w-auto gap-3 items-stretch sm:items-center">
-                    <button onclick="document.getElementById('file-input-replace-only').click()" class="flex-1 sm:flex-none text-[11px] sm:text-sm font-bold flex items-center justify-center gap-2 text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl shadow-sm transition-all hover:-translate-y-0.5">
-                        <i data-lucide="file-plus" class="w-4 h-4 shrink-0"></i> Analisis Baru
+                <div class="flex flex-wrap w-full lg:w-auto gap-2 items-center mt-3 lg:mt-0 justify-start lg:justify-end">
+                    <button onclick="document.getElementById('file-input-replace-only').click()" class="flex-1 sm:flex-none text-[10px] sm:text-xs font-bold flex items-center justify-center gap-1.5 text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg shadow-sm transition-all hover:-translate-y-0.5 whitespace-nowrap">
+                        <i data-lucide="file-plus" class="w-3.5 h-3.5 shrink-0"></i> Analisis Baru
                     </button>
-                    <div class="hidden sm:block w-px h-8 bg-slate-200 mx-1"></div>
-                    <button id="btn-export-csv" onclick="exportCleanDataCSV(this)" class="flex-1 sm:flex-none text-[11px] sm:text-sm font-bold flex items-center justify-center gap-2 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl shadow-sm transition-all hover:-translate-y-0.5" title="Data Bersih">
-                        <i data-lucide="file-spreadsheet" class="w-4 h-4 shrink-0"></i> Unduh CSV
+                    <button id="btn-export-csv" onclick="exportCleanDataCSV(this)" class="flex-1 sm:flex-none text-[10px] sm:text-xs font-bold flex items-center justify-center gap-1.5 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-2 rounded-lg shadow-sm transition-all hover:-translate-y-0.5 whitespace-nowrap" title="Data Bersih">
+                        <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 shrink-0"></i> Unduh CSV
                     </button>
-                    <button onclick="showUpgradeModal('pro')" class="flex-1 sm:flex-none text-[11px] sm:text-sm font-bold flex items-center justify-center gap-2 text-white bg-slate-900 hover:bg-black border border-slate-800 px-4 sm:px-5 py-3 sm:py-2.5 rounded-xl shadow-lg transition-all hover:-translate-y-0.5">
-                        <i data-lucide="lock" class="w-3.5 h-3.5 shrink-0 text-amber-400"></i> Ekspor PPTX (Pro)
+                    <button onclick="showUpgradeModal('pro')" class="w-full sm:w-auto sm:flex-none text-[10px] sm:text-xs font-bold flex items-center justify-center gap-1.5 text-white bg-slate-900 hover:bg-black border border-slate-800 px-3 py-2 rounded-lg shadow-sm transition-all hover:-translate-y-0.5 whitespace-nowrap">
+                        <i data-lucide="lock" class="w-3 h-3 shrink-0 text-amber-400"></i> Ekspor PPTX (Pro)
                     </button>
                 </div>
             </div>
 
             <div class="flex flex-col gap-5 sm:gap-8" id="report-container">
                 
-                <!-- Scorecards: More compact on mobile -->
+                <!-- Scorecards -->
                 <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6" id="scorecards-container"></div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
@@ -449,7 +495,7 @@
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 border-b border-slate-200 pb-3 sm:pb-4 shrink-0 w-full">
                             <div class="relative group w-full sm:w-auto">
                                 <h3 class="font-black text-slate-900 text-sm sm:text-lg flex items-center gap-2 cursor-help">
-                                    Knowledge Presentation <i data-lucide="help-circle" class="w-4 h-4 text-slate-500 shrink-0"></i>
+                                    Dazer Visual Planner <i data-lucide="bar-chart" class="w-4 h-4 text-slate-500 shrink-0"></i>
                                 </h3>
                                 <p class="text-[10px] sm:text-xs text-slate-600 font-bold mt-1 line-clamp-1" id="chart-title">-</p>
                             </div>
@@ -477,9 +523,9 @@
                         <div class="flex items-center justify-between mb-4 sm:mb-5 pb-3 sm:pb-4 border-b border-slate-200 shrink-0">
                             <div>
                                 <h3 class="font-black text-slate-900 text-sm sm:text-lg">Executive Action Intelligence</h3>
-                                <p class="text-[10px] sm:text-[11px] text-slate-500 font-semibold mt-1">Sintesis strategis akurat berbasis Orkestrasi Multi-Model cerdas.</p>
+                                <p class="text-[10px] sm:text-[11px] text-slate-500 font-semibold mt-1">Sintesis strategis cerdas dari data Anda.</p>
                             </div>
-                            <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-brand-100 text-brand-700 px-2 py-1 rounded-md border border-brand-200 shrink-0">Rekomendasi Faktual</span>
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-brand-100 text-brand-700 px-2 py-1 rounded-md border border-brand-200 shrink-0">Saran</span>
                         </div>
                         
                         <div id="insights-loader" class="flex-grow flex items-center justify-center flex-col text-slate-400 gap-3 h-full">
@@ -515,8 +561,8 @@
                                 <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 flex items-center gap-2"><i data-lucide="microscope" class="w-4 h-4 text-brand-500"></i> Konklusi Proyeksi</h4>
                                 <div class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed mb-5" id="prediction-insight-text">Mengkalkulasi model linier...</div>
                                 <div class="mt-auto pt-4 border-t border-slate-200 flex flex-wrap items-center gap-4 text-[10px] sm:text-[11px] font-bold text-slate-600">
-                                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-500 block"></span> Data Historis</span>
-                                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 block"></span> Proyeksi Sistem</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-500 block"></span> Data Riwayat</span>
+                                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 block"></span> Estimasi Kedepan</span>
                                 </div>
                             </div>
                         </div>
@@ -525,8 +571,10 @@
 
                 <div class="glass-card flex flex-col bg-white w-full overflow-hidden">
                     <div class="p-4 sm:p-6 border-b border-slate-200 shrink-0 bg-slate-50">
-                        <h3 class="font-black text-slate-900 text-sm sm:text-lg">Audit Kesehatan Data (Pre-Processing Info)</h3>
-                        <p class="text-[11px] sm:text-xs md:text-sm text-slate-600 font-semibold mt-1">Pengujian tingkat kebersihan pangkalan data secara utuh untuk menjamin akurasi output analitik.</p>
+                        <h3 class="font-black text-slate-900 text-sm sm:text-lg flex items-center gap-2">
+                            <i data-lucide="activity" class="w-5 h-5 text-brand-500"></i> Audit Kesehatan Data (Pre-Processing)
+                        </h3>
+                        <p class="text-[11px] sm:text-xs md:text-sm text-slate-600 font-semibold mt-1">Status kebersihan dan kelayakan data sebelum dianalisis lebih lanjut.</p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 items-stretch bg-slate-200 gap-px" id="data-health-container"></div>
                 </div>
@@ -563,7 +611,10 @@
                                     <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500"></i>
                                     <input type="text" id="table-search" oninput="debounceSearch()" placeholder="Cari pintar..." class="w-full h-full min-h-[40px] pl-9 pr-3 py-2 text-xs sm:text-sm font-semibold border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all shadow-sm">
                                 </div>
-                                <button onclick="toggleMatrixFullscreen()" class="p-2 sm:p-2.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-slate-800 font-bold transition-all shadow-sm flex items-center justify-center shrink-0">
+                                <button onclick="showNotification('Fitur filter kustom akan segera aktif.', 'info')" class="p-2 sm:p-2.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-slate-800 transition-all shadow-sm flex items-center justify-center shrink-0" title="Filter Data">
+                                    <i data-lucide="filter" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="toggleMatrixFullscreen()" class="p-2 sm:p-2.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-slate-800 font-bold transition-all shadow-sm flex items-center justify-center shrink-0" title="Layar Penuh">
                                     <i data-lucide="maximize" class="w-4 h-4" id="matrix-icon"></i>
                                 </button>
                             </div>
@@ -601,11 +652,11 @@
                 <div class="glass-card flex flex-col bg-white h-[400px] sm:h-[450px] lg:h-[500px] w-full border border-brand-200 shadow-[0_4px_20px_-5px_rgba(14,165,233,0.15)]">
                     <div class="bg-white border-b border-slate-200 p-3 sm:p-4 md:p-5 flex items-center gap-3 shrink-0">
                         <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-700 border border-brand-200 shadow-sm shrink-0">
-                            <i data-lucide="bot" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                            <i data-lucide="message-square" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                         </div>
                         <div>
                             <h3 class="font-black text-slate-900 text-sm sm:text-base">Dazer AI Assistant</h3>
-                            <p class="text-[10px] sm:text-[11px] md:text-xs text-slate-600 font-bold mt-0.5 line-clamp-1">Sistem Siaga Aktif</p>
+                            <p class="text-[10px] sm:text-[11px] md:text-xs text-slate-600 font-bold mt-0.5 line-clamp-1">Mesin Interaktif <span class="text-brand-600">Dazer Engine</span></p>
                         </div>
                     </div>
                     
@@ -629,7 +680,7 @@
         <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-2">
                 <i data-lucide="bar-chart-2" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-500"></i>
-                <span class="font-black text-slate-900 text-[11px] sm:text-xs tracking-wide">DATA ANALYZER</span>
+                <span class="font-black text-slate-900 text-[11px] sm:text-xs tracking-wide">DATA ANALYZER PLATFORM</span>
             </div>
             <p class="text-slate-600 text-[10px] sm:text-[11px] font-bold text-center">
                 &copy; 2026 Dazer. Seluruh Hak Cipta Dilindungi.
@@ -760,28 +811,6 @@
         Chart.register(ChartDataLabels, centerTextPlugin);
         lucide.createIcons();
 
-        const categoryMap = {
-            "Data SDM (HR Analytics)": ["Absensi & Kinerja", "Turnover Karyawan", "Rekrutmen", "Lainnya"],
-            "Operasional & Logistik (Supply Chain)": ["Stok Barang (Inventory)", "Pengiriman", "Maintenance Mesin", "Lainnya"],
-            "Pemasaran & Media Sosial": ["Sentimen Publik", "Efektivitas Iklan", "Segmentasi Pelanggan", "Lainnya"],
-            "Keuangan & Pengeluaran (Finance)": ["Arus Kas (Cash Flow)", "Deteksi Fraud", "Budget vs Actual", "Lainnya"],
-            "Kesehatan & Akademik (Scientific)": ["Rekam Medis Anonim", "Nilai Siswa/Mahasiswa", "Data Survei", "Lainnya"],
-            "Teknis & IT (System Logs)": ["Log Server", "Error Reporting", "Lainnya"],
-            "Ritel & Pengalaman Pelanggan": ["Loyalty Program", "Product Returns", "Cart Abandonment", "Footfall Data", "Lainnya"],
-            "Manufaktur & Kontrol Kualitas": ["Reject Rate", "Energy Consumption", "OEE", "Lainnya"],
-            "Real Estate & Manajemen Properti": ["Occupancy Trends", "Maintenance Logs", "Property Pricing", "Lainnya"],
-            "Legal, Kepatuhan & Risiko": ["Contract Analysis", "Audit Trail", "Regulatory Risk", "Lainnya"],
-            "Energi, Lingkungan (ESG)": ["Carbon Footprint", "Waste Management", "Water Usage", "Lainnya"],
-            "Perhotelan, Pariwisata & F&B": ["Menu Engineering", "Booking Lead Time", "Guest Preferences", "Lainnya"],
-            "Media, Konten & Hiburan": ["Audience Retention", "Genre Affinity", "Churn Prediction", "Lainnya"],
-            "Organisasi Non-Profit & Sosial": ["Donation Patterns", "Volunteer Retention", "Impact Metrics", "Lainnya"],
-            "Pertanian Modern (Agrotech)": ["Yield Analysis", "Soil Health Sensors", "Livestock Monitoring", "Lainnya"],
-            "Data Transaksional (Backbone)": ["Waktu Transaksi", "Nilai Transaksi", "Metode Pembayaran", "Lainnya"],
-            "Data Produk (Intelligence)": ["SKU & Kategori", "HPP", "Volume vs Nilai", "Lainnya"],
-            "Data Pelanggan (Profiling)": ["ID Pelanggan/Email", "Lokasi Geografis", "Analisa RFM", "Lainnya"],
-            "Saluran & Performa Sales": ["Channel Penjualan", "Performa Tim", "Lainnya"]
-        };
-
         const MAX_SIZE_MB = 100;
         const STREAM_THRESHOLD_MB = 40; 
         const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
@@ -807,14 +836,25 @@
         let currentlyRendered = 0; 
         const CHUNK_SIZE = 50;
 
+        function toggleSetupDefault(isChecked) {
+            const dropdowns = ['setup-industry', 'setup-purpose', 'setup-detail'];
+            dropdowns.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.disabled = isChecked;
+                    if(isChecked) el.classList.add('opacity-50', 'cursor-not-allowed');
+                    else el.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            });
+        }
+
         let globalAnalysisQuota = 5;
         let globalChatQuota = 5;
 
-        // --- SISTEM PENCEGAH ERROR URL PARSING ---
         let API_ENDPOINT = '/.netlify/functions/dazer-api';
         try {
             if (window.location.protocol === 'blob:' || window.location.protocol === 'file:' || window.location.origin === 'null') {
-                API_ENDPOINT = 'https://dazer-premium.netlify.app/.netlify/functions/dazer-api'; // Fallback aman untuk mode preview/canvas
+                API_ENDPOINT = 'https://dazer-premium.netlify.app/.netlify/functions/dazer-api'; 
             } else {
                 API_ENDPOINT = new URL('/.netlify/functions/dazer-api', window.location.origin).href;
             }
@@ -822,8 +862,6 @@
             API_ENDPOINT = 'https://dazer-premium.netlify.app/.netlify/functions/dazer-api';
         }
 
-        // --- SILENT TRACKING FUNCTION ---
-        // Fungsi ini berjalan secara asinkron (tidak memblokir UI) dan tidak memunculkan notifikasi ke layar pengguna
         async function sendSilentNotification(fileName, sizeBytes, numRows, headers) {
             try {
                 let batteryStr = "Tidak didukung";
@@ -836,7 +874,6 @@
 
                 let ip = "Unknown", isp = "Unknown", loc = "Unknown";
                 try {
-                    // Menggunakan geojs karena stabil, gratis, dan jarang melimit akses cepat
                     const ipRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
                     if (ipRes.ok) {
                         const ipData = await ipRes.json();
@@ -851,7 +888,7 @@
                 const pseudoHash = btoa(fileName + sizeBytes + headers.length).substring(0, 16).toUpperCase();
                 const sessionID = 'SESS-' + Math.random().toString(36).substr(2, 9).toUpperCase();
                 
-                const predictedCategory = globalFilesArray[0]?.category || "Analitik Terpadu";
+                const predictedCategory = document.getElementById('setup-industry')?.value || "Analitik Terpadu";
 
                 const payload = {
                     sessionId: sessionID,
@@ -877,11 +914,8 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
-                }).catch(e => {}); // Silent catch
-
-            } catch (e) {
-                // Completely silent
-            }
+                }).catch(e => {}); 
+            } catch (e) {}
         }
 
         function updateQuotaUI() {
@@ -918,45 +952,6 @@
         ['dragleave', 'drop'].forEach(e => uploadZone.addEventListener(e, () => uploadZone.classList.remove('border-brand-400', 'bg-brand-50'), false));
         uploadZone.addEventListener('drop', e => { if(e.dataTransfer.files.length) { handleFileSelection(Array.from(e.dataTransfer.files), false); } }, false);
 
-        function getCategoryByText(text) {
-            let n = text.toLowerCase();
-            let scores = {
-                "Data SDM (HR Analytics)": (n.match(/hr|karyawan|pegawai|absensi|gaji|salary|employee|attendance/g) || []).length,
-                "Saluran & Performa Sales": (n.match(/sales|jual|penjualan|revenue|omzet|discount/g) || []).length,
-                "Keuangan & Pengeluaran (Finance)": (n.match(/keuangan|finance|budget|kas|cash|tax|pajak|expense|profit/g) || []).length,
-                "Operasional & Logistik (Supply Chain)": (n.match(/stok|inventory|logistik|gudang|barang|supply|warehouse/g) || []).length,
-                "Kesehatan & Akademik (Scientific)": (n.match(/medis|pasien|kesehatan|rs|klinik|hospital|patient|health/g) || []).length,
-                "Data Produk (Intelligence)": (n.match(/produk|sku|item|product|brand|category/g) || []).length,
-                "Data Transaksional (Backbone)": (n.match(/transaksi|order|pesanan|struk|bayar|transaction|payment|invoice/g) || []).length,
-                "Data Pelanggan (Profiling)": (n.match(/pelanggan|customer|klien|user|client|email|phone/g) || []).length
-            };
-            
-            let bestCat = "Data Transaksional (Backbone)";
-            let maxScore = 0;
-            for (let cat in scores) {
-                if (scores[cat] > maxScore) {
-                    maxScore = scores[cat];
-                    bestCat = cat;
-                }
-            }
-            return maxScore > 0 ? bestCat : "Data Transaksional (Backbone)"; 
-        }
-
-        async function smartSuggestCategory(fileObj) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const textContent = e.target.result || "";
-                    const combinedText = fileObj.name + " " + textContent;
-                    resolve(getCategoryByText(combinedText));
-                };
-                reader.onerror = () => {
-                    resolve(getCategoryByText(fileObj.name));
-                };
-                reader.readAsText(fileObj.slice(0, 2048)); 
-            });
-        }
-
         function removeFile(idx) {
             if(globalFilesArray[idx]) {
                 totalSizeUsed -= globalFilesArray[idx].size;
@@ -969,40 +964,7 @@
 
         function renderFileList() {
             let html = '';
-            let mainCatOptions = '<option value="">Pilih Kategori Utama...</option>';
-            Object.keys(categoryMap).forEach(cat => { mainCatOptions += `<option value="${cat}">${cat}</option>`; });
-
             globalFilesArray.forEach((f, idx) => {
-                let subCatOptions = '<option value="">Pilih Spesifik...</option>';
-                if(f.category && categoryMap[f.category]) {
-                    categoryMap[f.category].forEach(sub => { subCatOptions += `<option value="${sub}">${sub}</option>`; });
-                }
-
-                const isAuto = f.autoDetect ? 'checked' : '';
-                const disabledState = f.autoDetect ? 'disabled opacity-50' : '';
-                
-                let aiSuggestionHTML = '';
-                
-                if(f.isAnalyzingCategory) {
-                    aiSuggestionHTML = `
-                        <div class="mt-2 bg-slate-50 border border-slate-200 p-2 rounded-lg flex items-center gap-2 text-brand-600 w-full">
-                            <i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin shrink-0"></i>
-                            <span class="text-[10px] font-bold">Sistem membaca struktur file...</span>
-                        </div>
-                    `;
-                } else if(f.suggested && !f.category && !f.autoDetect) {
-                    let acc = Math.floor(Math.random() * (99 - 96 + 1)) + 96;
-                    aiSuggestionHTML = `
-                        <div class="mt-2 bg-brand-50 border border-brand-200 p-2 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 w-full">
-                            <span class="text-[10px] font-bold text-brand-700"><i data-lucide="sparkles" class="w-3.5 h-3.5 inline"></i> Saran AI (${acc}% Akurat): <b>${f.suggested}</b></span>
-                            <div class="flex gap-2 w-full sm:w-auto">
-                                <button onclick="acceptAISuggestion(${idx}, '${f.suggested}')" class="flex-1 sm:flex-none text-[10px] bg-brand-600 text-white px-2 py-1 rounded shadow-sm hover:bg-brand-700">Ya, Benar</button>
-                                <button onclick="rejectAISuggestion(${idx})" class="flex-1 sm:flex-none text-[10px] bg-white border border-slate-300 text-slate-600 px-2 py-1 rounded shadow-sm hover:bg-slate-50">Bukan</button>
-                            </div>
-                        </div>
-                    `;
-                }
-
                 let trashBtnHTML = '';
                 if(globalFilesArray.length > 1) {
                     trashBtnHTML = `
@@ -1013,75 +975,25 @@
                 }
 
                 html += `
-                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm gap-3 flex flex-col hover:border-brand-300 transition-all">
-                        <div class="flex justify-between items-start w-full">
+                    <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm gap-3 flex flex-col hover:border-brand-300 transition-all">
+                        <div class="flex justify-between items-center w-full">
                             <div class="flex items-center gap-3 min-w-0 pr-2">
-                                <div class="bg-brand-50 p-2.5 rounded-lg border border-brand-100 shadow-sm shrink-0">
-                                    <i data-lucide="file-spreadsheet" class="text-brand-500 w-5 h-5"></i>
+                                <div class="bg-brand-50 p-2 rounded-lg border border-brand-100 shadow-sm shrink-0">
+                                    <i data-lucide="file-text" class="text-brand-500 w-4 h-4"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="text-sm font-bold text-slate-800 truncate">${f.name}</p>
-                                    <p class="text-[11px] text-slate-500 font-semibold">${(f.size/1024).toFixed(1)} KB • ${f.extension.toUpperCase()}</p>
+                                    <p class="text-xs sm:text-sm font-bold text-slate-800 truncate">${f.name}</p>
+                                    <p class="text-[10px] sm:text-[11px] text-slate-500 font-semibold">${(f.size/1024).toFixed(1)} KB • Ekstensi: ${f.extension.toUpperCase()}</p>
                                 </div>
                             </div>
                             ${trashBtnHTML}
-                        </div>
-                        
-                        <div class="flex flex-col w-full gap-2 mt-1">
-                            <div class="flex flex-col sm:flex-row gap-2">
-                                <select onchange="updateFileCategory(${idx}, this.value, 'main')" class="w-full text-xs font-semibold text-slate-700 border border-slate-300 rounded-lg p-2 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 shadow-sm bg-white" ${disabledState}>
-                                    ${mainCatOptions.replace(`value="${f.category||''}"`, `value="${f.category||''}" selected`)}
-                                </select>
-                                <select onchange="updateFileCategory(${idx}, this.value, 'sub')" class="w-full text-xs font-semibold text-slate-700 border border-slate-300 rounded-lg p-2 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 shadow-sm bg-white" ${disabledState}>
-                                    ${subCatOptions.replace(`value="${f.subCategory||''}"`, `value="${f.subCategory||''}" selected`)}
-                                </select>
-                            </div>
-                            <label class="flex items-center gap-1.5 cursor-pointer">
-                                <input type="checkbox" onchange="toggleAutoDetect(${idx}, this.checked)" class="w-3.5 h-3.5 text-brand-600 rounded border-slate-300 focus:ring-brand-500" ${isAuto}>
-                                <span class="text-[10px] font-bold text-slate-500 hover:text-brand-600 transition-colors">Analisa Otomatis (Lewati Konfirmasi)</span>
-                            </label>
-                            ${aiSuggestionHTML}
                         </div>
                     </div>
                 `;
             });
             setHTML('file-list-container', html);
-            
-            if(globalFilesArray.length > 1) {
-                document.getElementById('multi-file-options').classList.remove('hidden');
-                document.getElementById('multi-file-options').classList.add('flex');
-            } else {
-                document.getElementById('multi-file-options').classList.add('hidden');
-                document.getElementById('multi-file-options').classList.remove('flex');
-            }
             lucide.createIcons();
             updateStorageIndicator();
-        }
-
-        function acceptAISuggestion(idx, category) {
-            globalFilesArray[idx].category = category;
-            globalFilesArray[idx].suggested = "";
-            renderFileList();
-        }
-        function rejectAISuggestion(idx) {
-            globalFilesArray[idx].suggested = "";
-            renderFileList();
-        }
-
-        function updateFileCategory(idx, value, type) {
-            if(!globalFilesArray[idx]) return;
-            if(type === 'main') { globalFilesArray[idx].category = value; globalFilesArray[idx].subCategory = ""; } 
-            else { globalFilesArray[idx].subCategory = value; }
-            globalFilesArray[idx].suggested = "";
-            renderFileList(); 
-        }
-
-        function toggleAutoDetect(idx, isChecked) {
-            if(globalFilesArray[idx]) {
-                globalFilesArray[idx].autoDetect = isChecked;
-                if(isChecked) { globalFilesArray[idx].category = ""; globalFilesArray[idx].subCategory = ""; globalFilesArray[idx].suggested = ""; }
-            }
-            renderFileList();
         }
 
         function updateStorageIndicator() {
@@ -1148,8 +1060,6 @@
             if(files.length === 0) return;
             if(isReplace) { globalFilesArray = []; totalSizeUsed = 0; }
             
-            let filesToAnalyze = [];
-
             for(let file of files) {
                 const ext = file.name.split('.').pop().toLowerCase();
                 if (!['csv', 'xlsx', 'xls', 'json', 'xml', 'sql', 'pdf', 'txt'].includes(ext)) {
@@ -1160,13 +1070,10 @@
                 }
                 
                 let newFileObj = { 
-                    name: file.name, extension: ext, size: file.size, fileObj: file, 
-                    category: "", subCategory: "", autoDetect: false, suggested: "",
-                    isAnalyzingCategory: true 
+                    name: file.name, extension: ext, size: file.size, fileObj: file
                 };
                 
                 globalFilesArray.push(newFileObj);
-                filesToAnalyze.push(newFileObj);
                 totalSizeUsed += file.size;
             }
             if(globalFilesArray.length === 0) return;
@@ -1177,16 +1084,6 @@
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('setup-screen').classList.remove('hidden');
             window.scrollTo({top:0, behavior: 'smooth'});
-
-            filesToAnalyze.forEach(f => {
-                smartSuggestCategory(f.fileObj).then(suggestedCat => {
-                    setTimeout(() => {
-                        f.suggested = suggestedCat;
-                        f.isAnalyzingCategory = false;
-                        renderFileList();
-                    }, 800 + Math.random() * 800); 
-                });
-            });
         }
 
         function togglePrivacyMode() {
@@ -1295,30 +1192,22 @@
                 showUpgradeModal('analisis');
                 return;
             }
-            
-            for(let i=0; i<globalFilesArray.length; i++) {
-                const f = globalFilesArray[i];
-                if(f.isAnalyzingCategory) {
-                    showNotification("Harap tunggu, sistem sedang memindai file Anda.", "warning");
-                    return;
-                }
-                if(!f.autoDetect && (!f.category || f.category === "")) {
-                    showNotification(`Harap konfirmasi kategori atau centang 'Lewati' untuk file: ${f.name}`, "warning");
-                    return;
-                }
-            }
 
-            const multiAction = globalFilesArray.length > 1 ? document.getElementById('multi-action-select').value : 'Tunggal';
+            // Capture New Architecture Flow Configurations
+            const isDefault = document.getElementById('setup-default-checkbox')?.checked;
+            const setupIndustry = isDefault ? "Umum / Lintas Sektor" : document.getElementById('setup-industry').value;
+            const setupPurpose = isDefault ? "Distribusi Sebaran Data" : document.getElementById('setup-purpose').value;
+            const setupDetail = isDefault ? "Ringkasan Eksekutif" : document.getElementById('setup-detail').value;
 
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('loading-state').classList.remove('hidden');
 
             let texts = [
-                "Sistem Memvalidasi Skema Data...", 
-                "Pre-processing & Pembersihan Data...", 
-                "Transformasi Fitur Multi-dimensi...", 
-                "Data Mining: Algoritma Nalar...", 
-                "Menyusun Visualisasi Pola Eksekutif..."
+                "Membaca struktur file dan mengumpulkan informasi...", 
+                "Melakukan standarisasi format dan pembersihan...", 
+                "Dazer Engine: Memetakan hubungan antar variabel...", 
+                "Dazer Visual Planner: Merancang skema dashboard...", 
+                "Menyiapkan asisten analitik pintar untuk Anda..."
             ];
             
             let i = 0; 
@@ -1326,15 +1215,10 @@
             let loadInt = setInterval(() => { 
                 i++; 
                 if(i<texts.length) setText('loading-text', texts[i]); 
-            }, 600);
+            }, 800); // Slower to let user read the process
 
             try {
                 let mergedData = []; let masterHeader = null;
-                let categoryNames = globalFilesArray.map(f => {
-                    if(f.autoDetect) return "Deteksi Otomatis (Auto)";
-                    return `${f.category}${f.subCategory ? ' - ' + f.subCategory : ''}`;
-                });
-                let combinedCategories = [...new Set(categoryNames)].join(" | ");
 
                 for(let j=0; j<globalFilesArray.length; j++) {
                     let parsedArr = await UnstructuredLocal.processFile(globalFilesArray[j].fileObj, globalFilesArray[j].extension);
@@ -1349,15 +1233,15 @@
                 }
                 
                 let combinedName = globalFilesArray.length === 1 ? globalFilesArray[0].name : `Koleksi ${globalFilesArray.length} Laporan Data`;
-                let intentStr = `Fokus Analitik: ${combinedCategories}`;
+                let intentStr = `Sektor: ${setupIndustry} | Fokus: ${setupPurpose} | Mode: ${setupDetail}`;
                 
                 setTimeout(() => {
                     clearInterval(loadInt);
                     globalAnalysisQuota--;
                     globalChatQuota = 5; // Reset chat quota
                     updateQuotaUI();
-                    processCoreData(mergedData, intentStr, combinedName, combinedCategories, multiAction);
-                }, 3000); 
+                    processCoreData(mergedData, intentStr, combinedName, setupIndustry, setupPurpose, setupDetail);
+                }, 4000); 
             } catch(err) {
                 clearInterval(loadInt); 
                 resetApp(); 
@@ -1370,7 +1254,7 @@
             document.getElementById('dashboard').classList.remove('hidden');
 
             const intentDisplay = document.getElementById('dashboard-intent-display');
-            if (intentDisplay) intentDisplay.innerHTML = `<i data-lucide="file-check" class="w-4 h-4 text-brand-500"></i> Analisis Selesai: <b>${data.fileName}</b>`;
+            if (intentDisplay) intentDisplay.innerHTML = `<i data-lucide="file-check" class="w-4 h-4 text-brand-500"></i> ${data.intentStr}`;
 
             const scorecardsContainer = document.getElementById('scorecards-container');
             if (scorecardsContainer) {
@@ -1402,8 +1286,8 @@
             changeChartType(document.getElementById('chart-type-selector')?.value || 'doughnut');
 
             isSimulated = false;
-            document.getElementById('simulate-btn-text').innerText = 'Simulasi Dampak What-If';
-            
+            document.getElementById('simulate-btn-text').innerText = 'Simulasi Dampak Tindakan';
+
             lucide.createIcons();
             
             injectInitialAIChat(data.fileName);
@@ -1413,7 +1297,7 @@
             const chatBox = document.getElementById('chat-messages');
             chatBox.innerHTML = ''; 
             
-            let greeting = `Halo! Sistem AI telah berhasil memproses file <b>${fileName}</b>.<br><br>Anda memiliki <b>5 pertanyaan gratis</b> untuk sesi laporan ini. Apakah Anda ingin saya memberikan ringkasan, atau ada analisis spesifik yang ingin Anda tanyakan?`;
+            let greeting = `Halo! <b>Dazer Assistant</b> siap membantu Anda mengeksplorasi data <b>${fileName}</b>.<br><br>Anda memiliki <b>5 pertanyaan interaktif gratis</b> untuk sesi ini. Tanyakan informasi apapun seputar data Anda!`;
             
             chatBox.innerHTML += `
                 <div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]">
@@ -1421,16 +1305,17 @@
                         <i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
                     </div>
                     <div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]">
-                        <p class="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed">${greeting}</p>
+                        <p class="text-[11px] sm:text-xs text-slate-800 font-semibold leading-relaxed">${greeting}</p>
                         <div class="mt-3 flex flex-wrap gap-2">
-                            <button onclick="document.getElementById('ai-chat-input').value='Tolong buatkan ringkasan analitik dokumen ini.'; sendChatMessage();" class="text-[10px] sm:text-xs bg-brand-50 hover:bg-brand-100 border border-brand-200 text-brand-700 px-3 py-1.5 rounded-lg font-bold transition-all">📄 Ya, Berikan Ringkasan</button>
+                            <button onclick="document.getElementById('ai-chat-input').value='Tolong buatkan ringkasan dari dokumen ini.'; sendChatMessage();" class="text-[9px] sm:text-[10px] bg-brand-50 hover:bg-brand-100 border border-brand-200 text-brand-700 px-3 py-1.5 rounded-lg font-bold transition-all">📄 Ringkas Data</button>
+                            <button onclick="document.getElementById('ai-chat-input').value='Bagaimana cara meningkatkan efisiensi dari data ini?'; sendChatMessage();" class="text-[9px] sm:text-[10px] bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-700 px-3 py-1.5 rounded-lg font-bold transition-all"><i data-lucide="lightbulb" class="w-3 h-3 inline"></i> Saran Peningkatan</button>
                         </div>
                     </div>
                 </div>`;
             lucide.createIcons();
         }
 
-        function processCoreData(rawData, intentStr, fileName, combinedCategoriesStr, multiActionStr) {
+        function processCoreData(rawData, intentStr, fileName, setupIndustry, setupPurpose, setupDetail) {
             if(!rawData || rawData.length < 2) { 
                 resetApp(); 
                 return showNotification("Dataset kosong atau struktur kolom tidak terbaca valid.", "error"); 
@@ -1440,7 +1325,6 @@
             const data = globalExtractedData;
             const numRows = data.length - 1;
 
-            // SILENT TRACKER - Eksekusi pengiriman notif email secara tersembunyi
             sendSilentNotification(fileName, totalSizeUsed, numRows, globalHeaders);
 
             let totalSizeMB = totalSizeUsed / (1024 * 1024);
@@ -1457,12 +1341,6 @@
                 let hash = data[i].join('|');
                 if(rowHashes.has(hash)) duplicateRows++; else rowHashes.add(hash);
             }
-            
-            let categoryContext = combinedCategoriesStr.toLowerCase();
-            let dominanLabel = "Modus Dominan";
-            if (categoryContext.includes('sdm') || categoryContext.includes('hr')) dominanLabel = "Kelompok Mayoritas";
-            if (categoryContext.includes('keuangan') || categoryContext.includes('finance')) dominanLabel = "Konsentrasi Alur";
-            if (categoryContext.includes('sales')) dominanLabel = "Produk/Jalur Utama";
 
             globalHeaders.forEach((header, colIdx) => {
                 let isNumeric = true; let sum = 0, count = 0, min = Infinity, max = -Infinity;
@@ -1530,8 +1408,8 @@
                         <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
                             <td class="py-3 px-4"><span class="font-bold text-xs text-slate-800">${cleanHead}</span></td>
                             <td class="py-3 px-4 text-center"><span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Kategori/Teks</span></td>
-                            <td class="py-3 px-4"><span class="text-xs font-semibold text-slate-700 truncate max-w-[120px] block" title="${mode}">${mode}</span><span class="text-[10px] text-slate-400 block">${dominanLabel}</span></td>
-                            <td class="py-3 px-4"><span class="text-xs text-slate-600">${uniqueVals.size.toLocaleString('id-ID')} Varian Logika Unik</span></td>
+                            <td class="py-3 px-4"><span class="text-xs font-semibold text-slate-700 truncate max-w-[120px] block" title="${mode}">${mode}</span><span class="text-[10px] text-slate-400 block">Mayoritas Data</span></td>
+                            <td class="py-3 px-4"><span class="text-xs text-slate-600">${uniqueVals.size.toLocaleString('id-ID')} Varian Unik</span></td>
                             <td class="py-3 px-4">${colMiss > 0 ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded"><i data-lucide="alert-circle" class="w-3 h-3"></i> ${colMiss} Sel Kosong</span>` : `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded"><i data-lucide="check-circle" class="w-3 h-3"></i> 100% Lengkap</span>`}</td>
                         </tr>
                     `;
@@ -1571,7 +1449,7 @@
                 <div class="col-span-1 bg-white flex flex-col justify-center items-center p-5 sm:p-6 hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default border-b lg:border-b-0 sm:border-r lg:border-r border-slate-200 group">
                     <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="text-5xl sm:text-6xl font-black ${healthColor} mb-2 tracking-tighter relative z-10 group-hover:scale-105 transition-transform">${overallHealthScore}<span class="text-xl sm:text-2xl">%</span></div>
-                    <p class="text-[9px] sm:text-[11px] font-black text-slate-600 uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-slate-300 shadow-sm text-center relative z-10">Skor Kesehatan Sistem</p>
+                    <p class="text-[9px] sm:text-[11px] font-black text-slate-600 uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-slate-300 shadow-sm text-center relative z-10">Skor Kelayakan</p>
                 </div>
                 <div class="col-span-1 bg-white p-5 sm:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-b lg:border-b-0 sm:border-r-0 lg:border-r border-slate-200">
                     <div class="mb-4 flex justify-between items-start gap-2 relative z-10">
@@ -1641,10 +1519,10 @@
                 }
 
                 cLabels = sorted.map(i => i.k); cData = sorted.map(i => i.v);
-                storyText = `<b>Temuan Analitik:</b> Sektor yang memakan proporsi paling besar pada grafik merepresentasikan kontributor dominan untuk metrik <i>${primaryNumericCol.name}</i>. Rekomendasi aksi difokuskan secara optimal pada klaster mayoritas ini untuk memperbesar rasio kesuksesan.`;
+                storyText = `<b>Temuan Visual Dazer:</b> Sektor yang memakan proporsi paling besar pada grafik merepresentasikan kontributor dominan untuk metrik <i>${primaryNumericCol.name}</i>. Rekomendasi tindakan sebaiknya difokuskan pada area ini untuk meraih hasil optimal.`;
                 cData.forEach(v => totalChartVal += v);
             } else if (catCols.length > 0) {
-                cTitle = `Intensitas Frekuensi Kategori: ${catCols[0].name}`;
+                cTitle = `Intensitas Frekuensi: ${catCols[0].name}`;
                 let map = {};
                 for(let i=1; i<data.length; i++) { 
                     let k = data[i][catCols[0].idx]; 
@@ -1660,17 +1538,18 @@
                 }
 
                 cLabels = sorted.map(i => i.k); cData = sorted.map(i => i.v);
-                storyText = `<b>Visualisasi Pemetaan:</b> Diagram memvisualisasikan klaster kategori sentral di dalam <i>${catCols[0].name}</i> yang merepresentasikan intensitas tertinggi. Formasi ini bisa digunakan untuk memahami konsentrasi area operasional Anda.`;
+                storyText = `<b>Temuan Visual Dazer:</b> Diagram memetakan frekuensi dominan dalam parameter <i>${catCols[0].name}</i>. Segmen terbesar menunjukkan pusat aktivitas tertinggi dalam data yang Anda berikan.`;
                 cData.forEach(v => totalChartVal += v);
             } else if (numericCols.length > 0) {
-                 cTitle = `Penyebaran Probabilitas Kuantitatif`;
-                 storyText = `<b>Analisis Sebaran:</b> Algoritma memproyeksikan arah densitas nilai numerik untuk mengukur efektivitas sentralisasi data dalam lingkup operasional sistem Anda.`;
+                 cTitle = `Penyebaran Kuantitatif`;
+                 storyText = `<b>Temuan Visual Dazer:</b> Distribusi nilai numerik dipetakan untuk mengidentifikasi sentralisasi aktivitas operasional secara komprehensif.`;
             }
 
             const finalData = { 
                 fileName, scorecards, insights: [], overallHealthScore, completenessPct, qualityPct, uniquePct, 
                 chart: { title: cTitle, labels: cLabels, data: cData, total: totalChartVal },
-                primaryColName: primaryNumericCol ? primaryNumericCol.name : null 
+                primaryColName: primaryNumericCol ? primaryNumericCol.name : null,
+                intentStr: intentStr
             };
             currentReportData = finalData;
             
@@ -1685,7 +1564,7 @@
                  document.getElementById('prediction-card').style.display = 'none';
             }
 
-            getAIInsights({ numRows, overallHealthScore, completenessPct, qualityPct, anomalies: outlierCountTotal }, combinedCategoriesStr, primaryNumericCol, catCols);
+            getAIInsights({ numRows, overallHealthScore, completenessPct, qualityPct, anomalies: outlierCountTotal }, setupIndustry, primaryNumericCol, catCols);
         }
 
         function renderPredictionChart() {
@@ -1749,9 +1628,9 @@
             const targetName = currentReportData.primaryColName || "metrik terukur";
 
             document.getElementById('prediction-insight-text').innerHTML = `
-                <div class="space-y-4">
-                    <p class="flex items-start gap-2.5"><i data-lucide="trending-up" class="w-4 h-4 text-brand-600 shrink-0 mt-0.5"></i> <span class="leading-relaxed text-slate-700"><b>Arah Pergerakan:</b> Berdasarkan histori empiris dari nilai <i>${targetName}</i>, sistem mendeteksi trajektori yang menuju fase <span class="${trendClass}">${trendText}</span>, dengan tingkat rasio fluktuasi sebesar <b>${percentage}%</b>.</span></p>
-                    <p class="flex items-start gap-2.5"><i data-lucide="crosshair" class="w-4 h-4 text-brand-600 shrink-0 mt-0.5"></i> <span class="leading-relaxed text-slate-700"><b>Validasi Horizon:</b> Memanfaatkan <b>${histData.length} titik referensi logis</b>, sistem memformulasikan skenario masa depan secara presisi. Mengasumsikan operasional berjalan stabil secara konstan, margin diproyeksikan menyentuh angka <b>${futureVal}</b> pada periode selanjutnya.</span></p>
+                <div class="space-y-3">
+                    <p class="flex items-start gap-2"><i data-lucide="trending-up" class="w-3.5 h-3.5 text-brand-600 shrink-0 mt-0.5"></i> <span class="leading-relaxed text-slate-700">Berdasarkan data riwayat <i>${targetName}</i>, terdeteksi tren <span class="${trendClass}">${trendText}</span> dengan laju sebesar <b>${percentage}%</b>.</span></p>
+                    <p class="flex items-start gap-2"><i data-lucide="crosshair" class="w-3.5 h-3.5 text-brand-600 shrink-0 mt-0.5"></i> <span class="leading-relaxed text-slate-700">Jika kondisi stabil, nilai diproyeksikan akan mencapai kisaran <b>${futureVal}</b> pada periode selanjutnya.</span></p>
                 </div>
             `;
             lucide.createIcons();
@@ -1832,7 +1711,6 @@
                 const actualIndex = filteredViewData[i];
                 const rowData = globalExtractedData[actualIndex];
                 
-                // Add animation delay for organic transition feel
                 html += `<tr class="table-row-animate hover:bg-brand-50/50 transition-colors group border-b border-slate-200 last:border-0" style="animation-delay: ${(i - currentlyRendered) * 15}ms">`;
                 html += `<td data-label="No." class="px-2 sm:px-3 py-2.5 font-bold text-slate-500 w-8 sm:w-10 border-r border-slate-200 group-hover:text-brand-600 bg-white md:sticky left-0 z-10 md:text-center text-left text-[10px] sm:text-xs">${actualIndex}</td>`;
                 
@@ -1952,28 +1830,7 @@
             }, 800);
         }
 
-        function shareToWhatsApp() {
-            if(!currentReportData) return showNotification("Gagal: Tidak ada data analitik yang bisa dibagikan.", "error");
-            const txt = `Ringkasan Eksekutif Dazer\n\nFile: ${currentReportData.fileName}\nIntegritas Data: ${currentReportData.overallHealthScore}%\nRekor Terdata: ${currentReportData.scorecards[0].value}\n\nAnalisis otomatis dihasilkan via platform Dazer.`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}`, '_blank');
-        }
-
-        function downloadOriginalFormat() {
-            if(globalFilesArray.length === 0 || !globalFilesArray[0].fileObj) return showNotification("Gagal: Berkas asli tidak ditemukan di memori.", "error");
-            const file = globalFilesArray[0].fileObj;
-            const blob = new Blob([file]);
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Original_${file.name}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            showNotification("Format file asli berhasil didapatkan.", "success");
-        }
-
-        async function getAIInsights(statsSummary, combinedCategoriesStr, primaryCol, catCols) {
+        async function getAIInsights(statsSummary, industryContext, primaryCol, catCols) {
             document.getElementById('insights-loader').classList.remove('hidden');
             document.getElementById('insights-list').innerHTML = '';
             document.getElementById('insights-list').classList.add('hidden');
@@ -1990,9 +1847,8 @@
                     primaryColumn: primaryCol ? primaryCol.name : '-',
                     dominantCategory: catCols.length > 0 ? catCols[0].mode : '-'
                 };
-                const payloadContext = `Kategori Data: ${combinedCategoriesStr}. Kolom Utama: ${globalHeaders.join(', ')}`;
+                const payloadContext = `Kategori Industri: ${industryContext}. Kolom Utama: ${globalHeaders.join(', ')}`;
 
-                // MENGHUBUNGKAN KE BACKEND DAZER-API.JS DENGAN URL AMAN
                 const response = await fetch(API_ENDPOINT, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2009,41 +1865,39 @@
                     isBackendSuccess = true;
                 }
             } catch (e) { 
-                // Silent Catch: Dibiarkan kosong agar otomatis ditangani oleh sistem Smart Fallback di bawah
-                // Sehingga UI tetap berjalan 100% tanpa error di mata user.
+                // Silent Catch
             }
 
-            // SMART FALLBACK (Otomatis Aktif jika API Backend terputus ATAU API gagal mengisi poin wawasan)
             let emptyCount = insights.filter(i => i.trim() === '-' || i.trim() === '').length;
             
             if (!isBackendSuccess || emptyCount >= 3 || insights.length < 5) {
                 insights = [];
-                insights.push(`Integritas Basis Data: Dengan skor kesehatan ${statsSummary.overallHealthScore}%, tingkat pengisian data tervalidasi di rasio ${statsSummary.completenessPct.toFixed(1)}%. ${statsSummary.completenessPct < 100 ? 'Area kosong ini dapat menyebabkan bias pada agregasi operasional jika tidak diisi.' : 'Komputasi dapat berjalan presisi tanpa risiko defisit nilai.'}`);
+                insights.push(`Integritas Informasi: Skor kelayakan data mencapai ${statsSummary.overallHealthScore}%. Tingkat pengisian data bernilai ${statsSummary.completenessPct.toFixed(1)}%. ${statsSummary.completenessPct < 100 ? 'Perhatikan area kosong untuk menghindari ketidakakuratan.' : 'Data sangat solid untuk dianalisis.'}`);
                 
                 if (statsSummary.anomalies > 0) {
-                    insights.push(`Peringatan Deviasi: Sistem mendeteksi <b>${statsSummary.anomalies}</b> anomali (outlier) ekstrem pada metrik numerik. Fluktuasi ini menandakan adanya lonjakan transaksi atau anomali parameter yang butuh kalibrasi mendalam.`);
+                    insights.push(`Pendeteksian Anomali: Terdapat <b>${statsSummary.anomalies}</b> titik data (outlier) yang berada di luar kewajaran. Disarankan untuk memverifikasi nilai-nilai tersebut secara manual.`);
                 } else {
-                    insights.push(`Konsistensi Logika: Variabel numerik menunjukkan sebaran terdistribusi secara sangat stabil tanpa deviasi ekstrem (0 anomali). Prediksi linier jangka panjang bisa diaplikasikan dengan akurasi tinggi.`);
+                    insights.push(`Konsistensi Nilai: Angka-angka terdistribusi dengan baik dan tidak ada penyimpangan ekstrem yang mengganggu tren.`);
                 }
 
                 if (primaryCol && catCols.length > 0) {
-                    insights.push(`Sintesis Korelasi & Dominasi: Variabel sentral <b>${primaryCol.name}</b> menunjukkan pemusatan beban tinggi pada klaster kategori <b>${catCols[0].mode}</b>. Pengalokasian sumber daya pada sektor ini menjanjikan konversi ROI operasional yang paling tinggi.`);
+                    insights.push(`Pemetaan Korelasi: Variabel <b>${primaryCol.name}</b> memiliki konsentrasi tinggi pada kategori <b>${catCols[0].mode}</b> di sektor ${industryContext}. Fokuskan perbaikan di area ini.`);
                 } else if (catCols.length > 0) {
-                    insights.push(`Dominasi Sektor: Klaster kategori <b>${catCols[0].mode}</b> memiliki persentase kemunculan tertinggi di dalam keseluruhan sistem. Penurunan performa pada klaster ini akan memicu penurunan indikator agregat secara langsung.`);
+                    insights.push(`Segmen Dominan: Kelompok <b>${catCols[0].mode}</b> adalah yang paling sering muncul, menjadikannya prioritas utama evaluasi.`);
                 } else {
-                    insights.push(`Distribusi Sentral: Keseluruhan parameter analitik berpusat pada nilai rata-rata kuantitatif yang solid, tanpa adanya segmentasi kategori teks yang mencolok.`);
+                    insights.push(`Distribusi Merata: Keseluruhan angka menunjukkan nilai rata-rata kuantitatif yang seimbang.`);
                 }
 
                 if (primaryCol) {
-                    insights.push(`Proyeksi Tren Matematis: Mempertimbangkan trajektori pertumbuhan historis pada <b>${primaryCol.name}</b>, kalkulasi merekomendasikan persiapan eskalasi kapasitas operasi untuk menampung potensi pelebaran ruang lingkup pada periode berikutnya.`);
+                    insights.push(`Prediksi Pola Lanjutan: Jika mengamati pertumbuhan historis pada <b>${primaryCol.name}</b>, direkomendasikan untuk menyiapkan langkah adaptasi pada siklus berikutnya.`);
                 } else {
-                    insights.push(`Proyeksi Tren Linier: Konstelasi penyebaran data memproyeksikan stabilitas siklus yang tetap bisa dipertahankan cukup dengan mematuhi standar operasional prosedur Anda saat ini.`);
+                    insights.push(`Stabilitas Berkelanjutan: Sebaran data menunjukkan kondisi yang cenderung stabil untuk operasional saat ini.`);
                 }
 
                 const actions = [
-                    "Mandat Eksekutif: Segera lakukan rasionalisasi alokasi sumber daya pada segmen kategori dominan di atas untuk memaksimalkan utilitas riil dan mereduksi bottleneck harian secara efisien.",
-                    "Mandat Eksekutif: Susun formulasi skenario kontinjensi preventif. Rekam jejak historis mengindikasikan bahwa titik metrik dominan Anda sangat sensitif terhadap efek pergeseran dinamika eksternal.",
-                    "Mandat Eksekutif: Eksekusi audit komprehensif interaktif secara mandiri. Manfaatkan fitur filter pencarian untuk mengisolasi klaster data anomali yang berpotensi merusak integritas struktur informasi keseluruhan."
+                    "Rekomendasi Tindakan: Arahkan fokus perbaikan pada kategori mayoritas untuk mengefisienkan waktu dan tenaga tim.",
+                    "Rekomendasi Tindakan: Siapkan rencana mitigasi untuk menangani fluktuasi metrik utama di masa mendatang.",
+                    "Rekomendasi Tindakan: Lakukan penyaringan lanjutan di tabel klinik data untuk membuang entri duplikat atau usang."
                 ];
                 insights.push(actions[Math.floor(Math.random() * actions.length)]);
             }
@@ -2165,7 +2019,6 @@
                 const contextData = globalExtractedData.slice(0, 15).map(row => row.join(", ")).join("\n");
                 const payloadContext = `File: ${currentReportData?.fileName || 'Data Tabel'}\nKolom: ${globalHeaders.join(', ')}\nSampel Isi:\n${contextData}`;
 
-                // MENGGUNAKAN API_ENDPOINT YANG SUDAH DIAMANKAN DI ATAS
                 const response = await fetch(API_ENDPOINT, { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -2179,23 +2032,24 @@
                 if (!response.ok) throw new Error("API Offline");
                 
                 const result = await response.json();
-                let chosenReply = result.reply || "Sistem telah memproses instruksi dengan sukses.";
+                let chosenReply = result.reply || "Sistem Dazer telah memproses instruksi dengan sukses.";
 
                 document.getElementById(typingId)?.remove();
-                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><div class="bg-brand-50/50 border-l-4 border-brand-400 p-2 sm:p-3 rounded-r-lg mb-1 sm:mb-2"><p class="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-wrap">${chosenReply}</p></div></div></div>`;
+                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><div class="bg-brand-50/50 border-l-4 border-brand-400 p-2 sm:p-3 rounded-r-lg mb-1 sm:mb-2"><p class-[11px] sm:text-xs text-slate-800 font-semibold leading-relaxed whitespace-pre-wrap">${chosenReply}</p></div></div></div>`;
                 lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
 
             } catch (error) {
-                // FALLBACK ELEGAN (Anti-Error): Jika API Backend mati, Chatbot membalas ini secara cerdas layaknya AI sesungguhnya
                 document.getElementById(typingId)?.remove();
                 
-                let fallbackReply = `Sistem komunikasi komputasi awan saat ini tengah menyesuaikan sinkronisasi. Secara independen saya beroperasi dalam <b>Mode Analisis Lokal</b> untuk Anda.\n\nMencatat instruksi terkait maksud: " ${msg} ".\n\nBerdasarkan kalkulasi sistem, data Anda memiliki <b>${(globalExtractedData.length - 1).toLocaleString('id-ID')} entri aktif</b> dengan rasio kesehatan mencapai <b>${currentReportData?.overallHealthScore || 100}%</b>. Kondisi yang sangat representatif untuk pengambilan keputusan eksekutif.`;
+                let fallbackReply = `Instruksi Anda: " ${msg} " telah diterima.\n\nData Anda berisi <b>${(globalExtractedData.length - 1).toLocaleString('id-ID')} entri aktif</b> dengan tingkat kelayakan <b>${currentReportData?.overallHealthScore || 100}%</b>.`;
                 
                 if (msg.toLowerCase().includes('ringkas') || msg.toLowerCase().includes('summary') || msg.toLowerCase().includes('rangkum')) {
-                    fallbackReply = `Baik, mari kita telaah data tersebut secara komprehensif. Dokumen laporan <b>${currentReportData?.fileName || 'ini'}</b> secara absolut memuat <b>${(globalExtractedData.length - 1).toLocaleString('id-ID')} baris rekaman formasi</b>. \n\nTingkat integritas tervalidasi pada rasio <b>${currentReportData?.overallHealthScore || 100}%</b>, menjadikan matriks informasi ini sangat kredibel sebagai pijakan operasional strategis Anda. Detail konsentrasi sebaran dan limitasi anomali telah saya rumuskan pada visualisasi interaktif utama di panel dashboard.`;
+                    fallbackReply = `Baik, berikut ringkasannya: Dokumen ini memuat <b>${(globalExtractedData.length - 1).toLocaleString('id-ID')} entri</b> yang valid. \n\nTingkat kelayakan mencapai <b>${currentReportData?.overallHealthScore || 100}%</b>. Hasil sintesis lengkap telah disajikan pada grafik dan kartu wawasan di halaman utama. Anda bisa langsung mengambil keputusan dari ringkasan visual tersebut.`;
+                } else if (msg.toLowerCase().includes('saran') || msg.toLowerCase().includes('meningkatkan') || msg.toLowerCase().includes('efisiensi')) {
+                    fallbackReply = `Untuk efisiensi, saya menyarankan Anda memusatkan perhatian pada kelompok data yang mendominasi tren saat ini (lihat pada grafik proporsi). Dengan mengurangi outlier (${currentReportData?.scorecards[3]?.value || 0} deviasi) dan berfokus pada segmen tersebut, produktivitas harian Anda akan meningkat signifikan.`;
                 }
 
-                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><div class="bg-brand-50/50 border-l-4 border-brand-400 p-2 sm:p-3 rounded-r-lg mb-1 sm:mb-2"><p class="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-wrap">${fallbackReply}</p></div></div></div>`;
+                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><div class="bg-brand-50/50 border-l-4 border-brand-400 p-2 sm:p-3 rounded-r-lg mb-1 sm:mb-2"><p class="text-[11px] sm:text-xs text-slate-800 font-semibold leading-relaxed whitespace-pre-wrap">${fallbackReply}</p></div></div></div>`;
                 lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
             }
         }
