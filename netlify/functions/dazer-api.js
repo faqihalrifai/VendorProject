@@ -62,9 +62,10 @@ exports.handler = async (event, context) => {
 
             let komputasiLogika = "Tidak ada analisis mendalam yang tersedia karena API DeepSeek gagal atau tidak ada."; 
 
+            // Tahap 1: Deepseek (Analisis Utama)
             if (deepseekKey) {
                 try {
-                    const dsPrompt = `Kamu analis data inti Dazer AI. Analisis statistik ini. Konteks: ${userContext}. Identifikasi anomali, tren, dan korelasi murni. JANGAN gunakan markdown.`;
+                    const dsPrompt = `Kamu adalah analis data inti Dazer AI. Analisis statistik berikut secara komprehensif. Konteks: ${userContext}. Identifikasi anomali, tren masa lalu dan masa depan, korelasi antar variabel, dan wawasan strategis lainnya. JANGAN gunakan markdown. Berikan laporan teks yang sangat padat dan analitis.`;
                     const dsResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${deepseekKey}` },
@@ -74,67 +75,46 @@ exports.handler = async (event, context) => {
                         const dsData = await dsResponse.json();
                         komputasiLogika = cleanMarkdown(dsData.choices?.[0]?.message?.content || komputasiLogika);
                     }
-                } catch(e) { console.log("DeepSeek fetch error (diabaikan)"); }
+                } catch(e) {
+                    console.log("DeepSeek fetch error (diabaikan)");
+                }
+            } else {
+                console.log("DeepSeek API Key tidak ditemukan. Analisis akan sangat terbatas.");
             }
 
-            // Format disederhanakan tanpa 'systemInstruction' agar kompatibel dengan 100% model Gemini (bahkan yang paling jadul sekalipun)
-            const fullPrompt = `Kamu adalah Dazer AI. 
-            Tugasmu MERANGKUM hasil analisis ini ke format JSON dengan DUA kunci: "insights" dan "cards".
-            1. "insights": Array string berisi TEPAT 7 hingga 8 poin tindakan eksekutif murni (DILARANG pakai kata awalan template, langsung kalimat aksi tajam tanpa markdown).
-            2. "cards": Object berisi 4 string (metric, segment, correlation, volatility) yang berisi rangkuman analisis untuk masing-masing aspek (maksimal 2 kalimat per item).
-            JANGAN MENGGUNAKAN MARKDOWN SAMA SEKALI. Format WAJIB JSON Murni tanpa backticks:
+            // Tahap 2: Gemini (Perangkum & Formatter JSON)
+            const systemPrompt = `Kamu adalah Dazer AI. 
+            Berikut adalah hasil analisis data mendalam yang telah dilakukan: "${komputasiLogika}".
+            Tugasmu HANYA MERANGKUM hasil tersebut ke format JSON dengan DUA kunci: "insights" dan "cards".
+            1. "insights": Array string berisi TEPAT 7 hingga 8 poin tindakan eksekutif murni (DILARANG pakai kata awalan template, langsung kalimat aksi tajam tanpa markdown). Ekstrak poin-poin ini dari hasil analisis di atas.
+            2. "cards": Object berisi 4 string (metric, segment, correlation, volatility) yang berisi rangkuman analisis untuk masing-masing aspek berdasarkan hasil di atas (maksimal 2 kalimat per item).
+            JANGAN MENGGUNAKAN MARKDOWN SAMA SEKALI (tanpa bintang, hashtag, dll).
+            Format WAJIB JSON Murni tanpa backticks:
             {
               "insights": ["aksi 1", "aksi 2", "aksi 3", "aksi 4", "aksi 5", "aksi 6", "aksi 7"],
               "cards": { "metric": "...", "segment": "...", "correlation": "...", "volatility": "..." }
-            }
-            
-            HASIL ANALISA AWAL:
-            ${komputasiLogika}
-            
-            DATASET AKTUAL:
-            ${data}`;
+            }`;
 
             try {
-                let textResponse = '{"insights":["-"], "cards":null}';
-                let isSuccess = false;
-                let lastErrorMsg = "";
-                
-                // MENGGABUNGKAN SEMUA GENERASI GEMINI (2.0 terbaru s/d versi lama 1.0)
-                const modelsToTry = [
-                    'gemini-2.5-flash',
-                    'gemini-2.0-flash', 
-                    'gemini-1.5-flash', 
-                    'gemini-1.5-pro', 
-                    'gemini-pro'
-                ];
+                // MENGGUNAKAN MODEL STANDARD gemini-1.5-flash YANG DIDUKUNG SEPENUHNYA OLEH GOOGLE
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Formatkan analisis ini ke JSON: ${komputasiLogika}` }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                        generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
+                    })
+                });
 
-                for (const model of modelsToTry) {
-                    try {
-                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                contents: [{ parts: [{ text: fullPrompt }] }],
-                                generationConfig: { temperature: 0.1 }
-                            })
-                        });
-
-                        if (!response.ok) {
-                            const errBody = await response.text();
-                            throw new Error(`[${model}] HTTP ${response.status}: ${errBody}`);
-                        }
-
-                        const result = await response.json();
-                        textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || textResponse;
-                        isSuccess = true;
-                        break; 
-                    } catch (apiErr) {
-                        console.warn(`Gagal menggunakan model ${model}, mencoba model berikutnya... Error:`, apiErr.message);
-                        lastErrorMsg = apiErr.message;
-                    }
+                // PENANGKAP ERROR API GOOGLE
+                if (!response.ok) {
+                    const errBody = await response.text();
+                    throw new Error(`[HTTP ${response.status}] ${errBody}`);
                 }
 
-                if (!isSuccess) throw new Error(lastErrorMsg);
+                const result = await response.json();
+                let textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || '{"insights":["-"], "cards":null}';
                 
                 let parsedData = { insights: ["-"], cards: null };
                 try {
@@ -148,15 +128,16 @@ exports.handler = async (event, context) => {
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsedData) };
 
             } catch (apiErr) {
-                console.error("!!! GEMINI TOTAL ERROR !!!", apiErr.message);
+                console.error("!!! GEMINI ERROR !!!", apiErr.message);
+                
                 return { 
                     statusCode: 200, 
                     headers: corsHeaders, 
                     body: JSON.stringify({ 
                         insights: [
-                            "⚠️ SISTEM AI MENGALAMI KENDALA API KEY ⚠️",
-                            `Error: ${apiErr.message}`,
-                            "Pastikan Anda membuat API Key baru DARI SITUS RESMI aistudio.google.com/app/apikey"
+                            "⚠️ SISTEM AI MENGALAMI KENDALA TEKNIS KONEKSI ⚠️",
+                            `Pesan Error: ${apiErr.message}`,
+                            "Silakan cek ulang pengaturan koneksi atau coba sesaat lagi."
                         ], 
                         cards: null 
                     }) 
