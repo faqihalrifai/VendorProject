@@ -52,7 +52,7 @@ exports.handler = async (event, context) => {
         }
 
         // ==========================================
-        // ACTION 2: ANALISA KDD UTAMA (GEMINI)
+        // ACTION 2: ANALISA KDD UTAMA (DEEPSEEK -> GEMINI)
         // ==========================================
         if (action === 'analyze_data') {
             const geminiKey = process.env.GEMINI_API_KEY;
@@ -60,27 +60,34 @@ exports.handler = async (event, context) => {
 
             if (!geminiKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API Gemini belum dimasukkan di Environment Variables Netlify."], cards: null }) };
 
-            let komputasiLogika = "Lakukan analisa mandiri secara mendalam."; 
+            let komputasiLogika = "Tidak ada analisis mendalam yang tersedia karena API DeepSeek gagal atau tidak ada."; 
 
+            // Tahap 1: Deepseek (Analisis Utama)
             if (deepseekKey) {
                 try {
-                    const dsPrompt = `Kamu analis Dazer AI. Analisa statistik ini. Konteks: ${userContext}. Cari pola. JANGAN pakai markdown.`;
+                    const dsPrompt = `Kamu adalah analis data inti Dazer AI. Analisis statistik berikut secara komprehensif. Konteks: ${userContext}. Identifikasi anomali, tren masa lalu dan masa depan, korelasi antar variabel, dan wawasan strategis lainnya. JANGAN gunakan markdown. Berikan laporan teks yang sangat padat dan analitis.`;
                     const dsResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${deepseekKey}` },
-                        body: JSON.stringify({ model: 'deepseek-chat', messages: [{ role: 'system', content: dsPrompt }, { role: 'user', content: `Statistik: ${data}` }], temperature: 0.1 })
+                        body: JSON.stringify({ model: 'deepseek-chat', messages: [{ role: 'system', content: dsPrompt }, { role: 'user', content: `Statistik Data: ${data}` }], temperature: 0.1 })
                     });
                     if (dsResponse.ok) {
                         const dsData = await dsResponse.json();
                         komputasiLogika = cleanMarkdown(dsData.choices?.[0]?.message?.content || komputasiLogika);
                     }
-                } catch(e) {}
+                } catch(e) {
+                    console.log("DeepSeek fetch error (diabaikan)");
+                }
+            } else {
+                console.log("DeepSeek API Key tidak ditemukan. Analisis akan sangat terbatas.");
             }
 
+            // Tahap 2: Gemini (Perangkum & Formatter JSON)
             const systemPrompt = `Kamu adalah Dazer AI. 
-            Hasil analisa awal: "${komputasiLogika}". Konteks Data Aktual: ${userContext}.
-            Tugasmu MERANGKUM hasil ke format JSON dengan DUA kunci: "insights" dan "cards".
-            1. "insights": Array string berisi TEPAT 7 hingga 8 poin tindakan eksekutif murni (DILARANG pakai kata awalan template, langsung kalimat aksi tajam tanpa markdown).
+            Berikut adalah hasil analisis data mendalam yang telah dilakukan: "${komputasiLogika}".
+            Tugasmu HANYA MERANGKUM hasil tersebut ke format JSON dengan DUA kunci: "insights" dan "cards".
+            1. "insights": Array string berisi TEPAT 7 hingga 8 poin tindakan eksekutif murni (DILARANG pakai kata awalan template, langsung kalimat aksi tajam tanpa markdown). Ekstrak poin-poin ini dari hasil analisis di atas.
+            2. "cards": Object berisi 4 string (metric, segment, correlation, volatility) yang berisi rangkuman analisis untuk masing-masing aspek berdasarkan hasil di atas (maksimal 2 kalimat per item).
             JANGAN MENGGUNAKAN MARKDOWN SAMA SEKALI (tanpa bintang, hashtag, dll).
             Format WAJIB JSON Murni tanpa backticks:
             {
@@ -89,13 +96,14 @@ exports.handler = async (event, context) => {
             }`;
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiKey}`, {
+                // MENGGUNAKAN MODEL STANDARD gemini-1.5-flash YANG DIDUKUNG SEPENUHNYA OLEH GOOGLE
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Dataset Aktual: ${data}. Buatkan JSON akurat.` }] }],
+                        contents: [{ parts: [{ text: `Formatkan analisis ini ke JSON: ${komputasiLogika}` }] }],
                         systemInstruction: { parts: [{ text: systemPrompt }] },
-                        generationConfig: { responseMimeType: "application/json", temperature: 0.2 }
+                        generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
                     })
                 });
 
@@ -122,7 +130,6 @@ exports.handler = async (event, context) => {
             } catch (apiErr) {
                 console.error("!!! GEMINI ERROR !!!", apiErr.message);
                 
-                // MENCETAK ERROR LANGSUNG KE LAYAR AGAR KITA TAHU MASALAHNYA
                 return { 
                     statusCode: 200, 
                     headers: corsHeaders, 
@@ -130,8 +137,7 @@ exports.handler = async (event, context) => {
                         insights: [
                             "⚠️ SISTEM AI MENGALAMI KENDALA TEKNIS KONEKSI ⚠️",
                             `Pesan Error: ${apiErr.message}`,
-                            "Jika pesan di atas tertulis 'fetch is not defined', berarti versi Node.js Netlify Anda usang (Set NODE_VERSION ke 20 di Environment Variables).",
-                            "Jika pesan berupa HTTP 400 (Bad Request), HTTP 429 (Quota), atau API_KEY_INVALID, silakan cek ulang API Key Google Gemini Anda."
+                            "Silakan cek ulang pengaturan koneksi atau coba sesaat lagi."
                         ], 
                         cards: null 
                     }) 
@@ -140,11 +146,34 @@ exports.handler = async (event, context) => {
         }
 
         // ==========================================
-        // ACTION 3: CHATBOT (GROQ)
+        // ACTION 3: CHATBOT (GROQ + TAVILY)
         // ==========================================
         if (action === 'chat') {
             const groqKey = process.env.GROQ_API_KEY;
+            const tvlyKey = process.env.TAVILY_API_KEY;
+
             if (!groqKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Error: API Groq belum dikonfigurasi." }) };
+
+            let internetContext = "";
+            const needsInternet = message.toLowerCase().match(/(pasar|berita|tren|luar|bandingkan|saat ini|sekarang|2026|2027|harga|apa|siapa|kapan|dimana|kenapa|bagaimana|terbaru|hari ini)/);
+            
+            if (needsInternet && tvlyKey) {
+                try {
+                    const tvlyRes = await fetch('https://api.tavily.com/search', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ api_key: tvlyKey, query: message, search_depth: "basic", max_results: 3 })
+                    });
+                    if (tvlyRes.ok) {
+                        const tvlyData = await tvlyRes.json();
+                        if (tvlyData && tvlyData.results) internetContext = `\n[Internet: ${JSON.stringify(tvlyData.results)}]`;
+                    }
+                } catch(e) {}
+            }
+
+            const universalSystemPrompt = `Kamu adalah Dazer AI. Jangan pakai markdown.
+            Konteks File: ${userContext}
+            ${internetContext}`;
 
             try {
                 const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -152,7 +181,7 @@ exports.handler = async (event, context) => {
                     headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         model: 'llama-3.3-70b-versatile', 
-                        messages: [{ role: 'system', content: "Kamu Dazer AI. Jangan pakai markdown." }, { role: 'user', content: message }], 
+                        messages: [{ role: 'system', content: universalSystemPrompt }, { role: 'user', content: message }], 
                         temperature: 0.6 
                     })
                 });
