@@ -51,7 +51,7 @@ exports.handler = async (event, context) => {
     } else {
         limitData.count += 1;
         if (limitData.count > 30) {
-            // Netlify: Return 200 agar JS fetch di UI tidak melempar Network Error, tapi isi pesannya peringatan
+            // Netlify: Return 200 agar JS fetch di UI tidak melempar Network Error
             return { 
                 statusCode: 200, 
                 headers: corsHeaders, 
@@ -81,18 +81,20 @@ exports.handler = async (event, context) => {
 
         // ==========================================
         // ACTION 1: SILENT LOGGER (Email Notif [DAZER])
-        // SINKRONISASI: Menangkap payload yang tidak memiliki action (dari sendSilentNotification di frontend)
+        // SINKRONISASI: Menangkap payload dari sendSilentNotification di frontend
         // ==========================================
         if (action === 'notify_upload' || (!action && body.sessionId && body.fileName)) {
             const emailPass = process.env.NODEMAILER_PASS; 
+            
             if(emailPass) {
-                let transporter = nodemailer.createTransport({
-                    service: 'gmail',
-                    auth: { user: 'faqihalrf@gmail.com', pass: emailPass }
-                });
-                
-                // Menyesuaikan exact keys dari payload index.html
-                const emailContent = `
+                try {
+                    let transporter = nodemailer.createTransport({
+                        service: 'gmail',
+                        auth: { user: 'faqihalrf@gmail.com', pass: emailPass }
+                    });
+                    
+                    // Menyesuaikan exact keys dari payload index.html
+                    const emailContent = `
 === DETAIL SESI & FILE ===
 Nama File    : ${body.fileName || '-'}
 Ukuran       : ${body.size || '-'}
@@ -115,16 +117,24 @@ Waktu Lokal  : ${body.localTime || '-'}
 Durasi Tahan : ${body.holdDuration || '-'}
 `.trim();
 
-                // Fire and forget, jangan ditunggu agar fungsi lambda cepat selesai
-                transporter.sendMail({
-                    from: '"Dazer KDD" <faqihalrf@gmail.com>',
-                    to: "faqihalrf@gmail.com",
-                    subject: `[DAZER] Aktivitas Baru: ${body.fileName || 'Data Upload'}`, 
-                    text: emailContent
-                }).catch((e) => {
-                    console.error("Mail Error (Ignored):", e.message);
-                }); // Abaikan error email agar tidak mengganggu sistem utama
+                    // PERBAIKAN KRUSIAL: Wajib gunakan `await` di Serverless
+                    // Jika tidak di-await, Netlify akan mematikan fungsi sebelum email terkirim ke server Google.
+                    await transporter.sendMail({
+                        from: '"Dazer KDD" <faqihalrf@gmail.com>',
+                        to: "faqihalrf@gmail.com",
+                        subject: `[DAZER] Aktivitas Baru: ${body.fileName || 'Data Upload'}`, 
+                        text: emailContent
+                    });
+                    
+                    console.log("Email notifikasi sukses dikirim ke faqihalrf@gmail.com");
+                } catch (emailErr) {
+                    console.error("Gagal mengirim email:", emailErr.message);
+                }
+            } else {
+                console.warn("Environment Variable 'NODEMAILER_PASS' belum disetel di Netlify.");
             }
+            
+            // Segera kembalikan 200 OK setelah proses email (berhasil atau gagal) selesai
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'logged' }) };
         }
 
@@ -153,7 +163,6 @@ Durasi Tahan : ${body.holdDuration || '-'}
                 try {
                     const dsPrompt = `Kamu adalah modul komputasi inti Dazer AI. Analisa data statistik berikut. Konteks file: ${userContext}. Cari anomali, pola masa depan, dan korelasi logis. JANGAN pakai markdown.`;
                     
-                    // Fetch native di Node.js 18+ (Standar Netlify saat ini)
                     const dsResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${deepseekKey}` },
