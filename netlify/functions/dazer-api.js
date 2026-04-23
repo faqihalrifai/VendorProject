@@ -77,7 +77,7 @@ exports.handler = async (event, context) => {
                 } catch(e) { console.log("DeepSeek fetch error (diabaikan)"); }
             }
 
-            // Format disederhanakan tanpa 'systemInstruction' agar kompatibel dengan 100% model Gemini
+            // Format disederhanakan tanpa 'systemInstruction' agar kompatibel dengan 100% model Gemini (bahkan yang paling jadul sekalipun)
             const fullPrompt = `Kamu adalah Dazer AI. 
             Tugasmu MERANGKUM hasil analisis ini ke format JSON dengan DUA kunci: "insights" dan "cards".
             1. "insights": Array string berisi TEPAT 7 hingga 8 poin tindakan eksekutif murni (DILARANG pakai kata awalan template, langsung kalimat aksi tajam tanpa markdown).
@@ -99,8 +99,14 @@ exports.handler = async (event, context) => {
                 let isSuccess = false;
                 let lastErrorMsg = "";
                 
-                // Urutan model yang dijamin ada di Google AI Studio
-                const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro'];
+                // MENGGABUNGKAN SEMUA GENERASI GEMINI (2.0 terbaru s/d versi lama 1.0)
+                const modelsToTry = [
+                    'gemini-2.5-flash',
+                    'gemini-2.0-flash', 
+                    'gemini-1.5-flash', 
+                    'gemini-1.5-pro', 
+                    'gemini-pro'
+                ];
 
                 for (const model of modelsToTry) {
                     try {
@@ -150,7 +156,7 @@ exports.handler = async (event, context) => {
                         insights: [
                             "⚠️ SISTEM AI MENGALAMI KENDALA API KEY ⚠️",
                             `Error: ${apiErr.message}`,
-                            "Pastikan Anda membuat API Key baru dari link aistudio.google.com/app/apikey"
+                            "Pastikan Anda membuat API Key baru DARI SITUS RESMI aistudio.google.com/app/apikey"
                         ], 
                         cards: null 
                     }) 
