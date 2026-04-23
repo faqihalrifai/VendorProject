@@ -81,15 +81,15 @@ exports.handler = async (event, context) => {
             Hasil analisa awal: "${komputasiLogika}". Konteks Data Aktual: ${userContext}.
             Tugasmu MERANGKUM hasil ke format JSON dengan DUA kunci: "insights" dan "cards".
             1. "insights": Array string berisi TEPAT 7 hingga 8 poin tindakan eksekutif murni (DILARANG pakai kata awalan template, langsung kalimat aksi tajam tanpa markdown).
-            2. "cards": Object berisi 4 string (metric, segment, correlation, volatility) analisa data murni.
-            Format WAJIB JSON murni tanpa backticks:
+            JANGAN MENGGUNAKAN MARKDOWN SAMA SEKALI (tanpa bintang, hashtag, dll).
+            Format WAJIB JSON Murni tanpa backticks:
             {
               "insights": ["aksi 1", "aksi 2", "aksi 3", "aksi 4", "aksi 5", "aksi 6", "aksi 7"],
               "cards": { "metric": "...", "segment": "...", "correlation": "...", "volatility": "..." }
             }`;
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
