@@ -62,7 +62,6 @@ exports.handler = async (event, context) => {
 
             let komputasiLogika = "Tidak ada analisis mendalam yang tersedia karena API DeepSeek gagal atau tidak ada."; 
 
-            // Tahap 1: Deepseek (Analisis Utama)
             if (deepseekKey) {
                 try {
                     const dsPrompt = `Kamu analis data inti Dazer AI. Analisis statistik ini. Konteks: ${userContext}. Identifikasi anomali, tren, dan korelasi murni. JANGAN gunakan markdown.`;
@@ -78,26 +77,30 @@ exports.handler = async (event, context) => {
                 } catch(e) { console.log("DeepSeek fetch error (diabaikan)"); }
             }
 
-            // Tahap 2: Gemini (Perangkum & Formatter JSON)
-            const systemPrompt = `Kamu adalah Dazer AI. 
-            Berikut adalah hasil komputasi analitik: "${komputasiLogika}". Konteks Data: ${userContext}.
-            Tugasmu HANYA MERANGKUM hasil tersebut ke format JSON dengan DUA kunci: "insights" dan "cards".
+            // Format disederhanakan tanpa 'systemInstruction' agar kompatibel dengan 100% model Gemini
+            const fullPrompt = `Kamu adalah Dazer AI. 
+            Tugasmu MERANGKUM hasil analisis ini ke format JSON dengan DUA kunci: "insights" dan "cards".
             1. "insights": Array string berisi TEPAT 7 hingga 8 poin tindakan eksekutif murni (DILARANG pakai kata awalan template, langsung kalimat aksi tajam tanpa markdown).
             2. "cards": Object berisi 4 string (metric, segment, correlation, volatility) yang berisi rangkuman analisis untuk masing-masing aspek (maksimal 2 kalimat per item).
-            JANGAN MENGGUNAKAN MARKDOWN SAMA SEKALI (tanpa bintang, hashtag, dll).
-            Format WAJIB JSON Murni tanpa backticks:
+            JANGAN MENGGUNAKAN MARKDOWN SAMA SEKALI. Format WAJIB JSON Murni tanpa backticks:
             {
               "insights": ["aksi 1", "aksi 2", "aksi 3", "aksi 4", "aksi 5", "aksi 6", "aksi 7"],
               "cards": { "metric": "...", "segment": "...", "correlation": "...", "volatility": "..." }
-            }`;
+            }
+            
+            HASIL ANALISA AWAL:
+            ${komputasiLogika}
+            
+            DATASET AKTUAL:
+            ${data}`;
 
             try {
                 let textResponse = '{"insights":["-"], "cards":null}';
                 let isSuccess = false;
                 let lastErrorMsg = "";
                 
-                // SISTEM AUTO-FALLBACK: Jika 1.5-flash ditolak (404), coba model lain yang diizinkan Google
-                const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro'];
+                // Urutan model yang dijamin ada di Google AI Studio
+                const modelsToTry = ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro'];
 
                 for (const model of modelsToTry) {
                     try {
@@ -105,7 +108,7 @@ exports.handler = async (event, context) => {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                contents: [{ parts: [{ text: `INSTRUKSI SISTEM:\n${systemPrompt}\n\nDATASET AKTUAL:\n${data}\n\nBerikan output HANYA dalam JSON murni.` }] }],
+                                contents: [{ parts: [{ text: fullPrompt }] }],
                                 generationConfig: { temperature: 0.1 }
                             })
                         });
@@ -118,9 +121,9 @@ exports.handler = async (event, context) => {
                         const result = await response.json();
                         textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || textResponse;
                         isSuccess = true;
-                        break; // SUKSES! Keluar dari loop pencarian model
+                        break; 
                     } catch (apiErr) {
-                        console.warn(`Gagal menggunakan model ${model}, mencoba model berikutnya...`);
+                        console.warn(`Gagal menggunakan model ${model}, mencoba model berikutnya... Error:`, apiErr.message);
                         lastErrorMsg = apiErr.message;
                     }
                 }
@@ -145,9 +148,9 @@ exports.handler = async (event, context) => {
                     headers: corsHeaders, 
                     body: JSON.stringify({ 
                         insights: [
-                            "⚠️ SISTEM AI MENGALAMI KENDALA TEKNIS ⚠️",
-                            `Pesan Error: ${apiErr.message}`,
-                            "Pastikan API Key Gemini yang Anda gunakan valid dan aktif."
+                            "⚠️ SISTEM AI MENGALAMI KENDALA API KEY ⚠️",
+                            `Error: ${apiErr.message}`,
+                            "Pastikan Anda membuat API Key baru dari link aistudio.google.com/app/apikey"
                         ], 
                         cards: null 
                     }) 
