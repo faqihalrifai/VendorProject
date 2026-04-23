@@ -135,12 +135,12 @@ Durasi Tahan : ${body.holdDuration || '-'}
                 console.warn("Environment Variable 'NODEMAILER_PASS' belum disetel di Netlify.");
             }
             
-            // Segera kembalikan 200 OK setelah proses email selesai
+            // Segera kembalikan 200 OK setelah proses email (berhasil atau gagal) selesai
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'logged' }) };
         }
 
         // ==========================================
-        // ACTION 2: ANALISA KDD UTAMA (7-8 Poin AI Murni + 4 Flip Cards)
+        // ACTION 2: ANALISA KDD UTAMA (BLUEPRINT 7-8 POIN + 4 KARTU)
         // ==========================================
         if (action === 'analyze_data') {
             const geminiKey = process.env.GEMINI_API_KEY;
@@ -151,7 +151,7 @@ Durasi Tahan : ${body.holdDuration || '-'}
                     statusCode: 200, 
                     headers: corsHeaders, 
                     body: JSON.stringify({ 
-                        insights: ["-", "-", "-", "-", "-", "-", "-"], 
+                        insights: ["-","-","-","-","-","-","-"], 
                         cards: null,
                         reply: "Sistem AI utama (Gemini) belum terkonfigurasi di server Netlify Anda." 
                     }) 
@@ -160,10 +160,10 @@ Durasi Tahan : ${body.holdDuration || '-'}
 
             let komputasiLogika = "Lakukan analisa mandiri secara mendalam berdasarkan statistik yang ada."; 
 
-            // Tahap 1: Deepseek (Analisa Mentah Opsional)
+            // Tahap 1: Deepseek (Opsional - Jika Gagal tidak akan crash)
             if (deepseekKey) {
                 try {
-                    const dsPrompt = `Kamu adalah analis utama Dazer AI. Analisa data statistik berikut secara ketat. Konteks file: ${userContext}. Cari anomali, tren, dan korelasi murni dari data. Jangan pakai markdown.`;
+                    const dsPrompt = `Kamu adalah analis utama Dazer AI. Analisa data statistik ini secara ketat. Konteks file: ${userContext}. Cari anomali, tren, dan korelasi murni dari data. JANGAN pakai markdown.`;
                     
                     const dsResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
                         method: 'POST',
@@ -184,17 +184,17 @@ Durasi Tahan : ${body.holdDuration || '-'}
                 }
             }
 
-            // Tahap 2: Gemini (Strukturisasi JSON Ketat)
+            // Tahap 2: Gemini (Krusial untuk output 7-8 Poin & 4 Kartu)
             const systemPrompt = `Kamu adalah Dazer AI, sistem Executive Action Intelligence. 
             Hasil analisa mendalam awal: "${komputasiLogika}". Konteks Data Aktual: ${userContext}.
             
-            Tugasmu MERANGKUM hasil tersebut secara SPESIFIK dan AKURAT ke dalam format JSON dengan dua kunci utama: "insights" dan "cards".
+            Tugasmu MERANGKUM hasil tersebut secara SPESIFIK dan AKURAT ke dalam format JSON dengan DUA kunci utama: "insights" dan "cards".
 
             ATURAN KETAT DAN WAJIB DIPATUHI:
             1. "insights": Array string berisi TEPAT 7 hingga 8 poin tindakan eksekutif strategis. 
                - DILARANG KERAS menggunakan kata awalan/template (seperti "Penilaian Awal:", "Fokus Usaha:", "Peringatan:", "Saran:").
-               - Langsung tulis instruksi/fakta dengan kalimat utuh, tajam, dan profesional murni berdasarkan data (misal: "Hapus 15 data anomali pada segmen X untuk menstabilkan metrik laba berjalan.").
-            2. "cards": Object berisi 4 string penjelasan akurat murni dari data (maksimal 2 kalimat per item) untuk mengisi antarmuka kartu berikut:
+               - Langsung tulis instruksi/fakta dengan kalimat utuh, tajam, dan profesional murni berdasarkan data (misal: "Hapus 15 data anomali pada segmen X untuk menstabilkan metrik berjalan.").
+            2. "cards": Object berisi 4 string penjelasan akurat murni dari data (maksimal 2 kalimat per item) untuk mengisi antarmuka kartu:
                - "metric": Analisis mendalam tentang indikator/angka performa utama.
                - "segment": Analisis tajam tentang segmen/kelompok data prioritas yang dominan.
                - "correlation": Fakta akurat tentang hubungan dan sebab-akibat antar variabel di data.
@@ -217,7 +217,7 @@ Durasi Tahan : ${body.holdDuration || '-'}
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Dataset Aktual: ${data}. Buatkan JSON akurat.` }] }],
+                        contents: [{ parts: [{ text: `Dataset Aktual: ${data}. Buatkan format laporan JSON.` }] }],
                         systemInstruction: { parts: [{ text: systemPrompt }] },
                         generationConfig: { responseMimeType: "application/json", temperature: 0.2 }
                     })
@@ -235,8 +235,11 @@ Durasi Tahan : ${body.holdDuration || '-'}
                     parsedData = JSON.parse(rawJson);
                     
                     if (Array.isArray(parsedData.insights)) {
-                        // Bersihkan markdown dan ambil tepat hingga 8 poin
+                        // Memastikan bersih dari markdown dan hanya memuat maksimal 8 baris berkualitas
                         parsedData.insights = parsedData.insights.map(item => cleanMarkdown(item)).filter(i => i.trim().length > 5).slice(0, 8);
+                        
+                        // Jaga-jaga jika AI mengembalikan terlalu sedikit
+                        while(parsedData.insights.length < 5) parsedData.insights.push("Lanjutkan optimalisasi operasional secara berkelanjutan.");
                     } else {
                         parsedData.insights = ["Analisis selesai namun tidak ada pola aksi spesifik yang terdeteksi."];
                     }
@@ -252,7 +255,7 @@ Durasi Tahan : ${body.holdDuration || '-'}
                     statusCode: 200, 
                     headers: corsHeaders, 
                     body: JSON.stringify({ 
-                        insights: ["Sistem AI sedang sibuk memproses antrean panjang. Mohon coba lagi dalam beberapa menit."],
+                        insights: ["Sistem AI sedang sibuk. Mohon ulangi analisis Anda."],
                         cards: null
                     }) 
                 };
