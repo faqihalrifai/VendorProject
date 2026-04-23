@@ -57,7 +57,8 @@ exports.handler = async (event, context) => {
                 headers: corsHeaders, 
                 body: JSON.stringify({ 
                     reply: "Sistem mendeteksi lalu lintas tinggi dari koneksi Anda. Mohon jeda sesaat.",
-                    insights: ["-", "-", "-", "-", "-"]
+                    insights: ["-", "-", "-", "-", "-", "-", "-"],
+                    cards: null
                 }) 
             };
         }
@@ -134,12 +135,12 @@ Durasi Tahan : ${body.holdDuration || '-'}
                 console.warn("Environment Variable 'NODEMAILER_PASS' belum disetel di Netlify.");
             }
             
-            // Segera kembalikan 200 OK setelah proses email (berhasil atau gagal) selesai
+            // Segera kembalikan 200 OK setelah proses email selesai
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'logged' }) };
         }
 
         // ==========================================
-        // ACTION 2: ANALISA KDD UTAMA (BLUEPRINT 5 POIN)
+        // ACTION 2: ANALISA KDD UTAMA (7-8 Poin AI Murni + 4 Flip Cards)
         // ==========================================
         if (action === 'analyze_data') {
             const geminiKey = process.env.GEMINI_API_KEY;
@@ -150,7 +151,8 @@ Durasi Tahan : ${body.holdDuration || '-'}
                     statusCode: 200, 
                     headers: corsHeaders, 
                     body: JSON.stringify({ 
-                        insights: ["-","-","-","-","-"], 
+                        insights: ["-", "-", "-", "-", "-", "-", "-"], 
+                        cards: null,
                         reply: "Sistem AI utama (Gemini) belum terkonfigurasi di server Netlify Anda." 
                     }) 
                 };
@@ -158,10 +160,10 @@ Durasi Tahan : ${body.holdDuration || '-'}
 
             let komputasiLogika = "Lakukan analisa mandiri secara mendalam berdasarkan statistik yang ada."; 
 
-            // Tahap 1: Deepseek (Opsional - Jika Gagal tidak akan crash)
+            // Tahap 1: Deepseek (Analisa Mentah Opsional)
             if (deepseekKey) {
                 try {
-                    const dsPrompt = `Kamu adalah modul komputasi inti Dazer AI. Analisa data statistik berikut. Konteks file: ${userContext}. Cari anomali, pola masa depan, dan korelasi logis. JANGAN pakai markdown.`;
+                    const dsPrompt = `Kamu adalah analis utama Dazer AI. Analisa data statistik berikut secara ketat. Konteks file: ${userContext}. Cari anomali, tren, dan korelasi murni dari data. Jangan pakai markdown.`;
                     
                     const dsResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
                         method: 'POST',
@@ -182,24 +184,32 @@ Durasi Tahan : ${body.holdDuration || '-'}
                 }
             }
 
-            // Tahap 2: Gemini (Krusial untuk output 5 Poin)
+            // Tahap 2: Gemini (Strukturisasi JSON Ketat)
             const systemPrompt = `Kamu adalah Dazer AI, sistem Executive Action Intelligence. 
-            Hasil komputasi mentah: "${komputasiLogika}". Konteks Data: ${userContext}.
+            Hasil analisa mendalam awal: "${komputasiLogika}". Konteks Data Aktual: ${userContext}.
             
-            Tugasmu menyusun hasil tersebut ke dalam array JSON berisi TEPAT 5 elemen string:
-            1. Pola Inti & Dominasi
-            2. Korelasi Silang
-            3. Audit Anomali & Integritas
-            4. Proyeksi Probabilitas
-            5. Mandat Aksi Strategis
+            Tugasmu MERANGKUM hasil tersebut secara SPESIFIK dan AKURAT ke dalam format JSON dengan dua kunci utama: "insights" dan "cards".
 
-            ATURAN KETAT:
-            - Tulis HANYA ISI NARASINYA SAJA (Tanpa judul nomor seperti "1. Pola:").
-            - Jika info tidak cukup/kosong, isi elemen tersebut HANYA dengan tanda strip: "-"
-            - JANGAN MENGGUNAKAN MARKDOWN (*, #, \` dll). Tulis teks rapi lurus.
-            - Format WAJIB valid JSON murni HANYA seperti ini (TANPA BACKTICKS):
+            ATURAN KETAT DAN WAJIB DIPATUHI:
+            1. "insights": Array string berisi TEPAT 7 hingga 8 poin tindakan eksekutif strategis. 
+               - DILARANG KERAS menggunakan kata awalan/template (seperti "Penilaian Awal:", "Fokus Usaha:", "Peringatan:", "Saran:").
+               - Langsung tulis instruksi/fakta dengan kalimat utuh, tajam, dan profesional murni berdasarkan data (misal: "Hapus 15 data anomali pada segmen X untuk menstabilkan metrik laba berjalan.").
+            2. "cards": Object berisi 4 string penjelasan akurat murni dari data (maksimal 2 kalimat per item) untuk mengisi antarmuka kartu berikut:
+               - "metric": Analisis mendalam tentang indikator/angka performa utama.
+               - "segment": Analisis tajam tentang segmen/kelompok data prioritas yang dominan.
+               - "correlation": Fakta akurat tentang hubungan dan sebab-akibat antar variabel di data.
+               - "volatility": Laporan akurat tentang tingkat volatilitas, risiko, dan deviasi/anomali data.
+
+            JANGAN MENGGUNAKAN MARKDOWN SAMA SEKALI (tanpa bintang, hashtag, dll).
+            Format WAJIB JSON Murni tanpa backticks:
             {
-              "insights": ["narasi 1", "narasi 2", "narasi 3", "-", "narasi 5"]
+              "insights": ["aksi spesifik 1", "aksi spesifik 2", "aksi spesifik 3", "aksi spesifik 4", "aksi spesifik 5", "aksi spesifik 6", "aksi spesifik 7"],
+              "cards": {
+                "metric": "analisis performa...",
+                "segment": "analisis segmen...",
+                "correlation": "analisis korelasi...",
+                "volatility": "analisis volatilitas..."
+              }
             }`;
 
             try {
@@ -207,7 +217,7 @@ Durasi Tahan : ${body.holdDuration || '-'}
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Dataset: ${data}. Buatkan format laporan JSON.` }] }],
+                        contents: [{ parts: [{ text: `Dataset Aktual: ${data}. Buatkan JSON akurat.` }] }],
                         systemInstruction: { parts: [{ text: systemPrompt }] },
                         generationConfig: { responseMimeType: "application/json", temperature: 0.2 }
                     })
@@ -216,20 +226,19 @@ Durasi Tahan : ${body.holdDuration || '-'}
                 if (!response.ok) throw new Error("API AI gagal merespon");
 
                 const result = await response.json();
-                let textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || '{"insights":["-","-","-","-","-"]}';
+                let textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || '{"insights":["-"], "cards":null}';
                 
-                let parsedData = { insights: ["-", "-", "-", "-", "-"] };
+                let parsedData = { insights: ["-", "-", "-", "-", "-", "-", "-"], cards: null };
                 try {
                     const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
                     const rawJson = jsonMatch ? jsonMatch[0] : textResponse;
                     parsedData = JSON.parse(rawJson);
                     
                     if (Array.isArray(parsedData.insights)) {
-                        parsedData.insights = parsedData.insights.map(item => cleanMarkdown(item));
-                        while(parsedData.insights.length < 5) parsedData.insights.push("-");
-                        parsedData.insights = parsedData.insights.slice(0, 5); // Paksa tepat 5 elemen
+                        // Bersihkan markdown dan ambil tepat hingga 8 poin
+                        parsedData.insights = parsedData.insights.map(item => cleanMarkdown(item)).filter(i => i.trim().length > 5).slice(0, 8);
                     } else {
-                        parsedData.insights = ["-", "-", "-", "-", "-"];
+                        parsedData.insights = ["Analisis selesai namun tidak ada pola aksi spesifik yang terdeteksi."];
                     }
                 } catch (err) {
                     console.error("JSON Parsing Error");
@@ -242,7 +251,10 @@ Durasi Tahan : ${body.holdDuration || '-'}
                 return { 
                     statusCode: 200, 
                     headers: corsHeaders, 
-                    body: JSON.stringify({ insights: ["-", "-", "-", "-", "Sistem AI sedang sibuk. Mohon ulangi analisis Anda."] }) 
+                    body: JSON.stringify({ 
+                        insights: ["Sistem AI sedang sibuk memproses antrean panjang. Mohon coba lagi dalam beberapa menit."],
+                        cards: null
+                    }) 
                 };
             }
         }
@@ -349,7 +361,8 @@ Durasi Tahan : ${body.holdDuration || '-'}
             headers: corsHeaders, 
             body: JSON.stringify({ 
                 reply: 'Maaf, terjadi interupsi tak terduga pada server. Mohon coba sesaat lagi.',
-                insights: ["-", "-", "-", "-", "-"] // Cegah error destructuring di frontend
+                insights: ["-", "-", "-", "-", "-", "-", "-"],
+                cards: null
             }) 
         };
     }
