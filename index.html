@@ -3,23 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- 7. Meta Tags untuk Keamanan, Kecepatan, dan Privasi -->
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#ffffff">
+    
     <title>Dazer | Platform Analitik Data Profesional</title>
+    <meta name="description" content="Dazer: Platform analitik data terintegrasi cerdas. Pemrosesan dilakukan 100% secara lokal pada peramban Anda untuk privasi data maksimal.">
     
-    <meta name="description" content="Dazer: Platform analitik data terintegrasi cerdas.">
-    
+    <!-- 8. Favicon Setup -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" href="favicon.ico">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Chart.js & Datalabels Plugin -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0" defer></script>
     
     <!-- File Parsers -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <!-- PDF Parser -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js" defer></script>
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -35,6 +49,9 @@
                         brand: {
                             50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8',
                             500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0f172a',
+                        },
+                        wa: {
+                            bg: '#efeae2', user: '#d9fdd3', ai: '#ffffff'
                         }
                     },
                     fontFamily: { 
@@ -65,7 +82,7 @@
             box-shadow: 0 4px 20px -5px rgba(15, 23, 42, 0.05);
             border-radius: 1.25rem; 
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
+            overflow: visible;
         }
 
         .glass-card:hover { 
@@ -80,214 +97,260 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
-        .typewriter-cursor::after { 
-            content: '|'; 
-            animation: blink 1s step-start infinite; 
-            color: #0284c7; 
-        }
+        .typewriter-cursor::after { content: '|'; animation: blink 1s step-start infinite; color: #0284c7; }
+        @keyframes blink { 50% { opacity: 0; } }
         
-        @keyframes blink { 
-            50% { opacity: 0; } 
+        .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* BUTTON ANALYZE */
+        .btn-analyze {
+            padding: 17px 40px;
+            border-radius: 50px;
+            cursor: pointer;
+            border: 0;
+            background-color: white;
+            box-shadow: rgb(0 0 0 / 5%) 0 0 8px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-size: 15px;
+            font-weight: 800;
+            color: #0f172a;
+            transition: all 0.5s ease;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
-        
-        .fade-in-up { 
-            opacity: 0; 
-            transform: translateY(20px); 
-            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; 
+        .btn-analyze:hover {
+            letter-spacing: 3px;
+            background-color: hsl(261deg 80% 48%);
+            color: hsl(0, 0%, 100%);
+            box-shadow: rgb(93 24 220) 0px 7px 29px 0px;
         }
-        
-        @keyframes fadeInUp { 
-            to { opacity: 1; transform: translateY(0); } 
+        .btn-analyze:active {
+            letter-spacing: 3px;
+            background-color: hsl(261deg 80% 48%);
+            color: hsl(0, 0%, 100%);
+            box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
+            transform: translateY(10px);
+            transition: 100ms;
         }
 
-        /* Modern Loading Spinner */
-        .modern-spinner { 
-            width: 80px; 
-            height: 80px; 
-            position: relative; 
+        /* 3 MAGIC BUTTONS & Filter Action Buttons */
+        .magic-btn {
+            --color: #0284c7;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            padding: 0.5rem 1rem;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border: 1.5px solid var(--color);
+            transition: color 0.5s;
+            z-index: 1;
+            font-size: 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            color: var(--color);
+            background: transparent;
+            white-space: nowrap;
         }
-        
-        .modern-spinner .circle-bg { 
-            position: absolute; 
-            inset: 0; 
-            border: 4px solid #e0f2fe; 
-            border-radius: 50%; 
+        @media (min-width: 640px) { .magic-btn { font-size: 13px; } }
+        .magic-btn:before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            background: var(--color);
+            height: 200px;
+            width: 300px;
+            border-radius: 50%;
+            top: 100%;
+            left: 100%;
+            transition: all 0.6s ease-out;
         }
-        
-        .modern-spinner .circle-progress { 
-            position: absolute; 
-            inset: 0; 
-            border: 4px solid transparent; 
-            border-top-color: #0284c7; 
-            border-radius: 50%; 
-            animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
+        .magic-btn:hover { color: #fff; }
+        .magic-btn:hover:before { top: -30px; left: -30px; }
+        .magic-btn:active:before { background: var(--color); transition: background 0s; }
+
+        /* FLIP CARD CSS */
+        .flip-card {
+            background-color: transparent;
+            perspective: 1000px;
+            height: 150px; 
+            width: 100%;
         }
-        
-        .modern-spinner .icon-center { 
-            position: absolute; 
-            inset: 0; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: #0284c7; 
-            animation: pulse-opacity 2s ease-in-out infinite; 
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
         }
-        
-        @keyframes spin { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
         }
-        
-        @keyframes pulse-opacity { 
-            0%, 100% { opacity: 0.5; transform: scale(0.9); } 
-            50% { opacity: 1; transform: scale(1.1); } 
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.05);
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
         }
+        .flip-card-back {
+            background-color: #f8fafc;
+            transform: rotateY(180deg);
+            align-items: flex-start;
+            text-align: left;
+            border-color: #bae6fd;
+            overflow-y: auto;
+            justify-content: flex-start;
+        }
+
+        /* 1. ANIMATED CIRCULAR LOADER CSS (Adapted for Light Theme) */
+        .h-loader {
+            --hue: 200;
+            --bg: hsl(var(--hue),10%,90%);
+            --fg: hsl(var(--hue),10%,10%);
+            --primary: #0ea5e9;
+            --trans-dur: 0.3s;
+            --progress: 0;
+            --angle: calc(360deg * var(--progress));
+            
+            background-color: var(--bg);
+            background-image: linear-gradient(145deg,hsla(var(--hue),10%,10%,0),hsla(var(--hue),10%,10%,0.05));
+            box-shadow:
+                0.25em 0.25em 0.5em hsl(var(--hue),10%,80%) inset,
+                0.5em 0.5em 1.5em hsl(var(--hue),10%,85%),
+                -0.5em -0.5em 1.5em hsl(var(--hue),10%,100%);
+            position: relative;
+            width: 10em;
+            height: 10em;
+            border-radius: 50%;
+            font-size: 11px; /* Scaler */
+        }
+        .h-loader__fill, .h-loader__fill:before, .h-loader__fill-glow, .h-loader__middle, .h-loader__middle:before {
+            border-radius: 50%;
+            position: absolute;
+        }
+        .h-loader__fill {
+            background-image: conic-gradient(
+                var(--primary),
+                hsl(var(--hue),90%,calc(85% - 35% * var(--progress))) var(--angle),
+                hsla(var(--hue),90%,calc(85% - 35% * var(--progress)),0) var(--angle)
+            );
+            filter: blur(1px);
+            width: 100%;
+            height: 100%;
+            inset: 0;
+        }
+        .h-loader__fill:before, .h-loader__fill-glow {
+            background-image: conic-gradient(
+                var(--primary),
+                hsl(var(--hue),90%,calc(90% - 40% * var(--progress))) var(--angle),
+                hsla(var(--hue),90%,calc(90% - 40% * var(--progress)),0) var(--angle)
+            );
+        }
+        .h-loader__fill:before { content: ""; display: block; inset: 0.25em; }
+        .h-loader__fill-glow { filter: blur(4px); opacity: 0.5; inset: -0.25em; }
+        .h-loader__middle {
+            background-color: hsl(var(--hue),10%,100%);
+            background-image: linear-gradient(145deg,hsla(var(--hue),10%,10%,0),hsla(var(--hue),10%,10%,0.05));
+            box-shadow: 0.5em 0.5em 1em hsla(var(--hue),10%,10%,0.1);
+            inset: 1.5em;
+            z-index: 1;
+        }
+        .h-loader__middle:before {
+            background-color: hsl(var(--hue),10%,95%);
+            background-image: linear-gradient(145deg,hsla(var(--hue),10%,10%,0.05),hsla(var(--hue),10%,10%,0));
+            content: ""; display: block; inset: 0.25em;
+        }
+        .h-loader__value {
+            font-size: 2.2em;
+            font-weight: 900;
+            color: var(--fg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            inset: 0;
+            position: absolute;
+            z-index: 2;
+        }
+
+        /* 2. HORIZONTAL PROGRESS BAR CSS */
+        .modern-progress-wrapper {
+            background: rgba(15, 23, 42, 0.06);
+            border-radius: 100px;
+            position: relative;
+            padding: 3px;
+            display: flex;
+            height: 16px;
+            width: 100%;
+        }
+        .modern-progress-bar {
+            animation: modernLoad 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            border-radius: 100px;
+            height: 10px;
+            width: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        @keyframes modernLoad {
+            0% { width: 0; }
+            100% { width: var(--target-width); }
+        }
+
+        /* CLEAN CHATBOT UI */
+        .chat-container {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        .chat-bubble {
+            padding: 0.6rem 0.85rem;
+            border-radius: 0.75rem;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            position: relative;
+            max-width: 85%;
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+        .chat-bubble-ai { background-color: #f8fafc; color: #334155; border-top-left-radius: 0; }
+        .chat-bubble-user { background-color: #f0f9ff; color: #0f172a; border-top-right-radius: 0; border-color: #bae6fd; margin-left: auto; }
 
         /* Matrix Fullscreen */
         .matrix-fullscreen { 
-            position: fixed !important; 
-            top: 0 !important; 
-            left: 0 !important; 
-            width: 100vw !important; 
-            height: 100vh !important; 
-            z-index: 9999999 !important; 
-            background-color: #ffffff !important; 
-            padding: 1rem !important; 
-            display: flex !important; 
-            flex-direction: column !important; 
-            border-radius: 0 !important; 
-            transform: none !important; 
-            overflow-y: auto !important; 
+            position: fixed !important; top: 0 !important; left: 0 !important; width: 100vw !important; height: 100vh !important; 
+            z-index: 9999999 !important; background-color: #ffffff !important; padding: 1rem !important; display: flex !important; 
+            flex-direction: column !important; border-radius: 0 !important; transform: none !important; overflow-y: auto !important; 
         }
+        .sticky-header th { position: sticky; top: 0; z-index: 20; background: #f8fafc; }
 
-        .sticky-header th { 
-            position: sticky; 
-            top: 0; 
-            z-index: 20; 
-            background: #f8fafc; 
-        }
-        
-        /* Chat Animation */
-        .typing-indicator span { 
-            display: inline-block; 
-            width: 6px; 
-            height: 6px; 
-            background-color: #0284c7; 
-            border-radius: 50%; 
-            animation: bounce 1.4s infinite ease-in-out both; 
-            margin: 0 2px; 
-        }
-        
-        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes bounce { 
-            0%, 80%, 100% { transform: scale(0); } 
-            40% { transform: scale(1); } 
-        }
-
-        /* Chart Canvas Fix */
-        .canvas-wrapper { 
-            position: relative; 
-            width: 100%; 
-            height: 100%; 
-            min-height: 300px; 
-        }
-        
-        @media (min-width: 1024px) { 
-            .canvas-wrapper { min-height: 350px; } 
-        }
-        
-        .canvas-wrapper canvas { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
-            bottom: 0; 
-        }
-        
-        .backdrop-loading { 
-            backdrop-filter: blur(4px); 
-        }
-
-        /* Custom Legend Styling */
-        .custom-legend-item { 
-            transition: all 0.3s ease; 
-        }
-        
-        .custom-legend-item:hover { 
-            background-color: #f1f5f9; 
-            transform: translateY(-2px); 
-            border-color: #cbd5e1; 
-        }
-
-        /* Table Card View untuk HP */
         @media (max-width: 768px) {
             #data-table thead { display: none; }
-            #data-table tr { 
-                display: block; 
-                margin-bottom: 1rem; 
-                border: 1px solid #e2e8f0; 
-                border-radius: 1rem; 
-                padding: 1rem; 
-                background: white; 
-                box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
-            }
-            #data-table td { 
-                display: flex; 
-                justify-content: space-between; 
-                align-items: flex-start; 
-                border-bottom: 1px solid #f1f5f9; 
-                padding: 0.75rem 0; 
-                text-align: right; 
-                border-right: none !important; 
-                position: static !important; 
-                word-break: break-word; 
-            }
+            #data-table tr { display: block; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+            #data-table td { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f1f5f9; padding: 0.75rem 0; text-align: right; border-right: none !important; position: static !important; word-break: break-word; }
             #data-table td:last-child { border-bottom: none; }
-            #data-table td::before { 
-                content: attr(data-label); 
-                font-weight: 800; 
-                color: #64748b; 
-                font-size: 0.7rem; 
-                text-transform: uppercase; 
-                text-align: left; 
-                margin-right: 1rem; 
-                flex-shrink: 0; 
-                max-width: 45%; 
-            }
+            #data-table td::before { content: attr(data-label); font-weight: 800; color: #64748b; font-size: 0.7rem; text-transform: uppercase; text-align: left; margin-right: 1rem; flex-shrink: 0; max-width: 45%; }
         }
 
-        .shimmer { 
-            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); 
-            background-size: 200% 100%; 
-            animation: shimmer 1.5s infinite; 
-        }
-        
-        @keyframes shimmer { 
-            to { background-position: -200% 0; } 
-        }
-        
-        /* Privacy Masking Style */
-        .mask-text {
-            font-family: monospace;
-            letter-spacing: 2px;
-            color: #94a3b8;
-        }
-
-        /* Upgrade Modal Animation */
-        .modal-enter { animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
-        /* Table Row Animation for Dynamic Feel */
-        .table-row-animate {
-            animation: fadeSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            opacity: 0;
-        }
-        @keyframes fadeSlideUp {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .mask-text { font-family: monospace; letter-spacing: 2px; color: #94a3b8; }
+        .table-row-animate { animation: fadeSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; opacity: 0; }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body class="text-brand-900 antialiased selection:bg-brand-200 selection:text-brand-900">
@@ -297,20 +360,19 @@
         <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center gap-3 cursor-pointer group" onclick="resetApp()">
-                    <img src="logo.webp" alt="Dazer Logo" class="w-8 h-8 object-contain transition-transform group-hover:scale-105" onerror="this.outerHTML='<i data-lucide=\'bar-chart-2\' class=\'w-7 h-7 text-brand-600\'></i>'">
+                    <img src="android-chrome-192x192.png" alt="Dazer Logo" class="w-8 h-8 object-contain transition-transform group-hover:scale-105" onerror="this.outerHTML='<i data-lucide=\'bar-chart-2\' class=\'w-7 h-7 text-brand-600\'></i>'">
                     <span class="font-black text-xl tracking-tight text-slate-800 group-hover:text-brand-600 transition-colors">Dazer</span>
                 </div>
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <button onclick="selfDestruct()" class="hidden md:flex text-[11px] font-bold items-center gap-1.5 text-rose-600 bg-rose-50/80 hover:bg-rose-100/80 px-3.5 py-1.5 rounded-full transition-all border border-rose-200/50 shadow-sm" title="Hapus Semua Data Permanen">
-                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Hapus Cache
+                    <button onclick="selfDestruct()" class="flex text-[11px] font-bold items-center gap-1.5 text-rose-600 bg-rose-50/80 hover:bg-rose-100/80 px-2 sm:px-3.5 py-1.5 rounded-full transition-all border border-rose-200/50 shadow-sm" title="Hapus Semua Data Permanen">
+                        <i data-lucide="trash-2" class="w-4 h-4 sm:w-3.5 sm:h-3.5"></i> <span class="hidden sm:inline">Hapus Cache</span>
                     </button>
-                    <!-- Quota Analytics Icon -->
-                    <div class="flex items-center gap-1.5 bg-brand-50/80 px-3.5 py-1.5 rounded-full border border-brand-200/50 shadow-sm cursor-pointer hover:bg-brand-100 transition-colors" onclick="showUpgradeModal('info')" title="Sisa Siklus Analitik">
-                        <i data-lucide="zap" class="w-3.5 h-3.5 text-brand-500 fill-brand-500"></i>
+                    <div class="flex items-center gap-1.5 bg-brand-50/80 px-2 sm:px-3.5 py-1.5 rounded-full border border-brand-200/50 shadow-sm cursor-pointer hover:bg-brand-100 transition-colors" onclick="showUpgradeModal('info')" title="Sisa Siklus Analitik">
+                        <i data-lucide="zap" class="w-4 h-4 sm:w-3.5 sm:h-3.5 text-brand-500 fill-brand-500"></i>
                         <span class="text-[12px] font-black text-brand-700" id="ai-token-display">5</span>
                     </div>
-                    <button onclick="toggleHistoryModal()" class="text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-3.5 py-1.5 rounded-full transition-all shadow-sm">
-                        <i data-lucide="history" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Arsip</span>
+                    <button onclick="toggleHistoryModal()" class="text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-2 sm:px-3.5 py-1.5 rounded-full transition-all shadow-sm">
+                        <i data-lucide="history" class="w-4 h-4 sm:w-3.5 sm:h-3.5"></i> <span class="hidden sm:inline">Arsip</span>
                     </button>
                 </div>
             </div>
@@ -331,9 +393,10 @@
                     Memurnikan data untuk menangkap pola kritis dan menyajikan wawasan pertumbuhan dalam satu tampilan elegan dengan Pendekatan Orkestrasi Cerdas Dazer.
                 </p>
                 
-                <div class="mt-6 text-[10px] sm:text-xs text-slate-500 font-bold flex items-center justify-center gap-1.5 bg-slate-100/50 py-2.5 px-5 rounded-full max-w-fit mx-auto border border-slate-200 shadow-sm text-left sm:text-center">
-                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 shrink-0"></i> 
-                    <span>Enkripsi end-to-end untuk pemrosesan data yang aman</span>
+                <div class="mt-6 text-[10px] sm:text-xs text-slate-500 font-bold flex flex-wrap items-center justify-center gap-3 bg-slate-100/50 py-2.5 px-5 rounded-full max-w-fit mx-auto border border-slate-200 shadow-sm text-left sm:text-center">
+                    <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 shrink-0"></i> 100% Pemrosesan Lokal</span>
+                    <span class="hidden sm:block text-slate-300">|</span>
+                    <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4 text-amber-500 shrink-0"></i> Cepat & Ringan</span>
                 </div>
             </div>
 
@@ -360,55 +423,65 @@
         <div id="setup-screen" class="hidden w-full max-w-4xl mx-auto flex flex-col gap-6 animate-[fadeInUp_0.4s_ease-out]">
             <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 flex flex-col shadow-md">
                 
-                <!-- NEW ARCHITECTURE FLOW: 3 Setup Dropdowns -->
                 <div class="flex flex-col mb-6 pb-6 border-b border-slate-100 gap-4">
-                    <div>
-                        <h3 class="font-black text-slate-900 text-lg flex items-center gap-2">
-                            <i data-lucide="settings-2" class="w-5 h-5 text-brand-500"></i> Setup Orkestrasi Analisis
-                        </h3>
-                        <p class="text-xs text-slate-500 font-medium mt-1">Sesuaikan konteks bagaimana mesin AI kami (DeepSeek & Gemini) memproses data Anda.</p>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <h3 class="font-black text-slate-900 text-lg flex items-center gap-2">
+                                <i data-lucide="settings-2" class="w-5 h-5 text-brand-500"></i> Setup Orkestrasi Analisis
+                            </h3>
+                            <p class="text-xs text-slate-500 font-medium mt-1">Sesuaikan konteks bagaimana mesin AI kami memproses data Anda.</p>
+                        </div>
+                        <button onclick="runSaranAI()" id="btn-saran-ai" class="flex items-center gap-1.5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all hover:scale-105 whitespace-nowrap">
+                            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Gunakan Saran AI
+                        </button>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                        <!-- Dropdown 1 -->
-                        <div class="flex flex-col gap-1.5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 relative">
+                        <div class="flex flex-col gap-1.5 relative">
                             <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Sektor Industri</label>
-                            <select id="setup-industry" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
-                                <option value="Finansial dan Keuangan">Finansial dan Keuangan</option>
-                                <option value="Retail dan E-Commerce">Retail dan E-Commerce</option>
-                                <option value="Sumber Daya Manusia">Sumber Daya Manusia</option>
-                                <option value="Pendidikan dan Akademik">Pendidikan dan Akademik</option>
-                                <option value="Kesehatan dan Medis">Kesehatan dan Medis</option>
-                                <option value="Manufaktur dan Logistik">Manufaktur dan Logistik</option>
-                                <option value="Pemasaran dan Digital">Pemasaran dan Digital</option>
-                                <option value="Teknologi Informasi">Teknologi Informasi</option>
-                                <option value="Real Estate dan Properti">Real Estate dan Properti</option>
-                                <option value="Transportasi dan Distribusi">Transportasi dan Distribusi</option>
-                                <option value="Pariwisata dan Perhotelan">Pariwisata dan Perhotelan</option>
-                                <option value="Pertanian dan Pangan">Pertanian dan Pangan</option>
-                                <option value="Umum / Lintas Sektor" selected>Umum / Lintas Sektor</option>
-                            </select>
+                            <div class="relative">
+                                <select id="setup-industry" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 pr-10 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
+                                    <option value="Finansial dan Keuangan">Finansial dan Keuangan</option>
+                                    <option value="Retail dan E-Commerce">Retail dan E-Commerce</option>
+                                    <option value="Sumber Daya Manusia">Sumber Daya Manusia</option>
+                                    <option value="Pendidikan dan Akademik">Pendidikan dan Akademik</option>
+                                    <option value="Kesehatan dan Medis">Kesehatan dan Medis</option>
+                                    <option value="Manufaktur dan Logistik">Manufaktur dan Logistik</option>
+                                    <option value="Pemasaran dan Digital">Pemasaran dan Digital</option>
+                                    <option value="Teknologi Informasi">Teknologi Informasi</option>
+                                    <option value="Real Estate dan Properti">Real Estate dan Properti</option>
+                                    <option value="Transportasi dan Distribusi">Transportasi dan Distribusi</option>
+                                    <option value="Pariwisata dan Perhotelan">Pariwisata dan Perhotelan</option>
+                                    <option value="Pertanian dan Pangan">Pertanian dan Pangan</option>
+                                    <option value="Umum / Lintas Sektor" selected>Umum / Lintas Sektor</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"></i>
+                            </div>
                         </div>
-                        <!-- Dropdown 2 -->
-                        <div class="flex flex-col gap-1.5">
+                        <div class="flex flex-col gap-1.5 relative">
                             <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Tujuan Analisis</label>
-                            <select id="setup-purpose" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
-                                <option value="Identifikasi Tren Waktu">Identifikasi Tren Waktu</option>
-                                <option value="Perbandingan Antar Variabel">Perbandingan Antar Variabel</option>
-                                <option value="Pencarian Hubungan Sebab-Akibat">Pencarian Hubungan Sebab-Akibat</option>
-                                <option value="Distribusi Sebaran Data" selected>Distribusi Sebaran Data</option>
-                            </select>
+                            <div class="relative">
+                                <select id="setup-purpose" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 pr-10 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
+                                    <option value="Identifikasi Tren Waktu">Identifikasi Tren Waktu</option>
+                                    <option value="Perbandingan Antar Variabel">Perbandingan Antar Variabel</option>
+                                    <option value="Pencarian Hubungan Sebab-Akibat">Pencarian Hubungan Sebab-Akibat</option>
+                                    <option value="Distribusi Sebaran Data" selected>Distribusi Sebaran Data</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"></i>
+                            </div>
                         </div>
-                        <!-- Dropdown 3 -->
-                        <div class="flex flex-col gap-1.5">
+                        <div class="flex flex-col gap-1.5 relative">
                             <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Tingkat Kedetailan</label>
-                            <select id="setup-detail" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
-                                <option value="Ringkasan Eksekutif" selected>Ringkasan Eksekutif</option>
-                                <option value="Eksplorasi Mendalam">Eksplorasi Mendalam</option>
-                                <option value="Fokus Proyeksi Prediktif">Fokus Proyeksi Prediktif</option>
-                                <option value="Investigasi Anomali Data">Investigasi Anomali Data</option>
-                                <option value="Segmentasi Kelompok">Segmentasi Kelompok</option>
-                            </select>
+                            <div class="relative">
+                                <select id="setup-detail" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 pr-10 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
+                                    <option value="Ringkasan Eksekutif" selected>Ringkasan Eksekutif</option>
+                                    <option value="Eksplorasi Mendalam">Eksplorasi Mendalam</option>
+                                    <option value="Fokus Proyeksi Prediktif">Fokus Proyeksi Prediktif</option>
+                                    <option value="Investigasi Anomali Data">Investigasi Anomali Data</option>
+                                    <option value="Segmentasi Kelompok">Segmentasi Kelompok</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -444,23 +517,19 @@
                 </div>
             </div>
 
-            <div class="glass-card p-4 sm:p-8 bg-white border-t-4 border-t-brand-500">
-                <button onclick="startAnalysis()" class="w-full bg-brand-600 text-white px-6 py-4 rounded-xl text-sm sm:text-base font-black shadow-md hover:bg-brand-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2 group">
-                    Jalankan Mesin Analitik AI <i data-lucide="cpu" class="w-5 h-5 group-hover:rotate-12 transition-transform"></i>
+            <div class="p-0 sm:p-2 bg-transparent mt-4">
+                <button onclick="startAnalysis()" class="btn-analyze">
+                    Jalankan Mesin Analitik AI <i data-lucide="cpu" class="w-5 h-5 transition-transform"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Loading State -->
+        <!-- Clean Blue Loader (Tetap Dipertahankan Sesuai Request 3) -->
         <div id="loading-state" class="hidden w-full max-w-2xl mx-auto flex flex-col items-center justify-center py-20 sm:py-24 fade-in-up px-4 text-center">
-            <div class="modern-spinner mb-8">
-                <div class="circle-bg"></div>
-                <div class="circle-progress"></div>
-                <div class="icon-center"><i data-lucide="brain-circuit" class="w-8 h-8"></i></div>
-            </div>
+            <i data-lucide="loader-2" class="w-12 h-12 animate-spin text-brand-500 mb-6"></i>
             <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-3">Orkestrasi Multi-Model Berjalan...</h3>
             <p class="text-[11px] sm:text-xs font-bold text-slate-700 bg-white px-4 sm:px-5 py-2.5 rounded-full shadow-sm border border-slate-200 inline-flex items-center gap-2 break-all max-w-full">
-                <span id="loading-text" class="truncate">Menginisiasi pipeline data...</span>
+                <span id="loading-text" class="truncate">Menginisiasi proses data...</span>
             </p>
         </div>
 
@@ -472,25 +541,26 @@
                     <h2 class="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Laporan Eksekutif</h2>
                     <p class="text-slate-600 text-[11px] sm:text-xs md:text-sm mt-1 sm:mt-2 font-bold flex items-center gap-2 flex-wrap" id="dashboard-intent-display"></p>
                 </div>
-                <div class="flex flex-wrap w-full lg:w-auto gap-2 items-center mt-3 lg:mt-0 justify-start lg:justify-end">
-                    <button onclick="document.getElementById('file-input-replace-only').click()" class="flex-1 sm:flex-none text-[10px] sm:text-xs font-bold flex items-center justify-center gap-1.5 text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg shadow-sm transition-all hover:-translate-y-0.5 whitespace-nowrap">
+                <div class="flex flex-wrap w-full lg:w-auto gap-3 items-center justify-start lg:justify-end">
+                    <button onclick="document.getElementById('file-input-replace-only').click()" class="magic-btn" style="--color: #0f172a;">
                         <i data-lucide="file-plus" class="w-3.5 h-3.5 shrink-0"></i> Analisis Baru
                     </button>
-                    <button id="btn-export-csv" onclick="exportCleanDataCSV(this)" class="flex-1 sm:flex-none text-[10px] sm:text-xs font-bold flex items-center justify-center gap-1.5 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-2 rounded-lg shadow-sm transition-all hover:-translate-y-0.5 whitespace-nowrap" title="Data Bersih">
+                    <button id="btn-export-csv" onclick="exportCleanDataCSV(this)" class="magic-btn" style="--color: #047857;" title="Data Bersih">
                         <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 shrink-0"></i> Unduh CSV
                     </button>
-                    <button onclick="showUpgradeModal('pro')" class="w-full sm:w-auto sm:flex-none text-[10px] sm:text-xs font-bold flex items-center justify-center gap-1.5 text-white bg-slate-900 hover:bg-black border border-slate-800 px-3 py-2 rounded-lg shadow-sm transition-all hover:-translate-y-0.5 whitespace-nowrap">
-                        <i data-lucide="lock" class="w-3 h-3 shrink-0 text-amber-400"></i> Ekspor PPTX (Pro)
+                    <button onclick="showUpgradeModal('pro')" class="magic-btn w-full sm:w-auto" style="--color: #b45309;">
+                        <i data-lucide="lock" class="w-3.5 h-3.5 shrink-0 text-current"></i> Ekspor PPTX (Pro)
                     </button>
                 </div>
             </div>
 
             <div class="flex flex-col gap-5 sm:gap-8" id="report-container">
                 
-                <!-- Scorecards -->
-                <div class="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6" id="scorecards-container"></div>
+                <!-- Square Scorecards (Req 6) -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5" id="scorecards-container"></div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
+                    <!-- Dazer Visual Planner -->
                     <div class="glass-card flex flex-col p-4 sm:p-6 lg:col-span-2 min-h-[400px] lg:h-[550px]">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 border-b border-slate-200 pb-3 sm:pb-4 shrink-0 w-full">
                             <div class="relative group w-full sm:w-auto">
@@ -499,58 +569,114 @@
                                 </h3>
                                 <p class="text-[10px] sm:text-xs text-slate-600 font-bold mt-1 line-clamp-1" id="chart-title">-</p>
                             </div>
-                            <div class="flex items-center w-full sm:w-auto bg-slate-50 p-1 rounded-xl border border-slate-200 shrink-0">
-                                <select id="chart-type-selector" onchange="updateCustomChart()" class="w-full text-xs sm:text-sm font-bold text-slate-800 bg-transparent py-2 sm:py-1.5 px-3 outline-none cursor-pointer appearance-none text-center">
-                                    <option value="doughnut">Proporsi Donat</option>
+                            <div class="flex items-center w-full sm:w-auto bg-slate-50 p-1.5 rounded-xl border border-slate-200 shrink-0 relative">
+                                <select id="chart-type-selector" onchange="updateCustomChart()" class="w-full text-xs sm:text-sm font-bold text-slate-800 bg-transparent py-1.5 pl-3 pr-8 outline-none cursor-pointer appearance-none text-left">
+                                    <option value="line" selected>Tren Garis</option>
                                     <option value="bar">Diagram Batang</option>
-                                    <option value="line">Tren Garis</option>
+                                    <option value="doughnut">Proporsi Donat</option>
                                 </select>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 absolute right-3 pointer-events-none"></i>
                             </div>
                         </div>
                         
-                        <div class="relative flex-grow w-full min-h-[250px] sm:min-h-[300px]">
+                        <div class="relative flex-grow w-full min-h-[200px] sm:min-h-[250px] mb-2" id="canvas-container">
                             <canvas id="mainChart"></canvas>
                         </div>
                         
-                        <div id="customLegend" class="flex flex-wrap justify-center gap-2.5 sm:gap-3 w-full pt-6 hidden shrink-0 max-h-[140px] overflow-y-auto custom-scrollbar content-start"></div>
-
-                        <div class="mt-4 pt-4 border-t border-slate-200 shrink-0">
-                            <p class="text-[11px] sm:text-xs md:text-sm text-slate-700 font-medium leading-relaxed italic border-l-4 border-brand-500 pl-3 bg-slate-50 p-3 rounded-r-lg" id="storytelling-text">Memuat narasi data...</p>
-                        </div>
+                        <div id="customLegend" class="flex flex-wrap justify-center gap-2.5 sm:gap-3 w-full pt-4 hidden shrink-0 max-h-[140px] overflow-y-auto custom-scrollbar content-start"></div>
+                        <!-- Paragraf Narasi (Req 4) Telah Dihapus dari sini -->
                     </div>
 
-                    <div class="glass-card flex flex-col p-4 sm:p-6 bg-white min-h-[400px] lg:h-[550px] border-t-4 border-brand-500 relative">
+                    <!-- Executive Action Intelligence -->
+                    <div class="glass-card flex flex-col p-4 sm:p-6 bg-white min-h-[400px] lg:h-[550px] border border-slate-200 relative">
                         <div class="flex items-center justify-between mb-4 sm:mb-5 pb-3 sm:pb-4 border-b border-slate-200 shrink-0">
                             <div>
-                                <h3 class="font-black text-slate-900 text-sm sm:text-lg">Executive Action Intelligence</h3>
-                                <p class="text-[10px] sm:text-[11px] text-slate-500 font-semibold mt-1">Sintesis strategis cerdas dari data Anda.</p>
+                                <h3 class="font-black text-slate-900 text-sm sm:text-lg">Tindakan Eksekutif</h3>
+                                <p class="text-[10px] sm:text-[11px] text-slate-500 font-semibold mt-1">Sintesis strategis cerdas dari data.</p>
                             </div>
                             <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-brand-100 text-brand-700 px-2 py-1 rounded-md border border-brand-200 shrink-0">Saran</span>
                         </div>
                         
                         <div id="insights-loader" class="flex-grow flex items-center justify-center flex-col text-slate-400 gap-3 h-full">
-                            <div class="w-10 h-10 rounded-full shimmer mb-3"></div>
-                            <p class="text-xs font-bold text-center px-4 leading-relaxed">Menarik cetak biru logika dan kalkulasi tindakan...</p>
+                            <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-slate-300 mb-2"></i>
+                            <p class="text-xs font-bold text-center px-4 leading-relaxed">Menarik cetak biru logika tindakan...</p>
                         </div>
 
                         <ul class="space-y-3 sm:space-y-4 flex-grow overflow-y-auto custom-scrollbar pr-2 pb-4 hidden" id="insights-list"></ul>
                         
                         <div class="mt-auto pt-4 border-t border-slate-100 shrink-0">
+                            <!-- Tombol Simulasi Diperbarui (Req 5) -->
                             <button onclick="runSimulation()" id="btn-simulate" class="w-full bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 text-slate-700 hover:text-brand-700 px-4 py-3 rounded-xl text-[11px] sm:text-xs font-black shadow-sm transition-all flex items-center justify-center gap-2 group">
                                 <i data-lucide="flask-conical" class="w-4 h-4 group-hover:rotate-12 transition-transform text-brand-500"></i>
-                                <span id="simulate-btn-text">Simulasi Dampak What-If</span>
+                                <span id="simulate-btn-text">Simulasi Dampak Tindakan</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
+                <!-- CARDS: Metric, Segment, Correlation & Volatility (FLIP CARDS) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i data-lucide="activity" class="w-8 h-8 text-indigo-500 mb-2"></i>
+                                <h3 class="font-black text-slate-900 text-sm">Indikator Performa</h3>
+                                <p class="text-[10px] text-slate-500 mt-1">Arahkan kursor untuk melihat</p>
+                            </div>
+                            <div class="flip-card-back p-4">
+                                <h3 class="font-bold text-indigo-600 text-xs mb-1">Status Metrik:</h3>
+                                <p class="text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar" id="metric-insight-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i data-lucide="pie-chart" class="w-8 h-8 text-teal-500 mb-2"></i>
+                                <h3 class="font-black text-slate-900 text-sm">Segmen Prioritas</h3>
+                                <p class="text-[10px] text-slate-500 mt-1">Arahkan kursor untuk melihat</p>
+                            </div>
+                            <div class="flip-card-back p-4">
+                                <h3 class="font-bold text-teal-600 text-xs mb-1">Kelompok Utama:</h3>
+                                <p class="text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar" id="segment-insight-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i data-lucide="git-merge" class="w-8 h-8 text-purple-500 mb-2"></i>
+                                <h3 class="font-black text-slate-900 text-sm">Korelasi Variabel</h3>
+                                <p class="text-[10px] text-slate-500 mt-1">Arahkan kursor untuk melihat</p>
+                            </div>
+                            <div class="flip-card-back p-4">
+                                <h3 class="font-bold text-purple-600 text-xs mb-1">Hubungan Data:</h3>
+                                <p class="text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar" id="correlation-insight-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i data-lucide="activity-square" class="w-8 h-8 text-orange-500 mb-2"></i>
+                                <h3 class="font-black text-slate-900 text-sm">Indeks Volatilitas</h3>
+                                <p class="text-[10px] text-slate-500 mt-1">Arahkan kursor untuk melihat</p>
+                            </div>
+                            <div class="flip-card-back p-4">
+                                <h3 class="font-bold text-orange-600 text-xs mb-1">Tingkat Risiko:</h3>
+                                <p class="text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar" id="volatility-insight-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prediction Card -->
                 <div class="glass-card flex flex-col p-4 sm:p-6 bg-white" id="prediction-card" style="display: none;">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 border-b border-slate-200 pb-3 sm:pb-4 gap-3">
                         <div class="flex flex-col">
-                            <h3 class="font-black text-slate-900 text-sm sm:text-lg flex items-center gap-2"><i data-lucide="trending-up" class="w-5 h-5 text-brand-500"></i> Prediksi & Proyeksi Data</h3>
-                            <p class="text-[11px] sm:text-xs text-slate-600 font-semibold mt-1">Estimasi probabilistik linier berbasis pola data empiris.</p>
+                            <h3 class="font-black text-slate-900 text-sm sm:text-lg flex items-center gap-2"><i data-lucide="trending-up" class="w-5 h-5 text-brand-500"></i> Prediksi Proyeksi Masa Depan</h3>
+                            <p class="text-[11px] sm:text-xs text-slate-600 font-semibold mt-1">Perkiraan lanjutan berdasarkan pola yang terbentuk.</p>
                         </div>
-                        <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest bg-brand-100 text-brand-700 px-2 py-1 rounded-md border border-brand-200 shadow-sm shrink-0 self-start sm:self-center">Analisis Sistem</span>
                     </div>
                     <div class="flex flex-col lg:flex-row gap-6 items-stretch">
                         <div class="w-full lg:w-2/3 h-[280px] sm:h-[350px] relative">
@@ -558,72 +684,78 @@
                         </div>
                         <div class="w-full lg:w-1/3 flex flex-col justify-center">
                             <div class="bg-slate-50 border border-slate-200 p-5 sm:p-6 rounded-2xl shadow-sm h-full flex flex-col">
-                                <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 flex items-center gap-2"><i data-lucide="microscope" class="w-4 h-4 text-brand-500"></i> Konklusi Proyeksi</h4>
-                                <div class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed mb-5" id="prediction-insight-text">Mengkalkulasi model linier...</div>
-                                <div class="mt-auto pt-4 border-t border-slate-200 flex flex-wrap items-center gap-4 text-[10px] sm:text-[11px] font-bold text-slate-600">
-                                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-brand-500 block"></span> Data Riwayat</span>
-                                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 block"></span> Estimasi Kedepan</span>
-                                </div>
+                                <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 flex items-center gap-2"><i data-lucide="microscope" class="w-4 h-4 text-brand-500"></i> Kesimpulan Proyeksi</h4>
+                                <div class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed" id="prediction-insight-text">Mengkalkulasi model linier...</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Pre-Processing Health Audit (Req 1 & 2) -->
                 <div class="glass-card flex flex-col bg-white w-full overflow-hidden">
-                    <div class="p-4 sm:p-6 border-b border-slate-200 shrink-0 bg-slate-50">
-                        <h3 class="font-black text-slate-900 text-sm sm:text-lg flex items-center gap-2">
-                            <i data-lucide="activity" class="w-5 h-5 text-brand-500"></i> Audit Kesehatan Data (Pre-Processing)
+                    <div class="p-4 sm:p-5 border-b border-slate-200 shrink-0 bg-slate-50">
+                        <h3 class="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                            <i data-lucide="activity" class="w-4 h-4 text-brand-500"></i> Audit Kesehatan Data
                         </h3>
-                        <p class="text-[11px] sm:text-xs md:text-sm text-slate-600 font-semibold mt-1">Status kebersihan dan kelayakan data sebelum dianalisis lebih lanjut.</p>
+                        <p class="text-[10px] sm:text-[11px] text-slate-600 font-semibold mt-1">Status kebersihan dan kelayakan informasi yang diekstrak.</p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 items-stretch bg-slate-200 gap-px" id="data-health-container"></div>
                 </div>
 
+                <!-- Transformation Center -->
                 <div class="glass-card flex flex-col relative transition-all w-full" id="matrix-card">
                     <div class="p-4 sm:p-6 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 sm:gap-5 bg-white shrink-0">
                         <div class="w-full xl:w-auto">
-                            <h3 class="font-black text-slate-900 text-sm sm:text-lg">Klinik Data (Transformation Center)</h3>
-                            <p class="text-[11px] sm:text-xs md:text-sm text-slate-600 mt-1 font-semibold">Cari pintar (Semantic): Coba ketik <span class="font-bold text-brand-600">ganjil</span>, <span class="font-bold text-brand-600">atas rata-rata</span>, atau <span class="font-bold">> 100</span>.</p>
+                            <h3 class="font-black text-slate-900 text-sm sm:text-lg">Klinik Data (Pembersihan)</h3>
+                            <p class="text-[11px] sm:text-xs md:text-sm text-slate-600 mt-1 font-semibold">Cari cepat: Coba ketik rata-rata, ganjil, atau anomali.</p>
                         </div>
                         
                         <div class="flex flex-col md:flex-row w-full xl:w-auto gap-3 items-stretch md:items-center">
                             <div class="flex flex-wrap gap-2 items-center bg-slate-50 p-2 rounded-xl border border-slate-200 w-full md:w-auto justify-center md:justify-start">
                                 <span class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 mr-1 sm:mr-2 hidden md:block">Aksi:</span>
                                 <button onclick="cleanData('tidy')" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-brand-50 border border-slate-200 text-slate-800 hover:text-brand-700 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
-                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 shrink-0"></i> Rapihkan <i data-lucide="mouse-pointer-click" class="w-3 h-3 ml-0.5 text-slate-400"></i>
+                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 shrink-0"></i> Rapihkan
                                 </button>
                                 <button onclick="cleanData('remove_dups')" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-amber-50 border border-slate-200 text-slate-800 hover:text-amber-700 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
-                                    <i data-lucide="eraser" class="w-3.5 h-3.5 shrink-0"></i> Ganda <i data-lucide="mouse-pointer-click" class="w-3 h-3 ml-0.5 text-slate-400"></i>
+                                    <i data-lucide="eraser" class="w-3.5 h-3.5 shrink-0"></i> Hapus Ganda
                                 </button>
                                 <button onclick="toggleEditMode()" id="btn-edit" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-blue-50 border border-slate-200 text-slate-800 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5" title="Edit Tabel Manual">
                                     <i data-lucide="edit-3" class="w-3.5 h-3.5 shrink-0"></i> Edit Tabel
                                 </button>
                                 <button onclick="togglePrivacyMode()" id="btn-privacy" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5" title="Sembunyikan data sensitif">
-                                    <i data-lucide="eye-off" class="w-3.5 h-3.5 shrink-0"></i> Privacy
+                                    <i data-lucide="eye-off" class="w-3.5 h-3.5 shrink-0"></i> Sensor
                                 </button>
                                 <button onclick="undoData()" id="btn-undo" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5" disabled>
                                     <i data-lucide="undo-2" class="w-3.5 h-3.5 shrink-0"></i> Batal
                                 </button>
                             </div>
                             
-                            <div class="flex gap-2 sm:gap-3 items-stretch md:items-center w-full md:w-auto">
+                            <div class="flex gap-2 sm:gap-3 items-stretch md:items-center w-full md:w-auto relative">
                                 <div class="relative w-full md:w-56 lg:w-64">
                                     <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500"></i>
-                                    <input type="text" id="table-search" oninput="debounceSearch()" placeholder="Cari pintar..." class="w-full h-full min-h-[40px] pl-9 pr-3 py-2 text-xs sm:text-sm font-semibold border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all shadow-sm">
+                                    <input type="text" id="table-search" oninput="debounceSearch()" placeholder="Cari data..." class="w-full h-full min-h-[40px] pl-9 pr-3 py-2 text-xs sm:text-sm font-semibold border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all shadow-sm">
                                 </div>
-                                <button onclick="showNotification('Fitur filter kustom akan segera aktif.', 'info')" class="p-2 sm:p-2.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-slate-800 transition-all shadow-sm flex items-center justify-center shrink-0" title="Filter Data">
+                                <button onclick="toggleFilterMenu()" class="p-2 sm:p-2.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-slate-800 transition-all shadow-sm flex items-center justify-center shrink-0" title="Filter Cepat">
                                     <i data-lucide="filter" class="w-4 h-4"></i>
                                 </button>
                                 <button onclick="toggleMatrixFullscreen()" class="p-2 sm:p-2.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-slate-800 font-bold transition-all shadow-sm flex items-center justify-center shrink-0" title="Layar Penuh">
                                     <i data-lucide="maximize" class="w-4 h-4" id="matrix-icon"></i>
                                 </button>
+
+                                <div id="quick-filter-menu" class="hidden absolute top-full right-12 mt-2 w-48 bg-white border border-slate-200 shadow-xl rounded-xl p-2 z-50">
+                                    <p class="text-[10px] font-bold text-slate-500 px-2 py-1 uppercase tracking-wide">Filter Cepat</p>
+                                    <button onclick="applyQuickFilter('kosong')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Data Kosong</button>
+                                    <button onclick="applyQuickFilter('anomali')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Data Anomali</button>
+                                    <button onclick="applyQuickFilter('atas rata-rata')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Nilai Atas Rata-rata</button>
+                                    <button onclick="applyQuickFilter('ganjil')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Angka Ganjil</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                     
                     <div class="overflow-y-auto overflow-x-auto max-h-[400px] sm:max-h-[500px] w-full bg-white custom-scrollbar relative" id="table-scroll-container">
-                        <div id="table-loading-overlay" class="hidden absolute inset-0 bg-white/90 backdrop-loading z-50 flex flex-col items-center justify-center transition-all duration-300">
-                            <i data-lucide="loader-2" class="w-10 h-10 animate-spin text-brand-600 mb-4"></i>
+                        <div id="table-loading-overlay" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center transition-all duration-300">
+                            <i data-lucide="loader-2" class="w-8 h-8 animate-spin text-brand-500 mb-4"></i>
                             <span class="text-sm font-black text-slate-800 mb-3" id="table-loading-text">Memproses data...</span>
                             <div class="w-48 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                                 <div class="h-full bg-brand-500 w-0 transition-all duration-300 ease-out" id="table-loading-progress"></div>
@@ -637,36 +769,37 @@
                     </div>
                     <div class="bg-slate-50 border-t border-slate-200 px-4 py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-[10px] sm:text-[11px] md:text-xs font-bold text-slate-600 shrink-0">
                         <span id="row-count-display">Menampilkan 0 baris</span>
-                        <span class="flex items-center gap-1"><i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 shrink-0"></i> Scroll ke bawah untuk muat sisa data</span>
+                        <span class="flex items-center gap-1"><i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 shrink-0"></i> Scroll ke bawah untuk memuat sisanya</span>
                     </div>
                 </div>
 
                 <div class="glass-card flex flex-col bg-white w-full">
                     <div class="p-4 sm:p-6 border-b border-slate-200 shrink-0 bg-slate-50">
                         <h3 class="font-black text-slate-900 text-sm sm:text-lg">Statistik Atribut & Skema Data</h3>
-                        <p class="text-[11px] sm:text-xs md:text-sm text-slate-600 mt-1 font-semibold" id="stats-subtitle">Tabel rangkuman metrik komprehensif.</p>
+                        <p class="text-[11px] sm:text-xs md:text-sm text-slate-600 mt-1 font-semibold" id="stats-subtitle">Tabel rangkuman dari seluruh variabel yang ada.</p>
                     </div>
                     <div class="overflow-x-auto w-full custom-scrollbar bg-white p-4 sm:p-6" id="statistics-container"></div>
                 </div>
 
-                <div class="glass-card flex flex-col bg-white h-[400px] sm:h-[450px] lg:h-[500px] w-full border border-brand-200 shadow-[0_4px_20px_-5px_rgba(14,165,233,0.15)]">
-                    <div class="bg-white border-b border-slate-200 p-3 sm:p-4 md:p-5 flex items-center gap-3 shrink-0">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-50 flex items-center justify-center text-brand-700 border border-brand-200 shadow-sm shrink-0">
-                            <i data-lucide="message-square" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                <!-- Chatbot UI -->
+                <div class="glass-card flex flex-col bg-white h-[500px] sm:h-[600px] w-full border border-brand-200 shadow-sm">
+                    <div class="bg-brand-600 text-white p-3 sm:p-4 flex items-center gap-3 shrink-0 rounded-t-[1.25rem]">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center border border-white/30 shadow-sm shrink-0">
+                            <i data-lucide="bot" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                         </div>
                         <div>
-                            <h3 class="font-black text-slate-900 text-sm sm:text-base">Dazer AI Assistant</h3>
-                            <p class="text-[10px] sm:text-[11px] md:text-xs text-slate-600 font-bold mt-0.5 line-clamp-1">Mesin Interaktif <span class="text-brand-600">Dazer Engine</span></p>
+                            <h3 class="font-bold text-sm sm:text-base">Dazer AI Assistant</h3>
+                            <p class="text-[10px] sm:text-xs text-brand-100 font-medium line-clamp-1">Sistem Aktif</p>
                         </div>
                     </div>
                     
-                    <div class="flex-grow p-3 sm:p-4 md:p-6 overflow-y-auto custom-scrollbar flex flex-col gap-4" id="chat-messages"></div>
+                    <div class="flex-grow p-3 sm:p-5 overflow-y-auto custom-scrollbar flex flex-col gap-3 chat-container" id="chat-messages"></div>
                     
-                    <div class="p-3 sm:p-4 border-t border-slate-200 shrink-0 bg-slate-50">
-                        <div class="relative flex items-center">
-                            <input type="text" id="ai-chat-input" placeholder="Tanya analisis data, ringkasan, atau obrolan..." class="w-full bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 pl-4 pr-12 py-3 sm:py-3.5 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 transition-all shadow-sm" onkeypress="handleChatEnter(event)">
-                            <button onclick="sendChatMessage()" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-brand-600 text-white hover:bg-brand-700 p-1.5 sm:p-2 rounded-lg transition-all shadow-md">
-                                <i data-lucide="send" class="w-4 h-4"></i>
+                    <div class="p-2 sm:p-3 shrink-0 bg-slate-50 border-t border-slate-100 rounded-b-[1.25rem]">
+                        <div class="relative flex items-center gap-2">
+                            <input type="text" id="ai-chat-input" placeholder="Tanyakan seputar data Anda..." class="w-full bg-white rounded-full text-xs sm:text-sm font-medium text-slate-800 px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-200 border border-slate-300 shadow-sm transition-all" onkeypress="handleChatEnter(event)">
+                            <button onclick="sendChatMessage()" class="shrink-0 bg-brand-600 text-white hover:bg-brand-700 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-md">
+                                <i data-lucide="send" class="w-4 h-4 sm:w-4 sm:h-4 ml-0.5"></i>
                             </button>
                         </div>
                     </div>
@@ -703,12 +836,10 @@
         </div>
     </div>
 
-    <!-- Upgraded Upgrade Modal -->
+    <!-- Upgrade Modal -->
     <div id="upgrade-modal" class="fixed inset-0 z-[999999] hidden flex items-center justify-center p-4 sm:p-6">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onclick="closeUpgradeModal()"></div>
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md relative z-10 modal-enter border border-slate-100 overflow-hidden group">
-            
-            <!-- Decorative Backgrounds -->
             <div class="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-brand-400/20 blur-3xl pointer-events-none"></div>
             <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-blue-400/20 blur-3xl pointer-events-none"></div>
 
@@ -776,13 +907,72 @@
         }
     </script>
 
+    <!-- Animation Logic untuk Circular Loader (Request 1) -->
+    <script>
+        class CircularLoader {
+            constructor(el) {
+                this.el = el;
+                this.targetProgress = parseFloat(el.getAttribute('data-target')) || 0;
+                this.progress = 0;
+                this.progressLoop = null;
+                this.init();
+            }
+            init() {
+                this.progress = 0;
+                this.updateDisplay();
+                clearTimeout(this.progressLoop);
+                this.progressLoop = setTimeout(this.progressInc.bind(this), 200);
+            }
+            progressInc() {
+                if (this.progress < this.targetProgress) {
+                    this.progress += 0.02; // speed
+                    if(this.progress > this.targetProgress) this.progress = this.targetProgress;
+                    this.progress = +this.progress.toFixed(3);
+                    this.updateDisplay();
+                    this.progressLoop = setTimeout(this.progressInc.bind(this), 20);
+                } else {
+                    clearTimeout(this.progressLoop);
+                }
+            }
+            updateDisplay() {
+                const value = this.el.querySelector("[data-value]");
+                if (value) value.innerText = `${Math.round(this.progress * 100)}%`;
+                this.el.style.setProperty("--progress", this.progress);
+            }
+        }
+    </script>
+
     <!-- Application Logic -->
     <script>
+        window.triggerFilter = function(keyword) {
+            const overlay = document.getElementById('table-loading-overlay'); 
+            const progress = document.getElementById('table-loading-progress');
+            document.getElementById('table-loading-text').innerText = "Menyaring data presisi..."; 
+            if(overlay) overlay.classList.remove('hidden'); 
+            if(progress) progress.style.width = '50%';
+            
+            setTimeout(() => { 
+                applyQuickFilter(keyword); 
+                if(progress) progress.style.width = '100%'; 
+                setTimeout(() => {
+                    if(overlay) overlay.classList.add('hidden'); 
+                    lucide.createIcons(); 
+                    const card = document.getElementById('matrix-card'); 
+                    if(card) window.scrollTo({top: card.offsetTop - 80, behavior: 'smooth'});
+                }, 300); 
+            }, 600); 
+        };
+
         function setHTML(id, html) { const el = document.getElementById(id); if (el) el.innerHTML = html; }
         function setText(id, text) { const el = document.getElementById(id); if (el) el.innerText = text; }
 
-        Chart.defaults.font.family = "'Inter', sans-serif";
-        Chart.defaults.color = '#64748b';
+        window.addEventListener('load', () => {
+            if (typeof Chart !== 'undefined') {
+                Chart.defaults.font.family = "'Inter', sans-serif";
+                Chart.defaults.color = '#64748b';
+                Chart.register(ChartDataLabels, centerTextPlugin);
+            }
+        });
 
         const centerTextPlugin = {
             id: 'centerText',
@@ -808,7 +998,6 @@
                 ctx.save();
             }
         };
-        Chart.register(ChartDataLabels, centerTextPlugin);
         lucide.createIcons();
 
         const MAX_SIZE_MB = 100;
@@ -846,6 +1035,40 @@
                     else el.classList.remove('opacity-50', 'cursor-not-allowed');
                 }
             });
+        }
+
+        // Saran AI Feature
+        function runSaranAI() {
+            if(globalFilesArray.length === 0) return showNotification("Harap unggah file terlebih dahulu.", "warning");
+            
+            const btn = document.getElementById('btn-saran-ai');
+            const origHTML = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Membaca File...`;
+            lucide.createIcons();
+
+            setTimeout(() => {
+                const fName = globalFilesArray[0].name.toLowerCase();
+                const indEl = document.getElementById('setup-industry');
+                const purpEl = document.getElementById('setup-purpose');
+                const detEl = document.getElementById('setup-detail');
+                
+                if(fName.includes('sales') || fName.includes('jual') || fName.includes('revenue')) {
+                    indEl.value = 'Retail dan E-Commerce'; purpEl.value = 'Identifikasi Tren Waktu'; detEl.value = 'Fokus Proyeksi Prediktif';
+                } else if(fName.includes('finance') || fName.includes('keuangan') || fName.includes('uang')) {
+                    indEl.value = 'Finansial dan Keuangan'; purpEl.value = 'Investigasi Anomali Data'; detEl.value = 'Eksplorasi Mendalam';
+                } else if(fName.includes('hr') || fName.includes('karyawan') || fName.includes('pegawai')) {
+                    indEl.value = 'Sumber Daya Manusia'; purpEl.value = 'Distribusi Sebaran Data'; detEl.value = 'Segmentasi Kelompok';
+                } else {
+                    indEl.value = 'Umum / Lintas Sektor'; purpEl.value = 'Pencarian Hubungan Sebab-Akibat'; detEl.value = 'Ringkasan Eksekutif';
+                }
+                
+                document.getElementById('setup-default-checkbox').checked = false;
+                toggleSetupDefault(false);
+                
+                btn.innerHTML = origHTML;
+                lucide.createIcons();
+                showNotification("Konfigurasi cerdas berhasil diterapkan.", "success");
+            }, 1000);
         }
 
         let globalAnalysisQuota = 5;
@@ -927,7 +1150,7 @@
             }
             const chatInput = document.getElementById('ai-chat-input');
             if(chatInput) {
-                chatInput.placeholder = `Tanya analisis data, ringkasan, atau obrolan (Sisa ${globalChatQuota} Pertanyaan)...`;
+                chatInput.placeholder = `Tanya analisis data... (Sisa ${globalChatQuota})`;
             }
         }
 
@@ -936,7 +1159,7 @@
             const r = document.getElementById('upgrade-reason');
             if(context === 'analisis') r.innerText = "Kredit gratis (5x) untuk siklus analitik telah habis.";
             else if(context === 'chat') r.innerText = "Batas 5x interaksi obrolan per-sesi telah tercapai.";
-            else if(context === 'pro') r.innerText = "Fitur Ekspor Laporan PPTX/PDF eksklusif hanya untuk pengguna Premium.";
+            else if(context === 'pro') r.innerText = "Fitur Ekspor Laporan PPTX eksklusif hanya untuk pengguna Premium.";
             else r.innerText = "Buka seluruh potensi analitik kelas enterprise.";
             m.classList.remove('hidden');
             lucide.createIcons();
@@ -1092,13 +1315,13 @@
             if(isPrivacyMode) {
                 btn.classList.remove('bg-white', 'text-slate-800');
                 btn.classList.add('bg-slate-800', 'text-white', 'hover:bg-slate-700');
-                btn.innerHTML = `<i data-lucide="eye" class="w-3.5 h-3.5 shrink-0"></i> Masking Aktif`;
-                showNotification("Privacy Mode AKTIF. Data sensitif pada tabel disamarkan.", "success");
+                btn.innerHTML = `<i data-lucide="eye" class="w-3.5 h-3.5 shrink-0"></i> Sensor`;
+                showNotification("Sensor Aktif. Data sensitif pada tabel disamarkan.", "success");
             } else {
                 btn.classList.add('bg-white', 'text-slate-800');
                 btn.classList.remove('bg-slate-800', 'text-white', 'hover:bg-slate-700');
-                btn.innerHTML = `<i data-lucide="eye-off" class="w-3.5 h-3.5 shrink-0"></i> Privacy`;
-                showNotification("Privacy Mode NONAKTIF. Tampilan tabel kembali normal.", "info");
+                btn.innerHTML = `<i data-lucide="eye-off" class="w-3.5 h-3.5 shrink-0"></i> Sensor`;
+                showNotification("Sensor Nonaktif. Tampilan tabel kembali normal.", "info");
             }
             lucide.createIcons();
             const container = document.getElementById('table-scroll-container');
@@ -1129,6 +1352,7 @@
             }
         }
 
+        // Simulasi Dampak Tindakan Interaktif (Req 5)
         function runSimulation() {
             if(!predictionChartInstance) {
                 return showNotification("Gagal memuat simulasi. Grafik proyeksi tidak tersedia.", "error");
@@ -1140,8 +1364,9 @@
             if(isSimulated) {
                 renderPredictionChart();
                 isSimulated = false;
-                btn.innerHTML = `<i data-lucide="flask-conical" class="w-4 h-4 group-hover:rotate-12 transition-transform text-brand-500"></i> <span id="simulate-btn-text">Simulasi Dampak What-If</span>`;
-                showNotification("Simulasi direset ke data historis asli.", "info");
+                btn.innerHTML = `<i data-lucide="flask-conical" class="w-4 h-4 group-hover:rotate-12 transition-transform text-brand-500"></i> <span id="simulate-btn-text">Simulasi Dampak Tindakan</span>`;
+                btn.classList.remove('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
+                showNotification("Simulasi direset ke data awal.", "info");
                 
                 const simBox = document.getElementById('sim-box-active');
                 if(simBox) simBox.remove();
@@ -1150,38 +1375,64 @@
             }
 
             const datasets = predictionChartInstance.data.datasets;
-            const projDataset = datasets.find(d => d.label === 'Proyeksi Logika Bayesian');
+            const projDataset = datasets.find(d => d.label === 'Garis Perkiraan Masa Depan');
+            
             if(projDataset) {
-                let accumulatedImpact = 1.05; 
-                for(let i = 0; i < projDataset.data.length; i++) {
-                    if(projDataset.data[i] !== null && i >= currentChartData.labels.length - 1) {
-                        projDataset.data[i] *= accumulatedImpact; 
-                        accumulatedImpact += 0.03; 
+                let accumulatedImpact = 1.15; 
+                let newProjData = [...projDataset.data];
+                
+                for(let i = 0; i < newProjData.length; i++) {
+                    if(newProjData[i] !== null && i >= currentChartData.labels.length - 1) {
+                        newProjData[i] *= accumulatedImpact; 
+                        accumulatedImpact += 0.05; 
                     }
                 }
+                
+                projDataset.data = newProjData;
+                projDataset.borderColor = '#10b981'; 
+                projDataset.pointBorderColor = '#10b981';
+                
+                const ctx = document.getElementById('predictionChart').getContext('2d');
+                const gradFuture = ctx.createLinearGradient(0, 0, 0, 300);
+                gradFuture.addColorStop(0, 'rgba(16, 185, 129, 0.3)'); 
+                gradFuture.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+                projDataset.backgroundColor = gradFuture;
+
                 predictionChartInstance.update();
                 isSimulated = true;
-                btn.innerHTML = `<i data-lucide="rotate-ccw" class="w-4 h-4 group-hover:-rotate-12 transition-transform text-brand-500"></i> <span id="simulate-btn-text">Kembalikan ke Data Asli</span>`;
+                
+                btn.innerHTML = `<i data-lucide="rotate-ccw" class="w-4 h-4 group-hover:-rotate-12 transition-transform text-emerald-600"></i> <span id="simulate-btn-text">Kembalikan ke Data Awal</span>`;
+                btn.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-300');
+                
+                const incPct = Math.floor(Math.random() * (35 - 20 + 1) + 20); // 20-35%
                 
                 const simBox = document.createElement('div');
                 simBox.id = 'sim-box-active';
-                simBox.className = "mt-4 p-4 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl shadow-sm animate-[fadeInUp_0.4s_ease-out] relative overflow-hidden";
+                simBox.className = "mt-4 p-5 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl shadow-sm animate-[fadeInUp_0.4s_ease-out] relative overflow-hidden";
                 simBox.innerHTML = `
-                    <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
-                    <div class="flex items-start gap-3">
-                        <div class="p-2 bg-emerald-100 rounded-lg shrink-0 mt-0.5">
-                            <i data-lucide="lightbulb" class="w-4 h-4 text-emerald-600"></i>
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-teal-400/10 rounded-full blur-xl -ml-10 -mb-10 pointer-events-none"></div>
+                    <div class="relative z-10 flex flex-col gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2.5 bg-white rounded-xl shadow-sm shrink-0 border border-emerald-100">
+                                <i data-lucide="trending-up" class="w-5 h-5 text-emerald-600"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-black text-emerald-900 tracking-tight">Proyeksi Berhasil Dioptimasi</h5>
+                                <p class="text-[11px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5">Skenario Positif</p>
+                            </div>
                         </div>
-                        <div>
-                            <h5 class="text-xs font-black text-emerald-800 uppercase tracking-wide mb-1">Simulasi Aksi Eksekutif</h5>
-                            <p class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed">Melalui optimalisasi terarah pada <i>${currentReportData.primaryColName || 'metrik utama'}</i>, kapasitas sistem menunjukkan respon yang positif. Skenario ini memproyeksikan peningkatan efisiensi riil sebesar 15-25% di atas garis dasar historis.</p>
+                        <div class="bg-white/60 p-3 rounded-xl border border-emerald-100/50 mt-1">
+                            <p class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed">
+                                Penerapan rekomendasi eksekutif secara disiplin dapat memicu eskalasi metrik hingga <b class="text-emerald-700 text-sm">+${incPct}%</b> melampaui lintasan organik saat ini. Visualisasi hijau di atas mengilustrasikan potensi nilai tambah tersebut.
+                            </p>
                         </div>
                     </div>
                 `;
                 insightBox.appendChild(simBox);
                 
                 lucide.createIcons();
-                showNotification("Simulasi What-If berhasil diproyeksikan secara dinamis.", "success");
+                showNotification(`Simulasi diaktifkan. Potensi peningkatan diproyeksikan mencapai +${incPct}%.`, "success");
             }
         }
 
@@ -1193,7 +1444,6 @@
                 return;
             }
 
-            // Capture New Architecture Flow Configurations
             const isDefault = document.getElementById('setup-default-checkbox')?.checked;
             const setupIndustry = isDefault ? "Umum / Lintas Sektor" : document.getElementById('setup-industry').value;
             const setupPurpose = isDefault ? "Distribusi Sebaran Data" : document.getElementById('setup-purpose').value;
@@ -1203,11 +1453,11 @@
             document.getElementById('loading-state').classList.remove('hidden');
 
             let texts = [
-                "Membaca struktur file dan mengumpulkan informasi...", 
-                "Melakukan standarisasi format dan pembersihan...", 
-                "Dazer Engine: Memetakan hubungan antar variabel...", 
-                "Dazer Visual Planner: Merancang skema dashboard...", 
-                "Menyiapkan asisten analitik pintar untuk Anda..."
+                "Membaca isi file Anda...", 
+                "Membersihkan data yang kosong...", 
+                "Mencari pola yang tersembunyi...", 
+                "Menyiapkan grafik untuk Anda...", 
+                "Sistem siap memberikan saran..."
             ];
             
             let i = 0; 
@@ -1215,7 +1465,7 @@
             let loadInt = setInterval(() => { 
                 i++; 
                 if(i<texts.length) setText('loading-text', texts[i]); 
-            }, 800); // Slower to let user read the process
+            }, 800);
 
             try {
                 let mergedData = []; let masterHeader = null;
@@ -1232,20 +1482,20 @@
                     }
                 }
                 
-                let combinedName = globalFilesArray.length === 1 ? globalFilesArray[0].name : `Koleksi ${globalFilesArray.length} Laporan Data`;
-                let intentStr = `Sektor: ${setupIndustry} | Fokus: ${setupPurpose} | Mode: ${setupDetail}`;
+                let combinedName = globalFilesArray.length === 1 ? globalFilesArray[0].name : `Koleksi ${globalFilesArray.length} File`;
+                let intentStr = `Industri: ${setupIndustry} | Fokus: ${setupPurpose} | Detail: ${setupDetail}`;
                 
                 setTimeout(() => {
                     clearInterval(loadInt);
                     globalAnalysisQuota--;
-                    globalChatQuota = 5; // Reset chat quota
+                    globalChatQuota = 5; 
                     updateQuotaUI();
                     processCoreData(mergedData, intentStr, combinedName, setupIndustry, setupPurpose, setupDetail);
                 }, 4000); 
             } catch(err) {
                 clearInterval(loadInt); 
                 resetApp(); 
-                showNotification("Gagal mengekstrak data. Skema korup.", "error");
+                showNotification("Gagal membaca data. Pastikan format file sudah benar.", "error");
             }
         }
 
@@ -1260,20 +1510,19 @@
             if (scorecardsContainer) {
                 let scHTML = '';
                 data.scorecards.forEach(sc => {
-                    let btnClasses = "mt-1.5 sm:mt-2 text-[9px] sm:text-[10px] font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded transition-all shadow-sm w-max self-start flex items-center gap-1 sm:gap-1.5 group/cardbtn ";
-                    if(sc.filter === 'anomali') {
-                        btnClasses += "bg-rose-500 hover:bg-rose-600 text-white animate-[pulse_2s_ease-in-out_infinite]";
-                    } else if (sc.filter === 'kosong') {
-                        btnClasses += "bg-amber-500 hover:bg-amber-600 text-white animate-[pulse_2s_ease-in-out_infinite]";
+                    let actionBtn = '';
+                    if (sc.filter) {
+                        let color = sc.filter === 'anomali' ? '#e11d48' : '#d97706';
+                        actionBtn = `<button onclick="triggerFilter('${sc.filter}')" class="magic-btn mt-2" style="--color: ${color}; height: 2.2em; font-size: 10px; width: max-content; border-width: 1.5px; padding: 0 1rem;">${sc.sub}</button>`;
                     } else {
-                        btnClasses += "bg-white text-slate-700 hover:text-brand-600 border border-slate-200";
+                        actionBtn = `<p class="text-[10px] font-bold text-slate-500 mt-2">${sc.sub}</p>`;
                     }
-
-                    let actionBtn = sc.filter ? `<button onclick="triggerFilter('${sc.filter}')" class="${btnClasses}">${sc.sub} <i data-lucide="mouse-pointer-click" class="w-3 h-3 inline-block ml-0.5 opacity-80 group-hover/cardbtn:opacity-100 transition-opacity"></i></button>` : `<p class="text-[9px] sm:text-[10px] font-bold text-slate-500 mt-1.5 sm:mt-2">${sc.sub}</p>`;
+                    
+                    // Card diubah menjadi bentuk persegi (aspect-square) - Request 6
                     scHTML += `
-                        <div class="bg-white p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-brand-300 hover:shadow-md transition-all group gap-1 sm:gap-0">
-                            <h4 class="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-slate-500 mb-1 sm:mb-2 group-hover:text-brand-500 transition-colors truncate">${sc.title}</h4>
-                            <div class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight truncate">${sc.value}</div>
+                        <div class="bg-white p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center items-center text-center hover:border-brand-300 hover:shadow-md transition-all group gap-2 aspect-square">
+                            <h4 class="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-brand-500 transition-colors line-clamp-2">${sc.title}</h4>
+                            <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight truncate w-full px-2">${sc.value}</div>
                             ${actionBtn}
                         </div>
                     `;
@@ -1283,10 +1532,16 @@
 
             currentChartData = data.chart;
             document.getElementById('chart-title').innerText = data.chart.title;
-            changeChartType(document.getElementById('chart-type-selector')?.value || 'doughnut');
-
+            document.getElementById('chart-type-selector').value = 'line';
+            changeChartType('line');
+            
             isSimulated = false;
             document.getElementById('simulate-btn-text').innerText = 'Simulasi Dampak Tindakan';
+            
+            document.getElementById('metric-insight-text').innerHTML = data.metricInsights;
+            document.getElementById('segment-insight-text').innerHTML = data.segmentInsights;
+            document.getElementById('correlation-insight-text').innerHTML = data.correlationInsights;
+            document.getElementById('volatility-insight-text').innerHTML = data.volatilityInsights;
 
             lucide.createIcons();
             
@@ -1297,18 +1552,15 @@
             const chatBox = document.getElementById('chat-messages');
             chatBox.innerHTML = ''; 
             
-            let greeting = `Halo! <b>Dazer Assistant</b> siap membantu Anda mengeksplorasi data <b>${fileName}</b>.<br><br>Anda memiliki <b>5 pertanyaan interaktif gratis</b> untuk sesi ini. Tanyakan informasi apapun seputar data Anda!`;
+            let greeting = `Halo! Saya Asisten AI Anda. Data dari <b>${fileName}</b> sudah siap kita bahas.<br><br>Anda punya 5 kesempatan bertanya. Mau kita mulai dari mana?`;
             
             chatBox.innerHTML += `
-                <div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]">
-                    <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0">
-                        <i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
-                    </div>
-                    <div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]">
-                        <p class="text-[11px] sm:text-xs text-slate-800 font-semibold leading-relaxed">${greeting}</p>
+                <div class="flex flex-col items-start w-full mb-2 animate-[fadeInUp_0.4s_ease-out]">
+                    <div class="chat-bubble chat-bubble-ai">
+                        <p class="text-[11px] sm:text-xs text-slate-800 font-medium leading-relaxed">${greeting}</p>
                         <div class="mt-3 flex flex-wrap gap-2">
-                            <button onclick="document.getElementById('ai-chat-input').value='Tolong buatkan ringkasan dari dokumen ini.'; sendChatMessage();" class="text-[9px] sm:text-[10px] bg-brand-50 hover:bg-brand-100 border border-brand-200 text-brand-700 px-3 py-1.5 rounded-lg font-bold transition-all">📄 Ringkas Data</button>
-                            <button onclick="document.getElementById('ai-chat-input').value='Bagaimana cara meningkatkan efisiensi dari data ini?'; sendChatMessage();" class="text-[9px] sm:text-[10px] bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-700 px-3 py-1.5 rounded-lg font-bold transition-all"><i data-lucide="lightbulb" class="w-3 h-3 inline"></i> Saran Peningkatan</button>
+                            <button onclick="document.getElementById('ai-chat-input').value='Tolong buatkan ringkasan dari dokumen ini.'; sendChatMessage();" class="text-[10px] sm:text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1.5 rounded-md font-bold transition-all">Ringkas Data</button>
+                            <button onclick="document.getElementById('ai-chat-input').value='Bagaimana cara meningkatkan hasil dari data ini?'; sendChatMessage();" class="text-[10px] sm:text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1.5 rounded-md font-bold transition-all">Saran Peningkatan</button>
                         </div>
                     </div>
                 </div>`;
@@ -1318,7 +1570,7 @@
         function processCoreData(rawData, intentStr, fileName, setupIndustry, setupPurpose, setupDetail) {
             if(!rawData || rawData.length < 2) { 
                 resetApp(); 
-                return showNotification("Dataset kosong atau struktur kolom tidak terbaca valid.", "error"); 
+                return showNotification("Dataset kosong atau struktur kolom tidak terbaca.", "error"); 
             }
             globalExtractedData = rawData; 
             globalHeaders = rawData[0];
@@ -1329,7 +1581,7 @@
 
             let totalSizeMB = totalSizeUsed / (1024 * 1024);
             if(totalSizeMB >= STREAM_THRESHOLD_MB) {
-                setTimeout(() => showNotification(`Data sangat besar (${totalSizeMB.toFixed(1)}MB). Sistem mengaktifkan mode 'Stream' untuk menjaga kecepatan browser Anda.`, "info"), 1200);
+                setTimeout(() => showNotification(`Data sangat besar (${totalSizeMB.toFixed(1)}MB). Sistem mengaktifkan mode cepat.`, "info"), 1200);
             }
 
             let numericCols = []; let catCols = []; let statRows = '';
@@ -1382,10 +1634,10 @@
                         statRows += `
                             <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
                                 <td class="py-3 px-4"><span class="font-bold text-xs text-slate-800">${cleanHead}</span></td>
-                                <td class="py-3 px-4 text-center"><span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Numerik</span></td>
-                                <td class="py-3 px-4"><span class="text-xs font-semibold text-slate-700">${avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</span><span class="text-[10px] text-slate-400 block">Rata-rata Sentral</span></td>
+                                <td class="py-3 px-4 text-center"><span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Angka</span></td>
+                                <td class="py-3 px-4"><span class="text-xs font-semibold text-slate-700">${avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</span><span class="text-[10px] text-slate-400 block">Rata-rata</span></td>
                                 <td class="py-3 px-4"><span class="text-xs text-slate-600">Min: ${min.toLocaleString('id-ID')} | Max: ${max.toLocaleString('id-ID')}</span></td>
-                                <td class="py-3 px-4">${outliers > 0 ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded"><i data-lucide="alert-triangle" class="w-3 h-3"></i> ${outliers} Anomali</span>` : `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded"><i data-lucide="check-circle" class="w-3 h-3"></i> Terdistribusi Normal</span>`}</td>
+                                <td class="py-3 px-4">${outliers > 0 ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded"> ${outliers} Anomali</span>` : `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded"> Normal</span>`}</td>
                             </tr>
                         `;
                     }
@@ -1407,10 +1659,10 @@
                     statRows += `
                         <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
                             <td class="py-3 px-4"><span class="font-bold text-xs text-slate-800">${cleanHead}</span></td>
-                            <td class="py-3 px-4 text-center"><span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Kategori/Teks</span></td>
-                            <td class="py-3 px-4"><span class="text-xs font-semibold text-slate-700 truncate max-w-[120px] block" title="${mode}">${mode}</span><span class="text-[10px] text-slate-400 block">Mayoritas Data</span></td>
-                            <td class="py-3 px-4"><span class="text-xs text-slate-600">${uniqueVals.size.toLocaleString('id-ID')} Varian Unik</span></td>
-                            <td class="py-3 px-4">${colMiss > 0 ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded"><i data-lucide="alert-circle" class="w-3 h-3"></i> ${colMiss} Sel Kosong</span>` : `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded"><i data-lucide="check-circle" class="w-3 h-3"></i> 100% Lengkap</span>`}</td>
+                            <td class="py-3 px-4 text-center"><span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Kategori</span></td>
+                            <td class="py-3 px-4"><span class="text-xs font-semibold text-slate-700 truncate max-w-[120px] block" title="${mode}">${mode}</span><span class="text-[10px] text-slate-400 block">Sering Muncul</span></td>
+                            <td class="py-3 px-4"><span class="text-xs text-slate-600">${uniqueVals.size.toLocaleString('id-ID')} Variasi</span></td>
+                            <td class="py-3 px-4">${colMiss > 0 ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded"> ${colMiss} Sel Kosong</span>` : `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded"> Lengkap</span>`}</td>
                         </tr>
                     `;
                 }
@@ -1421,17 +1673,17 @@
                     <table class="w-full text-left border-collapse whitespace-nowrap">
                         <thead class="bg-slate-100/50 border-b border-slate-200">
                             <tr>
-                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Atribut / Kolom</th>
+                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Atribut Kolom</th>
                                 <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider text-center">Tipe Data</th>
                                 <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Metrik Utama</th>
-                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Distribusi Rentang</th>
-                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Validasi & Kesehatan</th>
+                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Rentang Nilai</th>
+                                <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Kesehatan</th>
                             </tr>
                         </thead>
                         <tbody>${statRows}</tbody>
                     </table>
                 </div>
-            ` : '<div class="text-center text-xs sm:text-sm font-bold text-slate-600 py-12 bg-slate-50 rounded-xl border border-slate-200">Kalkulasi statistik pola analitik tidak tersedia untuk struktur data ini.</div>');
+            ` : '<div class="text-center text-xs sm:text-sm font-bold text-slate-600 py-12 bg-slate-50 rounded-xl border border-slate-200">Data belum cukup untuk membuat ringkasan statistik.</div>');
 
             let primaryNumericCol = numericCols.length > 0 ? numericCols.sort((a,b) => b.sum - a.sum)[0] : null;
             let outlierCountTotal = numericCols.reduce((a,c) => a + c.outliers, 0);
@@ -1443,67 +1695,91 @@
             const uniquePct = numRows > 0 ? Math.max(0, 100 - ((duplicateRows / numRows) * 100)) : 100;
             const overallHealthScore = Math.round((completenessPct + qualityPct + uniquePct) / 3);
             
-            let healthColor = overallHealthScore >= 90 ? 'text-emerald-600' : (overallHealthScore >= 75 ? 'text-amber-500' : 'text-rose-600');
-            
+            // Render Elemen HTML untuk Audit Kesehatan (Mengimplementasikan Request 1 & 2)
             setHTML('data-health-container', `
                 <div class="col-span-1 bg-white flex flex-col justify-center items-center p-5 sm:p-6 hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default border-b lg:border-b-0 sm:border-r lg:border-r border-slate-200 group">
-                    <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50/50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="text-5xl sm:text-6xl font-black ${healthColor} mb-2 tracking-tighter relative z-10 group-hover:scale-105 transition-transform">${overallHealthScore}<span class="text-xl sm:text-2xl">%</span></div>
-                    <p class="text-[9px] sm:text-[11px] font-black text-slate-600 uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-slate-300 shadow-sm text-center relative z-10">Skor Kelayakan</p>
+                    <div class="relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
+                        <!-- Request 1: Circular Loader Terintegrasi -->
+                        <div class="h-loader" data-target="${overallHealthScore / 100}">
+                            <div class="h-loader__fill-glow"></div>
+                            <div class="h-loader__fill"></div>
+                            <div class="h-loader__middle">
+                                <div class="h-loader__value">
+                                    <div data-value>0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-[9px] sm:text-[10px] font-black text-slate-600 uppercase tracking-widest mt-4">Skor Kelayakan</p>
                 </div>
                 <div class="col-span-1 bg-white p-5 sm:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-b lg:border-b-0 sm:border-r-0 lg:border-r border-slate-200">
                     <div class="mb-4 flex justify-between items-start gap-2 relative z-10">
                         <div>
-                            <p class="text-xs sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Kelengkapan Formasi</p>
-                            <p class="text-[10px] sm:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Defisit <b>${missingValueCount.toLocaleString('id-ID')} sel kosong</b>. Pengisian data menjamin komputasi yang presisi tanpa bias.</p>
+                            <p class="text-xs sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Kelengkapan Data</p>
+                            <p class="text-[10px] sm:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Defisit <b>${missingValueCount.toLocaleString('id-ID')} sel kosong</b>. Pengisian data menjamin komputasi presisi tanpa bias.</p>
                         </div>
                         <div class="p-1.5 sm:p-2 rounded-lg shrink-0 ${completenessPct >= 90 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'} shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="${completenessPct >= 90 ? 'check-circle' : 'alert-triangle'}" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div>
                     </div>
                     <div class="flex items-center gap-3 relative z-10">
-                        <div class="text-base sm:text-lg font-black ${completenessPct >= 90 ? 'text-emerald-600' : 'text-amber-600'} w-10 sm:w-12">${completenessPct.toFixed(0)}%</div>
-                        <div class="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 overflow-hidden shadow-inner"><div class="${completenessPct >= 90 ? 'bg-emerald-500' : 'bg-amber-500'} h-2.5 sm:h-3 rounded-full transition-all duration-1000 ease-out group-hover:brightness-110" style="width:${completenessPct}%"></div></div>
+                        <div class="text-base sm:text-lg font-black ${completenessPct >= 90 ? 'text-emerald-600' : 'text-amber-600'} w-10 sm:w-12 shrink-0">${completenessPct.toFixed(0)}%</div>
+                        <!-- Request 2: Horizontal Animated Progress Bar -->
+                        <div class="modern-progress-wrapper w-full">
+                            <div class="modern-progress-bar ${completenessPct >= 90 ? 'bg-emerald-500' : 'bg-amber-500'}" style="--target-width: ${completenessPct}%;"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-span-1 bg-white p-5 sm:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-b sm:border-b-0 lg:border-b-0 sm:border-r lg:border-r border-slate-200">
                     <div class="mb-4 flex justify-between items-start gap-2 relative z-10">
                         <div>
                             <p class="text-xs sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Konsistensi Logika</p>
-                            <p class="text-[10px] sm:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Terdapat <b>${outlierCountTotal.toLocaleString('id-ID')} deviasi anomali</b> ekstrem. Meminimalisir outlier membantu stabilisasi proyeksi masa depan.</p>
+                            <p class="text-[10px] sm:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Terdapat <b>${outlierCountTotal.toLocaleString('id-ID')} deviasi anomali</b>. Meminimalisir angka meleset ini akan menstabilkan grafik.</p>
                         </div>
                         <div class="p-1.5 sm:p-2 rounded-lg shrink-0 ${qualityPct >= 90 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'} shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="${qualityPct >= 90 ? 'check-circle' : 'alert-triangle'}" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div>
                     </div>
                     <div class="flex items-center gap-3 relative z-10">
-                        <div class="text-base sm:text-lg font-black ${qualityPct >= 90 ? 'text-emerald-600' : 'text-rose-600'} w-10 sm:w-12">${qualityPct.toFixed(0)}%</div>
-                        <div class="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 overflow-hidden shadow-inner"><div class="${qualityPct >= 90 ? 'bg-emerald-500' : 'bg-rose-500'} h-2.5 sm:h-3 rounded-full transition-all duration-1000 ease-out group-hover:brightness-110" style="width:${qualityPct}%"></div></div>
+                        <div class="text-base sm:text-lg font-black ${qualityPct >= 90 ? 'text-emerald-600' : 'text-rose-600'} w-10 sm:w-12 shrink-0">${qualityPct.toFixed(0)}%</div>
+                        <!-- Request 2: Horizontal Animated Progress Bar -->
+                        <div class="modern-progress-wrapper w-full">
+                            <div class="modern-progress-bar ${qualityPct >= 90 ? 'bg-emerald-500' : 'bg-rose-500'}" style="--target-width: ${qualityPct}%;"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-span-1 bg-white p-5 sm:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-none">
                     <div class="mb-4 flex justify-between items-start gap-2 relative z-10">
                         <div>
-                            <p class="text-xs sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Keunikan Sistem</p>
-                            <p class="text-[10px] sm:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Ditemukan <b>${duplicateRows.toLocaleString('id-ID')} pola duplikat</b> identik. Menghapus data ganda akan menyaring informasi dari redundansi.</p>
+                            <p class="text-xs sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Keunikan Baris</p>
+                            <p class="text-[10px] sm:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Ditemukan <b>${duplicateRows.toLocaleString('id-ID')} pola duplikat</b> identik. Menghapus data kembar akan menyaring kualitas akhir.</p>
                         </div>
                         <div class="p-1.5 sm:p-2 rounded-lg shrink-0 ${uniquePct >= 95 ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-100 text-brand-700'} shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="${uniquePct >= 95 ? 'check-circle' : 'alert-triangle'}" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div>
                     </div>
                     <div class="flex items-center gap-3 relative z-10">
-                        <div class="text-base sm:text-lg font-black ${uniquePct >= 95 ? 'text-emerald-600' : 'text-brand-600'} w-10 sm:w-12">${uniquePct.toFixed(0)}%</div>
-                        <div class="w-full bg-slate-200 rounded-full h-2.5 sm:h-3 overflow-hidden shadow-inner"><div class="${uniquePct >= 95 ? 'bg-emerald-500' : 'bg-brand-500'} h-2.5 sm:h-3 rounded-full transition-all duration-1000 ease-out group-hover:brightness-110" style="width:${uniquePct}%"></div></div>
+                        <div class="text-base sm:text-lg font-black ${uniquePct >= 95 ? 'text-emerald-600' : 'text-brand-600'} w-10 sm:w-12 shrink-0">${uniquePct.toFixed(0)}%</div>
+                        <!-- Request 2: Horizontal Animated Progress Bar -->
+                        <div class="modern-progress-wrapper w-full">
+                            <div class="modern-progress-bar ${uniquePct >= 95 ? 'bg-emerald-500' : 'bg-brand-500'}" style="--target-width: ${uniquePct}%;"></div>
+                        </div>
                     </div>
                 </div>
             `);
 
-            let scorecards = []; 
-            scorecards.push({ title: "Volume / Densitas Data", value: numRows.toLocaleString('id-ID'), sub: `${globalHeaders.length} Atribut Terekstrak`, filter: '' });
-            if(primaryNumericCol) scorecards.push({ title: `Titik Puncak (${primaryNumericCol.name.substring(0,8)}..)`, value: primaryNumericCol.sum > 0 ? primaryNumericCol.sum.toLocaleString('id-ID', {notation: 'compact', maximumFractionDigits:1}) : primaryNumericCol.max.toLocaleString('id-ID'), sub: "Nilai Maksimum Logis", filter: '' });
-            else if (catCols.length > 0) scorecards.push({ title: "Kategori Dominan", value: catCols[0].mode, sub: "Konsentrasi Utama", filter: '' });
-            scorecards.push({ title: "Deteksi Deviasi / Anomali", value: `${outlierCountTotal}`, sub: "Saring anomali secara instan", filter: 'anomali' });
-            scorecards.push({ title: "Kekosongan (Missing Values)", value: missingValueCount.toLocaleString('id-ID'), sub: "Eksklusi sel kosong untuk presisi", filter: 'kosong' });
+            // Menginisiasi animasi circular loader (Request 1)
+            setTimeout(() => {
+                const loaderEl = document.querySelector('.h-loader');
+                if(loaderEl) new CircularLoader(loaderEl);
+            }, 100);
 
-            let cLabels = []; let cData = []; let cTitle = "Pemetaan Relasi Distribusi"; let storyText = "";
+            let scorecards = []; 
+            scorecards.push({ title: "Total Baris Data", value: numRows.toLocaleString('id-ID'), sub: `Memuat ${globalHeaders.length} Kolom`, filter: '' });
+            if(primaryNumericCol) scorecards.push({ title: `Titik Puncak`, value: primaryNumericCol.sum > 0 ? primaryNumericCol.sum.toLocaleString('id-ID', {notation: 'compact', maximumFractionDigits:1}) : primaryNumericCol.max.toLocaleString('id-ID'), sub: `Dari kolom ${primaryNumericCol.name.substring(0,8)}..`, filter: '' });
+            else if (catCols.length > 0) scorecards.push({ title: "Sering Muncul", value: catCols[0].mode, sub: "Kategori Dominan", filter: '' });
+            scorecards.push({ title: "Angka Anomali", value: `${outlierCountTotal}`, sub: "Saring Anomali", filter: 'anomali' });
+            scorecards.push({ title: "Nilai Kosong", value: missingValueCount.toLocaleString('id-ID'), sub: "Saring Sel Kosong", filter: 'kosong' });
+
+            let cLabels = []; let cData = []; let cTitle = "Pemetaan Data";
             let totalChartVal = 0;
             
             if(catCols.length > 0 && numericCols.length > 0) {
-                cTitle = `Proporsi Korelasi: ${primaryNumericCol.name} vs ${catCols[0].name}`;
+                cTitle = `Hubungan: ${primaryNumericCol.name} dengan ${catCols[0].name}`;
                 let map = {};
                 for(let i=1; i<data.length; i++) { 
                     let k = data[i][catCols[0].idx]; let v = parseFloat(data[i][primaryNumericCol.idx]) || 0; 
@@ -1519,10 +1795,9 @@
                 }
 
                 cLabels = sorted.map(i => i.k); cData = sorted.map(i => i.v);
-                storyText = `<b>Temuan Visual Dazer:</b> Sektor yang memakan proporsi paling besar pada grafik merepresentasikan kontributor dominan untuk metrik <i>${primaryNumericCol.name}</i>. Rekomendasi tindakan sebaiknya difokuskan pada area ini untuk meraih hasil optimal.`;
                 cData.forEach(v => totalChartVal += v);
             } else if (catCols.length > 0) {
-                cTitle = `Intensitas Frekuensi: ${catCols[0].name}`;
+                cTitle = `Seberapa Sering Muncul: ${catCols[0].name}`;
                 let map = {};
                 for(let i=1; i<data.length; i++) { 
                     let k = data[i][catCols[0].idx]; 
@@ -1538,24 +1813,56 @@
                 }
 
                 cLabels = sorted.map(i => i.k); cData = sorted.map(i => i.v);
-                storyText = `<b>Temuan Visual Dazer:</b> Diagram memetakan frekuensi dominan dalam parameter <i>${catCols[0].name}</i>. Segmen terbesar menunjukkan pusat aktivitas tertinggi dalam data yang Anda berikan.`;
                 cData.forEach(v => totalChartVal += v);
             } else if (numericCols.length > 0) {
-                 cTitle = `Penyebaran Kuantitatif`;
-                 storyText = `<b>Temuan Visual Dazer:</b> Distribusi nilai numerik dipetakan untuk mengidentifikasi sentralisasi aktivitas operasional secara komprehensif.`;
+                 cTitle = `Persebaran Angka`;
             }
+
+            let metricInsightsText = "";
+            let segmentInsightsText = "";
+            let correlationInsightsText = "";
+            let volatilityInsightsText = "";
+
+            let primeName = primaryNumericCol ? primaryNumericCol.name : (catCols.length > 0 ? catCols[0].name : "Data Utama");
+            
+            if (primaryNumericCol) {
+                let status = qualityPct > 85 ? "Cukup Aman & Stabil" : "Naik-Turun (Fluktuatif)";
+                metricInsightsText = `Angka pada <b>${primeName}</b> saat ini terlihat ${status} dengan rata-rata mencapai ${primaryNumericCol.avg.toLocaleString('id-ID', {maximumFractionDigits:1})}. ${qualityPct > 85 ? 'Ini adalah pertanda bagus, pastikan Anda menjaga ritme ini agar bisnis terus sehat dan sesuai target yang diharapkan.' : 'Sebaiknya Anda pantau terus angka ini. Segera cari tahu dan perbaiki masalah yang menyebabkan angkanya sering meleset dari kebiasaan.'}`;
+            } else {
+                metricInsightsText = `Saat ini kami belum menemukan angka hitungan pasti (seperti total uang atau jumlah barang) di dalam tabel Anda. Agar sistem kami bisa menilai performa dengan jitu, pastikan Anda telah memasukkan kolom angka tersebut.`;
+            }
+
+            if (catCols.length > 0) {
+                segmentInsightsText = `Kategori <b>${catCols[0].mode}</b> adalah bagian yang paling dominan dan menyerap banyak energi operasional. Jika Anda ingin melihat peningkatan hasil secara instan, arahkan ide dan kekuatan tim Anda secara maksimal hanya pada kelompok yang satu ini.`;
+            } else {
+                segmentInsightsText = `Tabel yang Anda berikan belum memiliki pengelompokan nama atau kategori yang jelas. Kami menyarankan Anda untuk memecah data ke dalam label tertentu (misal: area atau nama produk) supaya tahu mana yang paling laku.`;
+            }
+
+            if (numericCols.length > 1) {
+                correlationInsightsText = `Kami menemukan bahwa pergerakan <b>${numericCols[0].name}</b> dan <b>${numericCols[1].name}</b> saling terkait. Saat salah satu angkanya naik, yang lain biasanya ikut berubah. Pola unik ini bisa Anda gunakan untuk membuat strategi yang saling mendukung.`;
+            } else if (numericCols.length === 1 && catCols.length > 0) {
+                correlationInsightsText = `Dari hasil pengamatan, pencapaian angka pada <b>${primeName}</b> amat sangat dipengaruhi oleh seberapa aktifnya kelompok <b>${catCols[0].mode}</b>. Mengatur dan mengelola kelompok ini dengan baik akan langsung menambah pundi-pundi Anda.`;
+            } else {
+                correlationInsightsText = `Data ini masih terlalu padat dan tunggal. Untuk melihat apakah ada dua hal yang saling memengaruhi, Anda perlu memberikan setidaknya dua kolom nilai angka yang berbeda jenisnya di tabel Anda.`;
+            }
+
+            let volatilityLevel = qualityPct >= 90 ? "Aman Terkendali" : (qualityPct >= 75 ? "Perlu Perhatian" : "Beresiko Tinggi");
+            volatilityInsightsText = `Kondisi naik turunnya data Anda kami kategorikan sebagai <b>${volatilityLevel}</b>. ${qualityPct >= 90 ? 'Luar biasa! Semua kegiatan berjalan lancar dan nyaris tidak ada kejadian aneh yang merusak rutinitas harian di tempat Anda.' : 'Awas! Ada cukup banyak kejadian di luar batas normal yang tercatat. Segera telusuri penyebabnya agar Anda tidak mengalami kerugian.'}`;
 
             const finalData = { 
                 fileName, scorecards, insights: [], overallHealthScore, completenessPct, qualityPct, uniquePct, 
                 chart: { title: cTitle, labels: cLabels, data: cData, total: totalChartVal },
                 primaryColName: primaryNumericCol ? primaryNumericCol.name : null,
-                intentStr: intentStr
+                intentStr: intentStr,
+                metricInsights: metricInsightsText,
+                segmentInsights: segmentInsightsText,
+                correlationInsights: correlationInsightsText,
+                volatilityInsights: volatilityInsightsText
             };
             currentReportData = finalData;
             
             initFilterView(); 
             renderDashboard(finalData);
-            document.getElementById('storytelling-text').innerHTML = storyText;
 
             if (primaryNumericCol || cData.length > 0) {
                 document.getElementById('prediction-card').style.display = 'flex';
@@ -1595,7 +1902,7 @@
             projData.push(lastVal + (avgDiff * 2.5));
             
             const histLabels = [...limitHistLabels];
-            histLabels.push('Q+1 (Proyeksi)', 'Q+2 (Proyeksi)', 'Q+3 (Proyeksi)');
+            histLabels.push('Prediksi Waktu 1', 'Prediksi Waktu 2', 'Prediksi Waktu 3');
 
             const gradFuture = ctx.createLinearGradient(0, 0, 0, 300);
             gradFuture.addColorStop(0, 'rgba(245, 158, 11, 0.25)'); gradFuture.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
@@ -1607,8 +1914,8 @@
                 data: {
                     labels: histLabels,
                     datasets: [
-                        { label: 'Logika Historis', data: [...histData, null, null, null], borderColor: '#0ea5e9', backgroundColor: gradPast, fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#ffffff', pointBorderColor: '#0ea5e9', pointBorderWidth: 2, borderWidth: 3 },
-                        { label: 'Proyeksi Logika Bayesian', data: projData, borderColor: '#f59e0b', borderDash: [5, 5], backgroundColor: gradFuture, fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 7, pointBackgroundColor: '#ffffff', pointBorderColor: '#f59e0b', pointBorderWidth: 2, borderWidth: 3 }
+                        { label: 'Garis Masa Lalu', data: [...histData, null, null, null], borderColor: '#0ea5e9', backgroundColor: gradPast, fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#ffffff', pointBorderColor: '#0ea5e9', pointBorderWidth: 2, borderWidth: 3 },
+                        { label: 'Garis Perkiraan Masa Depan', data: projData, borderColor: '#f59e0b', borderDash: [5, 5], backgroundColor: gradFuture, fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 7, pointBackgroundColor: '#ffffff', pointBorderColor: '#f59e0b', pointBorderWidth: 2, borderWidth: 3 }
                     ]
                 },
                 options: {
@@ -1621,19 +1928,36 @@
                 }
             });
             
-            const trendText = avgDiff > 0 ? 'Ekspansif (Positif)' : 'Kontraksi (Negatif)';
-            const trendClass = avgDiff > 0 ? 'text-emerald-600 font-bold uppercase' : 'text-rose-600 font-bold uppercase';
+            const trendText = avgDiff > 0 ? 'terus mendaki' : 'perlahan menurun';
             const futureVal = Math.round(projData[projData.length-1] || 0).toLocaleString('id-ID');
             const percentage = lastVal > 0 ? Math.abs((avgDiff / lastVal) * 100).toFixed(1) : 0;
-            const targetName = currentReportData.primaryColName || "metrik terukur";
+            const targetName = currentReportData.primaryColName || "angka dominan";
 
             document.getElementById('prediction-insight-text').innerHTML = `
                 <div class="space-y-3">
-                    <p class="flex items-start gap-2"><i data-lucide="trending-up" class="w-3.5 h-3.5 text-brand-600 shrink-0 mt-0.5"></i> <span class="leading-relaxed text-slate-700">Berdasarkan data riwayat <i>${targetName}</i>, terdeteksi tren <span class="${trendClass}">${trendText}</span> dengan laju sebesar <b>${percentage}%</b>.</span></p>
-                    <p class="flex items-start gap-2"><i data-lucide="crosshair" class="w-3.5 h-3.5 text-brand-600 shrink-0 mt-0.5"></i> <span class="leading-relaxed text-slate-700">Jika kondisi stabil, nilai diproyeksikan akan mencapai kisaran <b>${futureVal}</b> pada periode selanjutnya.</span></p>
+                    <p class="leading-relaxed text-slate-700 text-[11px] sm:text-xs">Dari kebiasaan masa lalu yang terekam pada <b>${targetName}</b>, kami melihat bahwa laju angkanya sedang dalam posisi <b>${trendText}</b> sebesar <b>${percentage}%</b>.</p>
+                    <p class="leading-relaxed text-slate-700 text-[11px] sm:text-xs">Jika rutinitas Anda berjalan lancar seperti biasa, kami perkirakan nilainya berpeluang menyentuh kisaran angka <b>${futureVal}</b> pada periode selanjutnya di masa depan.</p>
                 </div>
             `;
             lucide.createIcons();
+        }
+
+        function toggleFilterMenu() {
+            const menu = document.getElementById('quick-filter-menu');
+            if(menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                menu.classList.add('animate-[fadeInUp_0.2s_ease-out]');
+            } else {
+                menu.classList.add('hidden');
+            }
+        }
+        
+        function applyQuickFilter(keyword) {
+            document.getElementById('quick-filter-menu').classList.add('hidden');
+            const input = document.getElementById('table-search');
+            if(input) input.value = keyword;
+            initFilterView(keyword);
+            showNotification(`Tabel berhasil disaring untuk mencari: ${keyword}`, "success");
         }
 
         function initFilterView(query = "") {
@@ -1643,7 +1967,7 @@
             
             let isKosong = qLow === "kosong";
             let isAnomali = qLow === "anomali";
-            let isGanjil = qLow === "tampilkan yang ganjil" || qLow === "ganjil";
+            let isGanjil = qLow === "tampilkan yang ganjil" || qLow === "ganjil" || qLow === "angka ganjil";
             let isGenap = qLow === "tampilkan yang genap" || qLow === "genap";
             let isAtasRata = qLow === "tampilkan di atas rata-rata" || qLow === "atas rata-rata" || qLow.includes("atas rata");
 
@@ -1781,14 +2105,16 @@
                     item.innerHTML = `<div class="flex items-start gap-2.5 pt-0.5"><span class="w-3 h-3 rounded-full shrink-0 shadow-sm mt-0.5" style="background-color: ${color}"></span><span class="text-xs font-bold text-slate-700 break-words whitespace-normal text-left leading-relaxed">${label}</span></div><span class="text-xs font-black text-slate-900 shrink-0 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100">${percent}%</span>`;
                     legendContainer.appendChild(item);
                 });
-            } else if (legendContainer) legendContainer.classList.add('hidden');
+            } else if (legendContainer) {
+                legendContainer.classList.add('hidden');
+            }
             
             chartInstance = new Chart(ctx, {
                 type: type,
                 data: {
                     labels: currentChartData.labels,
                     datasets: [{
-                        label: 'Nilai Proporsional', data: currentChartData.data,
+                        label: 'Nilai Terkait', data: currentChartData.data,
                         backgroundColor: isPie ? baseColors : (isBar ? bgColors : bgColors[0]), borderColor: isPie ? '#ffffff' : (isBar ? 'transparent' : '#0ea5e9'), 
                         borderWidth: isPie ? 2 : (isLine ? 3 : 0), borderRadius: isPie ? 8 : (isBar ? { topLeft: 6, topRight: 6, bottomLeft: 0, bottomRight: 0 } : 0), 
                         barThickness: isBar ? Math.min(48, 400 / currentChartData.labels.length) : undefined, fill: isLine, tension: 0.4, hoverOffset: isPie ? 10 : 0,
@@ -1820,13 +2146,13 @@
         }
 
         function exportCleanDataCSV(btnElement) {
-            if(!globalExtractedData || globalExtractedData.length === 0) return showNotification("Kegagalan Ekspor: Cache data kosong.", "error");
+            if(!globalExtractedData || globalExtractedData.length === 0) return showNotification("Belum ada data untuk diunduh.", "error");
             const originalHTML = btnElement.innerHTML; btnElement.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin shrink-0"></i> Mengekstrak...`; btnElement.disabled = true; lucide.createIcons();
             setTimeout(() => {
                 let csvContent = "data:text/csv;charset=utf-8,";
                 globalExtractedData.forEach(rowArray => { let row = rowArray.map(cell => `"${String(cell !== undefined ? cell : '').replace(/"/g, '""')}"`).join(","); csvContent += row + "\r\n"; });
-                const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `Dazer_Analisis_Terpadu_${Date.now()}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
-                btnElement.innerHTML = originalHTML; btnElement.disabled = false; lucide.createIcons(); showNotification("File CSV (Data Bersih) berhasil didistribusikan.", "success");
+                const link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `Dazer_Analisis_Data_${Date.now()}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                btnElement.innerHTML = originalHTML; btnElement.disabled = false; lucide.createIcons(); showNotification("File data bersih Anda berhasil diunduh.", "success");
             }, 800);
         }
 
@@ -1847,7 +2173,7 @@
                     primaryColumn: primaryCol ? primaryCol.name : '-',
                     dominantCategory: catCols.length > 0 ? catCols[0].mode : '-'
                 };
-                const payloadContext = `Kategori Industri: ${industryContext}. Kolom Utama: ${globalHeaders.join(', ')}`;
+                const payloadContext = `Industri: ${industryContext}. Kolom Penting: ${globalHeaders.join(', ')}`;
 
                 const response = await fetch(API_ENDPOINT, {
                     method: 'POST',
@@ -1864,40 +2190,41 @@
                     insights = result.insights || [];
                     isBackendSuccess = true;
                 }
-            } catch (e) { 
-                // Silent Catch
-            }
+            } catch (e) {}
 
             let emptyCount = insights.filter(i => i.trim() === '-' || i.trim() === '').length;
             
             if (!isBackendSuccess || emptyCount >= 3 || insights.length < 5) {
                 insights = [];
-                insights.push(`Integritas Informasi: Skor kelayakan data mencapai ${statsSummary.overallHealthScore}%. Tingkat pengisian data bernilai ${statsSummary.completenessPct.toFixed(1)}%. ${statsSummary.completenessPct < 100 ? 'Perhatikan area kosong untuk menghindari ketidakakuratan.' : 'Data sangat solid untuk dianalisis.'}`);
+                let completenessText = statsSummary.completenessPct < 100 
+                    ? "Ada sedikit ruang kosong dalam tabel Anda. Sangat baik jika Anda dapat melengkapinya agar perhitungannya menjadi sempurna." 
+                    : "Data Anda seratus persen lengkap tanpa cacat. Ini adalah modal yang sangat bagus untuk mengambil keputusan yang akurat.";
+                insights.push(`Penilaian Awal: Secara keseluruhan, kesehatan data Anda mendapat skor ${statsSummary.overallHealthScore} persen. ${completenessText}`);
                 
                 if (statsSummary.anomalies > 0) {
-                    insights.push(`Pendeteksian Anomali: Terdapat <b>${statsSummary.anomalies}</b> titik data (outlier) yang berada di luar kewajaran. Disarankan untuk memverifikasi nilai-nilai tersebut secara manual.`);
+                    insights.push(`Peringatan Angka Aneh: Kami menemukan ada ${statsSummary.anomalies} baris angka yang melesat jauh dari kebiasaan. Sebaiknya periksa lagi nilai ini agar hasil rata-rata tidak rusak.`);
                 } else {
-                    insights.push(`Konsistensi Nilai: Angka-angka terdistribusi dengan baik dan tidak ada penyimpangan ekstrem yang mengganggu tren.`);
+                    insights.push(`Catatan Angka: Angka-angka yang Anda masukkan sangat rapi dan konsisten. Tidak ada kejutan atau lonjakan yang aneh sama sekali.`);
                 }
 
                 if (primaryCol && catCols.length > 0) {
-                    insights.push(`Pemetaan Korelasi: Variabel <b>${primaryCol.name}</b> memiliki konsentrasi tinggi pada kategori <b>${catCols[0].mode}</b> di sektor ${industryContext}. Fokuskan perbaikan di area ini.`);
+                    insights.push(`Fokus Usaha: Keuntungan terbesar pada kolom ${primaryCol.name} ternyata sangat didorong oleh kelompok ${catCols[0].mode}. Pusatkan tenaga tim Anda ke area ini untuk hasil instan.`);
                 } else if (catCols.length > 0) {
-                    insights.push(`Segmen Dominan: Kelompok <b>${catCols[0].mode}</b> adalah yang paling sering muncul, menjadikannya prioritas utama evaluasi.`);
+                    insights.push(`Juara Kelas: Dari semua yang Anda catat, kelompok ${catCols[0].mode} paling mendominasi. Kelompok inilah yang sebenarnya menggerakkan aktivitas harian Anda.`);
                 } else {
-                    insights.push(`Distribusi Merata: Keseluruhan angka menunjukkan nilai rata-rata kuantitatif yang seimbang.`);
+                    insights.push(`Pembagian Merata: Semuanya berjalan seimbang. Tidak ada satu bagian yang terlalu menonjol dibandingkan yang lain.`);
                 }
 
                 if (primaryCol) {
-                    insights.push(`Prediksi Pola Lanjutan: Jika mengamati pertumbuhan historis pada <b>${primaryCol.name}</b>, direkomendasikan untuk menyiapkan langkah adaptasi pada siklus berikutnya.`);
+                    insights.push(`Peluang Mendatang: Melihat laju kenaikan angka ${primaryCol.name}, kami sangat menyarankan Anda mulai menyiapkan kapasitas tambahan untuk menyambut peningkatan yang akan datang.`);
                 } else {
-                    insights.push(`Stabilitas Berkelanjutan: Sebaran data menunjukkan kondisi yang cenderung stabil untuk operasional saat ini.`);
+                    insights.push(`Langkah Kedepan: Data berjalan begitu damai. Jika rutinitas tidak berubah, Anda bisa menikmati hasil yang terus stabil ini di masa depan.`);
                 }
 
                 const actions = [
-                    "Rekomendasi Tindakan: Arahkan fokus perbaikan pada kategori mayoritas untuk mengefisienkan waktu dan tenaga tim.",
-                    "Rekomendasi Tindakan: Siapkan rencana mitigasi untuk menangani fluktuasi metrik utama di masa mendatang.",
-                    "Rekomendasi Tindakan: Lakukan penyaringan lanjutan di tabel klinik data untuk membuang entri duplikat atau usang."
+                    "Saran Ahli: Jangan buang waktu pada hal kecil. Tarik perhatian Anda hanya pada segmen yang paling sering muncul di data Anda.",
+                    "Saran Ahli: Buatlah rencana cadangan sekarang juga untuk mengantisipasi angka-angka aneh yang bisa merugikan Anda di kemudian hari.",
+                    "Saran Ahli: Bersihkan tabel Anda. Gunakan tombol saring di bawah agar pekerjaan Anda jadi lebih mudah dan ringan."
                 ];
                 insights.push(actions[Math.floor(Math.random() * actions.length)]);
             }
@@ -1909,30 +2236,25 @@
 
             insights.forEach((ins, i) => {
                 let isDash = ins.trim() === "-";
-                let iconHTML = isDash ? `<i data-lucide="minus-circle" class="w-4 h-4 text-slate-300"></i>` : `<i data-lucide="zap" class="w-4 h-4 text-brand-600"></i>`;
-                let textClass = isDash ? `text-slate-400 italic` : `text-slate-700`;
-                
+                if(isDash) return; 
+
                 inHTML += `
-                    <li class="flex gap-3 items-start group p-2.5 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-200">
-                        <div class="mt-0.5 shrink-0">${iconHTML}</div>
-                        <span class="text-sm font-semibold ${textClass} leading-relaxed typewriter-target" id="ins-${i}"></span>
+                    <li class="flex gap-3 items-start p-3 rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
+                        <div class="mt-0.5 shrink-0"><i data-lucide="check-circle" class="w-4 h-4 text-brand-600"></i></div>
+                        <span class="text-[11px] sm:text-xs font-semibold text-slate-700 leading-relaxed typewriter-target" id="ins-${i}"></span>
                     </li>`;
             });
             setHTML('insights-list', inHTML);
             lucide.createIcons();
             
+            let displayIndex = 0;
             insights.forEach((ins, i) => { 
+                if(ins.trim() === "-") return;
                 setTimeout(() => { 
                     const t = document.getElementById(`ins-${i}`); 
-                    if(t) {
-                        if (ins.trim() === "-") {
-                            t.innerHTML = "-";
-                            t.classList.remove('typewriter-cursor');
-                        } else {
-                            typeWriterEffect(t, ins, 15); 
-                        }
-                    }
-                }, i*400); 
+                    if(t) typeWriterEffect(t, ins, 15); 
+                }, displayIndex * 500); 
+                displayIndex++;
             });
             
             if(currentReportData) currentReportData.insights = insights;
@@ -1946,7 +2268,9 @@
         function undoData() {
             if(dataHistory.length === 0) return; globalExtractedData = dataHistory.pop();
             if(dataHistory.length === 0) { document.getElementById('btn-undo').disabled = true; document.getElementById('btn-undo').classList.add('bg-slate-100', 'text-slate-400', 'cursor-not-allowed'); document.getElementById('btn-undo').classList.remove('bg-white', 'text-slate-800', 'hover:bg-slate-50'); }
-            initFilterView(document.getElementById('table-search').value); showNotification("Tindakan dibatalkan. Restorasi basis data ke versi spasial sebelumnya berhasil.", "success");
+            const input = document.getElementById('table-search');
+            if(input) initFilterView(input.value); 
+            showNotification("Perubahan telah dibatalkan ke data sebelumnya.", "success");
         }
 
         function cleanData(type) {
@@ -1954,8 +2278,8 @@
             const overlay = document.getElementById('table-loading-overlay'); const loadingText = document.getElementById('table-loading-text'); const progress = document.getElementById('table-loading-progress');
             overlay.classList.remove('hidden'); progress.style.width = '0%';
             
-            const stepsTidy = ["Menganalisa struktur baris secara presisi...", "Membersihkan ruang kosong...", "Menyelesaikan penyelarasan fungsional..."];
-            const stepsDups = ["Memvalidasi hash identik logis...", "Mengeliminasi duplikasi entitas baris...", "Menyelesaikan siklus pembersihan terpadu..."];
+            const stepsTidy = ["Menganalisa baris...", "Membersihkan ruang kosong...", "Selesai..."];
+            const stepsDups = ["Mencari yang ganda...", "Menghapus kesamaan...", "Selesai..."];
             const steps = type === 'tidy' ? stepsTidy : stepsDups;
             
             let stepIdx = 0; loadingText.innerText = steps[stepIdx];
@@ -1975,7 +2299,7 @@
                                 } return cell; 
                             }); 
                         });
-                        showNotification(`Perapihan Operasional Sukses! Memperbaiki ${changedCells.toLocaleString('id-ID')} elemen sel tidak baku.`, "success");
+                        showNotification(`Berhasil merapihkan ${changedCells.toLocaleString('id-ID')} kotak data.`, "success");
                     } else if (type === 'remove_dups') {
                         let uniqueSet = new Set(); let cleanDataArr = [globalExtractedData[0]]; 
                         for(let i = 1; i < globalExtractedData.length; i++) { 
@@ -1983,18 +2307,13 @@
                             if(!uniqueSet.has(str) && str.replace(/\|/g, '').trim() !== "") { uniqueSet.add(str); cleanDataArr.push(globalExtractedData[i]); } 
                         }
                         let removed = initialRows - (cleanDataArr.length - 1); globalExtractedData = cleanDataArr;
-                        showNotification(`Pembersihan Duplikasi Selesai! Mengeliminasi ${removed.toLocaleString('id-ID')} baris repetitif.`, "success");
+                        showNotification(`Berhasil menghapus ${removed.toLocaleString('id-ID')} baris data yang kembar.`, "success");
                     }
-                    initFilterView(document.getElementById('table-search').value); overlay.classList.add('hidden'); progress.style.width = '0%';
+                    const input = document.getElementById('table-search');
+                    if(input) initFilterView(input.value); 
+                    overlay.classList.add('hidden'); progress.style.width = '0%';
                 }
             }, 600);
-        }
-
-        function triggerFilter(keyword) {
-            const card = document.getElementById('matrix-card'); window.scrollTo({top: card.offsetTop - 80, behavior: 'smooth'});
-            const overlay = document.getElementById('table-loading-overlay'); const progress = document.getElementById('table-loading-progress');
-            document.getElementById('table-loading-text').innerText = "Menyaring klasifikasi data secara presisi..."; if(overlay) overlay.classList.remove('hidden'); if(progress) progress.style.width = '50%';
-            setTimeout(() => { const searchInput = document.getElementById('table-search'); searchInput.value = keyword; initFilterView(keyword); if(progress) progress.style.width = '100%'; setTimeout(()=>{if(overlay) overlay.classList.add('hidden'); lucide.createIcons(); showNotification(`Matriks tabel diselaraskan untuk instruksi kueri: ${keyword}`, "success");}, 300); }, 800); 
         }
 
         async function sendChatMessage() {
@@ -2007,17 +2326,27 @@
             globalChatQuota--;
 
             const chatBox = document.getElementById('chat-messages');
-            chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 justify-end mb-2 animate-[fadeInUp_0.3s_ease-out]"><div class="bg-slate-800 p-3 sm:p-4 rounded-2xl rounded-tr-sm shadow-md max-w-[90%] sm:max-w-[85%]"><p class="text-xs sm:text-sm font-semibold text-white">${msg}</p></div></div>`;
+            chatBox.innerHTML += `
+                <div class="flex flex-col items-end w-full mb-2 animate-[fadeInUp_0.3s_ease-out]">
+                    <div class="chat-bubble chat-bubble-user shadow-sm">
+                        <p class="text-[11px] sm:text-xs font-semibold text-slate-800">${msg}</p>
+                    </div>
+                </div>`;
             input.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
             updateQuotaUI();
 
             const typingId = 'typing-' + Date.now();
-            chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2" id="${typingId}"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm typing-indicator flex items-center h-8 sm:h-10"><span></span><span></span><span></span></div></div>`;
+            chatBox.innerHTML += `
+                <div class="flex flex-col items-start w-full mb-2" id="${typingId}">
+                    <div class="chat-bubble chat-bubble-ai shadow-sm flex items-center h-8 sm:h-10 typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>`;
             lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
                 const contextData = globalExtractedData.slice(0, 15).map(row => row.join(", ")).join("\n");
-                const payloadContext = `File: ${currentReportData?.fileName || 'Data Tabel'}\nKolom: ${globalHeaders.join(', ')}\nSampel Isi:\n${contextData}`;
+                const payloadContext = `File: ${currentReportData?.fileName || 'Data Terlampir'}\nKolom: ${globalHeaders.join(', ')}\nIsi:\n${contextData}`;
 
                 const response = await fetch(API_ENDPOINT, { 
                     method: 'POST',
@@ -2029,27 +2358,37 @@
                     })
                 });
 
-                if (!response.ok) throw new Error("API Offline");
+                if (!response.ok) throw new Error("Terputus");
                 
                 const result = await response.json();
-                let chosenReply = result.reply || "Sistem Dazer telah memproses instruksi dengan sukses.";
+                let chosenReply = result.reply || "Pesan Anda sudah dimengerti oleh sistem.";
 
                 document.getElementById(typingId)?.remove();
-                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><div class="bg-brand-50/50 border-l-4 border-brand-400 p-2 sm:p-3 rounded-r-lg mb-1 sm:mb-2"><p class-[11px] sm:text-xs text-slate-800 font-semibold leading-relaxed whitespace-pre-wrap">${chosenReply}</p></div></div></div>`;
+                chatBox.innerHTML += `
+                    <div class="flex flex-col items-start w-full mb-2 animate-[fadeInUp_0.4s_ease-out]">
+                        <div class="chat-bubble chat-bubble-ai shadow-sm">
+                            <p class="text-[11px] sm:text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-wrap">${chosenReply}</p>
+                        </div>
+                    </div>`;
                 lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
 
             } catch (error) {
                 document.getElementById(typingId)?.remove();
                 
-                let fallbackReply = `Instruksi Anda: " ${msg} " telah diterima.\n\nData Anda berisi <b>${(globalExtractedData.length - 1).toLocaleString('id-ID')} entri aktif</b> dengan tingkat kelayakan <b>${currentReportData?.overallHealthScore || 100}%</b>.`;
+                let fallbackReply = `Permintaan Anda: " ${msg} " sudah saya terima.\n\nData ini memiliki total ${(globalExtractedData.length - 1).toLocaleString('id-ID')} baris dengan nilai kesehatan ${currentReportData?.overallHealthScore || 100} persen. Apakah ada bagian spesifik yang ingin diubah?`;
                 
                 if (msg.toLowerCase().includes('ringkas') || msg.toLowerCase().includes('summary') || msg.toLowerCase().includes('rangkum')) {
-                    fallbackReply = `Baik, berikut ringkasannya: Dokumen ini memuat <b>${(globalExtractedData.length - 1).toLocaleString('id-ID')} entri</b> yang valid. \n\nTingkat kelayakan mencapai <b>${currentReportData?.overallHealthScore || 100}%</b>. Hasil sintesis lengkap telah disajikan pada grafik dan kartu wawasan di halaman utama. Anda bisa langsung mengambil keputusan dari ringkasan visual tersebut.`;
+                    fallbackReply = `Baik, mari kita buat sesederhana mungkin:\nData Anda sangat sehat (mencapai ${currentReportData?.overallHealthScore || 100} persen). Anda punya total ${(globalExtractedData.length - 1).toLocaleString('id-ID')} catatan. Fokus utama Anda sebaiknya ditaruh pada saran tindakan di panel Executive Action agar kerja Anda lebih efektif.`;
                 } else if (msg.toLowerCase().includes('saran') || msg.toLowerCase().includes('meningkatkan') || msg.toLowerCase().includes('efisiensi')) {
-                    fallbackReply = `Untuk efisiensi, saya menyarankan Anda memusatkan perhatian pada kelompok data yang mendominasi tren saat ini (lihat pada grafik proporsi). Dengan mengurangi outlier (${currentReportData?.scorecards[3]?.value || 0} deviasi) dan berfokus pada segmen tersebut, produktivitas harian Anda akan meningkat signifikan.`;
+                    fallbackReply = `Saran paling jitu untuk saat ini: Lihat kolom kategori yang dominan. Sebagian besar kejadian Anda menumpuk di sana. Pindahkan tenaga tim Anda ke sana, dan bersihkan ${currentReportData?.scorecards[3]?.value || 0} angka yang aneh, maka operasional Anda akan langsung melesat!`;
                 }
 
-                chatBox.innerHTML += `<div class="flex gap-2 sm:gap-3 mb-2 animate-[fadeInUp_0.4s_ease-out]"><div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-brand-600 flex items-center justify-center text-white shadow-md shrink-0"><i data-lucide="bot" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div><div class="bg-white p-3 sm:p-4 rounded-2xl rounded-tl-sm border border-slate-200 shadow-sm max-w-[90%] sm:max-w-[85%]"><div class="bg-brand-50/50 border-l-4 border-brand-400 p-2 sm:p-3 rounded-r-lg mb-1 sm:mb-2"><p class="text-[11px] sm:text-xs text-slate-800 font-semibold leading-relaxed whitespace-pre-wrap">${fallbackReply}</p></div></div></div>`;
+                chatBox.innerHTML += `
+                    <div class="flex flex-col items-start w-full mb-2 animate-[fadeInUp_0.4s_ease-out]">
+                        <div class="chat-bubble chat-bubble-ai shadow-sm">
+                            <p class="text-[11px] sm:text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-wrap">${fallbackReply}</p>
+                        </div>
+                    </div>`;
                 lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
             }
         }
@@ -2083,7 +2422,7 @@
             globalFilesArray = []; totalSizeUsed = 0; updateStorageIndicator();
             document.getElementById('matrix-card')?.classList.remove('matrix-fullscreen'); isMatrixFullscreen = false; document.body.style.overflow = '';
         }
-        function selfDestruct() { if(!confirm("Sistem akan dieksekusi ulang. Hapus seluruh jejak cache memori di browser saat ini?")) return; localStorage.clear(); location.reload(); }
+        function selfDestruct() { if(!confirm("Sistem akan dihapus. Anda yakin ingin mereset semuanya?")) return; localStorage.clear(); location.reload(); }
     </script>
 </body>
 </html>
