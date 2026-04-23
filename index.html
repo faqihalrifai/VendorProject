@@ -109,13 +109,13 @@
             border-radius: 50px;
             cursor: pointer;
             border: 0;
-            background-color: white;
-            box-shadow: rgb(0 0 0 / 5%) 0 0 8px;
+            background-color: #0ea5e9;
+            box-shadow: rgba(14, 165, 233, 0.3) 0 4px 14px 0;
             letter-spacing: 1.5px;
             text-transform: uppercase;
             font-size: 15px;
             font-weight: 800;
-            color: #0f172a;
+            color: #ffffff;
             transition: all 0.5s ease;
             width: 100%;
             display: flex;
@@ -125,15 +125,15 @@
         }
         .btn-analyze:hover {
             letter-spacing: 3px;
-            background-color: hsl(261deg 80% 48%);
-            color: hsl(0, 0%, 100%);
-            box-shadow: rgb(93 24 220) 0px 7px 29px 0px;
+            background-color: #ffffff;
+            color: #0ea5e9;
+            box-shadow: rgba(14, 165, 233, 0.4) 0px 7px 29px 0px;
         }
         .btn-analyze:active {
             letter-spacing: 3px;
-            background-color: hsl(261deg 80% 48%);
-            color: hsl(0, 0%, 100%);
-            box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
+            background-color: #ffffff;
+            color: #0ea5e9;
+            box-shadow: rgba(14, 165, 233, 0.4) 0px 0px 0px 0px;
             transform: translateY(10px);
             transition: 100ms;
         }
@@ -309,12 +309,12 @@
             transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* UIVERSE LOADER */
+        /* UIVERSE LOADER - WARNA HITAM SESUAI REQUEST */
         .uiverse-loader {
             display: flex;
             justify-content: center;
             align-items: center;
-            --color: #0ea5e9;
+            --color: #111111; /* Warna Hitam Original */
             --animation: 2s ease-in-out infinite;
         }
         .uiverse-loader .circle {
@@ -323,11 +323,11 @@
             margin: 0 8px; background-color: transparent; animation: circle-keys var(--animation);
         }
         .uiverse-loader .circle .dot {
-            position: absolute; transform: translate(-50%, -50%); width: 14px; height: 14px;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px;
             border-radius: 50%; background-color: var(--color); animation: dot-keys var(--animation);
         }
         .uiverse-loader .circle .outline {
-            position: absolute; transform: translate(-50%, -50%); width: 20px; height: 20px;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px;
             border-radius: 50%; animation: outline-keys var(--animation);
         }
         .uiverse-loader .circle:nth-child(2) { animation-delay: 0.3s; }
@@ -2183,7 +2183,7 @@
 
         function exportCleanDataCSV(btnElement) {
             if(!globalExtractedData || globalExtractedData.length === 0) return showNotification("Belum ada data untuk diunduh.", "error");
-            const originalHTML = btnElement.innerHTML; btnElement.innerHTML = `<div class="uiverse-loader" style="transform: scale(0.35); --animation: 1s ease-in-out infinite;"><div class="circle"><div class="dot"></div><div class="outline"></div></div><div class="circle"><div class="dot"></div><div class="outline"></div></div></div>`; btnElement.disabled = true; lucide.createIcons();
+            const originalHTML = btnElement.innerHTML; btnElement.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin shrink-0"></i> Mengekstrak...`; btnElement.disabled = true; lucide.createIcons();
             setTimeout(() => {
                 let csvContent = "data:text/csv;charset=utf-8,";
                 globalExtractedData.forEach(rowArray => { let row = rowArray.map(cell => `"${String(cell !== undefined ? cell : '').replace(/"/g, '""')}"`).join(","); csvContent += row + "\r\n"; });
