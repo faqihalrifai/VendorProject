@@ -123,10 +123,10 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            min-height: 54px; /* Touch friendly */
+            min-height: 54px; /* Touch friendly for mobile */
         }
         @media (min-width: 640px) {
-            .btn-analyze { padding: 17px 40px; font-size: 15px; letter-spacing: 1.5px; }
+            .btn-analyze { padding: 15px 40px; font-size: 15px; letter-spacing: 1.5px; }
             .btn-analyze:hover { letter-spacing: 3px; background-color: #ffffff; color: #0ea5e9; box-shadow: rgba(14, 165, 233, 0.4) 0px 7px 29px 0px; }
         }
         .btn-analyze:active {
@@ -160,7 +160,7 @@
             white-space: nowrap;
             min-height: 40px;
         }
-        @media (min-width: 640px) { .magic-btn { font-size: 13px; border-radius: 6px; } }
+        @media (min-width: 640px) { .magic-btn { font-size: 12px; border-radius: 6px; min-height: 36px; padding: 0.4rem 0.8rem; } }
         .magic-btn:before {
             content: "";
             position: absolute;
@@ -181,7 +181,7 @@
         .flip-card {
             background-color: transparent;
             perspective: 1000px;
-            min-height: 160px; 
+            min-height: 180px; 
             width: 100%;
         }
         .flip-card-inner {
@@ -417,14 +417,14 @@
                     <span class="font-black text-lg sm:text-xl tracking-tight text-slate-800 group-hover:text-brand-600 transition-colors">Dazer</span>
                 </div>
                 <div class="flex items-center gap-1.5 sm:gap-3">
-                    <button onclick="selfDestruct()" class="flex text-[11px] font-bold items-center gap-1.5 text-rose-600 bg-rose-50/80 hover:bg-rose-100/80 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full transition-all border border-rose-200/50 shadow-sm min-h-[36px]" title="Hapus Semua Data Permanen">
+                    <button onclick="selfDestruct()" class="flex text-[11px] font-bold items-center gap-1.5 text-rose-600 bg-rose-50/80 hover:bg-rose-100/80 px-2.5 sm:px-3 py-1.5 rounded-full transition-all border border-rose-200/50 shadow-sm" title="Hapus Semua Data Permanen">
                         <i data-lucide="trash-2" class="w-4 h-4 sm:w-3.5 sm:h-3.5"></i> <span class="hidden sm:inline">Hapus Cache</span>
                     </button>
-                    <div class="flex items-center gap-1.5 bg-brand-50/80 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-brand-200/50 shadow-sm cursor-pointer hover:bg-brand-100 transition-colors min-h-[36px]" onclick="showUpgradeModal('info')" title="Sisa Siklus Analitik">
+                    <div class="flex items-center gap-1.5 bg-brand-50/80 px-3 sm:px-3 py-1.5 rounded-full border border-brand-200/50 shadow-sm cursor-pointer hover:bg-brand-100 transition-colors" onclick="showUpgradeModal('info')" title="Sisa Siklus Analitik">
                         <i data-lucide="zap" class="w-4 h-4 sm:w-3.5 sm:h-3.5 text-brand-500 fill-brand-500"></i>
                         <span class="text-[12px] font-black text-brand-700" id="ai-token-display">5</span>
                     </div>
-                    <button onclick="toggleHistoryModal()" class="text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full transition-all shadow-sm min-h-[36px]">
+                    <button onclick="toggleHistoryModal()" class="text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-2.5 sm:px-3 py-1.5 rounded-full transition-all shadow-sm">
                         <i data-lucide="history" class="w-4 h-4 sm:w-3.5 sm:h-3.5"></i> <span class="hidden sm:inline">Arsip</span>
                     </button>
                 </div>
@@ -577,8 +577,8 @@
             </div>
         </div>
 
-        <!-- Clean Blue Loader -->
-        <div id="loading-state" class="hidden w-full max-w-2xl mx-auto flex flex-col items-center justify-center py-16 sm:py-24 fade-in-up px-4 text-center">
+        <!-- Clean Blue Loader (Centered perfectly) -->
+        <div id="loading-state" class="hidden w-full flex-grow flex flex-col items-center justify-center min-h-[70vh] fade-in-up px-4 text-center">
             
             <div class="uiverse-loader mb-6 sm:mb-8">
               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
