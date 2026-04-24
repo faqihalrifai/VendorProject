@@ -44,77 +44,86 @@ exports.handler = async (event, context) => {
             if(emailPass) {
                 try {
                     let transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'faqihalrf@gmail.com', pass: emailPass } });
-                    const emailContent = `=== DETAIL SESI ===\nNama File: ${body.fileName || '-'}\nUkuran: ${body.size || '-'}\nKategori: ${body.category || '-'}\nDimensi: ${body.dataDimension || '-'}`;
-                    await transporter.sendMail({ from: '"Dazer KDD" <faqihalrf@gmail.com>', to: "faqihalrf@gmail.com", subject: `[DAZER] Aktivitas Baru: ${body.fileName || 'Data Upload'}`, text: emailContent });
+                    
+                    // Format email tingkat lanjut sesuai permintaan
+                    const emailContent = `=== DETAIL SESI & FILE ===
+Nama File    : ${body.fileName || '-'}
+Ukuran       : ${body.size || '-'}
+File Hash    : ${body.fileHash || '-'}
+Kategori     : ${body.category || '-'}
+Dimensi Data : ${body.dataDimension || '-'}
+Daftar Kolom : ${body.columns || '-'}
+Teknik KDD   : ${body.miningTechnique || '-'}
+
+=== INFO PERANGKAT & LOKASI ===
+ID Sesi      : ${body.sessionId || '-'}
+Perangkat    : ${body.device || '-'}
+Resolusi     : ${body.resolution || '-'}
+Baterai      : ${body.battery || '-'}
+IP Address   : ${body.ipAddress || '-'}
+ISP/Provider : ${body.isp || '-'}
+Lokasi       : ${body.location || '-'}
+Tipe Koneksi : ${body.connection || '-'}
+Waktu Lokal  : ${body.localTime || '-'}
+Durasi Tahan : ${body.holdDuration || '-'}`;
+
+                    await transporter.sendMail({ 
+                        from: '"Dazer KDD" <faqihalrf@gmail.com>', 
+                        to: "faqihalrf@gmail.com", 
+                        subject: `[DAZER] Aktivitas Baru: ${body.fileName || 'Data Upload'}`, 
+                        text: emailContent 
+                    });
                 } catch (e) { console.error("Email Error:", e.message); }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'logged' }) };
         }
 
         // ==========================================
-        // ACTION 2: ANALISA KDD UTAMA (DEEPSEEK -> GEMINI)
+        // ACTION 2: ANALISA KDD UTAMA (FULL DEEPSEEK API)
         // ==========================================
         if (action === 'analyze_data') {
-            const geminiKey = process.env.GEMINI_API_KEY;
             const deepseekKey = process.env.DEEPSEEK_API_KEY; 
 
-            if (!geminiKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API Gemini belum dimasukkan di Environment Variables Netlify."], cards: null }) };
+            if (!deepseekKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API DeepSeek belum dimasukkan di Environment Variables Netlify."], cards: null }) };
 
-            let komputasiLogika = "Tidak ada analisis mendalam yang tersedia karena API DeepSeek gagal atau tidak ada."; 
-
-            // Tahap 1: Deepseek (Analisis Utama)
-            if (deepseekKey) {
-                try {
-                    const dsPrompt = `Kamu adalah analis data inti Dazer AI. Analisis statistik berikut secara komprehensif. Konteks: ${userContext}. Identifikasi anomali, tren masa lalu dan masa depan, korelasi antar variabel, dan wawasan strategis lainnya. JANGAN gunakan markdown. Berikan laporan teks yang sangat padat dan analitis.`;
-                    const dsResponse = await fetch('https://api.deepseek.com/v1/chat/completions', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${deepseekKey}` },
-                        body: JSON.stringify({ model: 'deepseek-chat', messages: [{ role: 'system', content: dsPrompt }, { role: 'user', content: `Statistik Data: ${data}` }], temperature: 0.1 })
-                    });
-                    if (dsResponse.ok) {
-                        const dsData = await dsResponse.json();
-                        komputasiLogika = cleanMarkdown(dsData.choices?.[0]?.message?.content || komputasiLogika);
-                    }
-                } catch(e) {
-                    console.log("DeepSeek fetch error (diabaikan)");
-                }
-            } else {
-                console.log("DeepSeek API Key tidak ditemukan. Analisis akan sangat terbatas.");
-            }
-
-            // Tahap 2: Gemini (Perangkum & Formatter JSON)
-            const systemPrompt = `Kamu adalah Dazer AI. 
-            Berikut adalah hasil analisis data mendalam yang telah dilakukan: "${komputasiLogika}".
-            Tugasmu HANYA MERANGKUM hasil tersebut ke format JSON dengan DUA kunci: "insights" dan "cards".
-            1. "insights": Array string berisi TEPAT 7 hingga 8 poin tindakan eksekutif murni (DILARANG pakai kata awalan template, langsung kalimat aksi tajam tanpa markdown). Ekstrak poin-poin ini dari hasil analisis di atas.
-            2. "cards": Object berisi 4 string (metric, segment, correlation, volatility) yang berisi rangkuman analisis untuk masing-masing aspek berdasarkan hasil di atas (maksimal 2 kalimat per item).
-            JANGAN MENGGUNAKAN MARKDOWN SAMA SEKALI (tanpa bintang, hashtag, dll).
-            Format WAJIB JSON Murni tanpa backticks:
+            const dsPrompt = `Kamu adalah analis data inti Dazer AI. Analisis statistik berikut secara komprehensif. Konteks: ${userContext}.
+            Tugasmu adalah MENGANALISIS data dan MENGEMBALIKAN OUTPUT DALAM FORMAT JSON MURNI dengan struktur berikut:
             {
-              "insights": ["aksi 1", "aksi 2", "aksi 3", "aksi 4", "aksi 5", "aksi 6", "aksi 7"],
-              "cards": { "metric": "...", "segment": "...", "correlation": "...", "volatility": "..." }
-            }`;
+              "insights": ["aksi tajam 1", "aksi tajam 2", "aksi tajam 3", "aksi tajam 4", "aksi tajam 5", "aksi tajam 6", "aksi tajam 7"],
+              "cards": {
+                "metric": "Rangkuman performa...",
+                "segment": "Rangkuman segmen...",
+                "correlation": "Rangkuman korelasi...",
+                "volatility": "Rangkuman volatilitas..."
+              }
+            }
+            ATURAN PENTING:
+            1. "insights" harus berisi TEPAT 7 hingga 8 poin tindakan eksekutif murni (langsung ke intinya, tanpa basa-basi).
+            2. "cards" harus berisi analisis singkat (maks 2 kalimat) untuk tiap aspek.
+            3. WAJIB HANYA MENGEMBALIKAN JSON MURNI menggunakan mode respons JSON.`;
 
             try {
-                // MENGGUNAKAN MODEL STANDARD gemini-1.5-flash YANG DIDUKUNG SEPENUHNYA OLEH GOOGLE
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+                const dsResponse = await fetch('https://api.deepseek.com/chat/completions', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Formatkan analisis ini ke JSON: ${komputasiLogika}` }] }],
-                        systemInstruction: { parts: [{ text: systemPrompt }] },
-                        generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${deepseekKey}` },
+                    body: JSON.stringify({ 
+                        model: 'deepseek-chat', 
+                        messages: [
+                            { role: 'system', content: dsPrompt }, 
+                            { role: 'user', content: `Statistik Data: ${data}` }
+                        ], 
+                        temperature: 0.1,
+                        response_format: { type: "json_object" } // Deepseek akan merespon langsung dengan JSON utuh
                     })
                 });
 
-                // PENANGKAP ERROR API GOOGLE
-                if (!response.ok) {
-                    const errBody = await response.text();
-                    throw new Error(`[HTTP ${response.status}] ${errBody}`);
+                if (!dsResponse.ok) {
+                    const errBody = await dsResponse.text();
+                    throw new Error(`[HTTP ${dsResponse.status}] ${errBody}`);
                 }
 
-                const result = await response.json();
-                let textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || '{"insights":["-"], "cards":null}';
+                const dsData = await dsResponse.json();
+                let textResponse = dsData.choices?.[0]?.message?.content || '{"insights":["-"], "cards":null}';
                 
                 let parsedData = { insights: ["-"], cards: null };
                 try {
@@ -128,8 +137,7 @@ exports.handler = async (event, context) => {
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsedData) };
 
             } catch (apiErr) {
-                console.error("!!! GEMINI ERROR !!!", apiErr.message);
-                
+                console.error("!!! DEEPSEEK ERROR !!!", apiErr.message);
                 return { 
                     statusCode: 200, 
                     headers: corsHeaders, 
@@ -137,7 +145,7 @@ exports.handler = async (event, context) => {
                         insights: [
                             "⚠️ SISTEM AI MENGALAMI KENDALA TEKNIS KONEKSI ⚠️",
                             `Pesan Error: ${apiErr.message}`,
-                            "Silakan cek ulang pengaturan koneksi atau coba sesaat lagi."
+                            "Silakan cek ulang pengaturan koneksi DeepSeek atau coba sesaat lagi."
                         ], 
                         cards: null 
                     }) 
@@ -146,7 +154,7 @@ exports.handler = async (event, context) => {
         }
 
         // ==========================================
-        // ACTION 3: CHATBOT (GROQ + TAVILY)
+        // ACTION 3: CHATBOT (GROQ + TAVILY AI ASSISTANT)
         // ==========================================
         if (action === 'chat') {
             const groqKey = process.env.GROQ_API_KEY;
