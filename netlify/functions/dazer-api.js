@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD & AI Strategist (V5 Netlify Functions Optimized)
+// dazer-api.js - Backend KDD & AI Strategist (V7 - Full Groq & Strict Token Saver)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -18,14 +18,27 @@ exports.handler = async (event, context) => {
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "CORS Preflight OK" }) };
     if (event.httpMethod !== 'POST') return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: 'Method Not Allowed' }) };
 
+    // --- ANTI-SPAM & ANTI-BOROS TOKEN BERBASIS IP ---
     const clientIp = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown-ip';
     const currentTime = Date.now();
     const limitData = rateLimitMap.get(clientIp) || { count: 0, firstRequest: currentTime };
     
-    if (currentTime - limitData.firstRequest > 60000) { limitData.count = 1; limitData.firstRequest = currentTime; } 
-    else {
+    // Reset limit setiap 10 menit (600.000 ms)
+    if (currentTime - limitData.firstRequest > 600000) { 
+        limitData.count = 1; limitData.firstRequest = currentTime; 
+    } else {
         limitData.count += 1;
-        if (limitData.count > 30) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Lalu lintas tinggi. Mohon jeda sesaat.", insights: ["-"], cards: null }) };
+        // Maksimal 15 request per 10 menit per IP
+        if (limitData.count > 15) { 
+            return { 
+                statusCode: 200, headers: corsHeaders, 
+                body: JSON.stringify({ 
+                    reply: "Sistem mendeteksi lalu lintas tinggi dari perangkat Anda. Untuk menghemat sumber daya, mohon jeda 10 menit.", 
+                    insights: ["Limit penggunaan sistem tercapai. Harap tunggu beberapa saat sebelum menganalisa kembali."], 
+                    cards: null 
+                }) 
+            };
+        }
     }
     rateLimitMap.set(clientIp, limitData);
 
@@ -45,7 +58,6 @@ exports.handler = async (event, context) => {
                 try {
                     let transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'faqihalrf@gmail.com', pass: emailPass } });
                     
-                    // Format email tingkat lanjut sesuai permintaan
                     const emailContent = `=== DETAIL SESI & FILE ===
 Nama File    : ${body.fileName || '-'}
 Ukuran       : ${body.size || '-'}
@@ -79,51 +91,49 @@ Durasi Tahan : ${body.holdDuration || '-'}`;
         }
 
         // ==========================================
-        // ACTION 2: ANALISA KDD UTAMA (FULL DEEPSEEK API)
+        // ACTION 2: ANALISA KDD UTAMA (GROQ LLAMA-3.3-70B)
         // ==========================================
         if (action === 'analyze_data') {
-            const deepseekKey = process.env.DEEPSEEK_API_KEY; 
+            const groqKey = process.env.GROQ_API_KEY; 
 
-            if (!deepseekKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API DeepSeek belum dimasukkan di Environment Variables Netlify."], cards: null }) };
+            if (!groqKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API Groq belum dimasukkan di Netlify."], cards: null }) };
 
-            const dsPrompt = `Kamu adalah analis data inti Dazer AI. Analisis statistik berikut secara komprehensif. Konteks: ${userContext}.
-            Tugasmu adalah MENGANALISIS data dan MENGEMBALIKAN OUTPUT DALAM FORMAT JSON MURNI dengan struktur berikut:
-            {
-              "insights": ["aksi tajam 1", "aksi tajam 2", "aksi tajam 3", "aksi tajam 4", "aksi tajam 5", "aksi tajam 6", "aksi tajam 7"],
-              "cards": {
-                "metric": "Rangkuman performa...",
-                "segment": "Rangkuman segmen...",
-                "correlation": "Rangkuman korelasi...",
-                "volatility": "Rangkuman volatilitas..."
-              }
-            }
-            ATURAN PENTING:
-            1. "insights" harus berisi TEPAT 7 hingga 8 poin tindakan eksekutif murni (langsung ke intinya, tanpa basa-basi).
-            2. "cards" harus berisi analisis singkat (maks 2 kalimat) untuk tiap aspek.
-            3. WAJIB HANYA MENGEMBALIKAN JSON MURNI menggunakan mode respons JSON.`;
+            const systemPrompt = `Kamu analis data Dazer AI. Analisis: ${userContext}.
+MENGEMBALIKAN OUTPUT DALAM FORMAT JSON MURNI:
+{
+  "insights": ["aksi 1", "aksi 2", "aksi 3", "aksi 4", "aksi 5", "aksi 6", "aksi 7"],
+  "cards": {
+    "metric": "singkat...", "segment": "singkat...", "correlation": "singkat...", "volatility": "singkat..."
+  }
+}
+ATURAN HEMAT TOKEN:
+1. "insights" harus 7 poin. Sangat padat, langsung ke inti (max 12 kata per poin).
+2. "cards" maksimal 2 kalimat pendek per aspek.
+3. HANYA OUTPUT JSON MURNI. Dilarang memberi penjelasan di luar JSON.`;
 
             try {
-                const dsResponse = await fetch('https://api.deepseek.com/chat/completions', {
+                const aiResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${deepseekKey}` },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
                     body: JSON.stringify({ 
-                        model: 'deepseek-chat', 
+                        model: 'llama-3.3-70b-versatile', 
                         messages: [
-                            { role: 'system', content: dsPrompt }, 
-                            { role: 'user', content: `Statistik Data: ${data}` }
+                            { role: 'system', content: systemPrompt }, 
+                            { role: 'user', content: `Data: ${data}` }
                         ], 
                         temperature: 0.1,
-                        response_format: { type: "json_object" } // Deepseek akan merespon langsung dengan JSON utuh
+                        max_tokens: 800, // HEMAT TOKEN: Paksa AI berhenti setelah 800 token
+                        response_format: { type: "json_object" } 
                     })
                 });
 
-                if (!dsResponse.ok) {
-                    const errBody = await dsResponse.text();
-                    throw new Error(`[HTTP ${dsResponse.status}] ${errBody}`);
+                if (!aiResponse.ok) {
+                    const errBody = await aiResponse.text();
+                    throw new Error(`[HTTP ${aiResponse.status}] ${errBody}`);
                 }
 
-                const dsData = await dsResponse.json();
-                let textResponse = dsData.choices?.[0]?.message?.content || '{"insights":["-"], "cards":null}';
+                const aiData = await aiResponse.json();
+                let textResponse = aiData.choices?.[0]?.message?.content || '{"insights":["-"], "cards":null}';
                 
                 let parsedData = { insights: ["-"], cards: null };
                 try {
@@ -137,16 +147,11 @@ Durasi Tahan : ${body.holdDuration || '-'}`;
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsedData) };
 
             } catch (apiErr) {
-                console.error("!!! DEEPSEEK ERROR !!!", apiErr.message);
+                console.error("!!! GROQ ANALYZER ERROR !!!", apiErr.message);
                 return { 
-                    statusCode: 200, 
-                    headers: corsHeaders, 
+                    statusCode: 200, headers: corsHeaders, 
                     body: JSON.stringify({ 
-                        insights: [
-                            "⚠️ SISTEM AI MENGALAMI KENDALA TEKNIS KONEKSI ⚠️",
-                            `Pesan Error: ${apiErr.message}`,
-                            "Silakan cek ulang pengaturan koneksi DeepSeek atau coba sesaat lagi."
-                        ], 
+                        insights: ["⚠️ SISTEM AI MENGALAMI KENDALA TEKNIS", `Pesan: ${apiErr.message}`], 
                         cards: null 
                     }) 
                 };
@@ -170,18 +175,19 @@ Durasi Tahan : ${body.holdDuration || '-'}`;
                     const tvlyRes = await fetch('https://api.tavily.com/search', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ api_key: tvlyKey, query: message, search_depth: "basic", max_results: 3 })
+                        body: JSON.stringify({ api_key: tvlyKey, query: message, search_depth: "basic", max_results: 2 }) // HEMAT: Turunkan hasil internet
                     });
                     if (tvlyRes.ok) {
                         const tvlyData = await tvlyRes.json();
-                        if (tvlyData && tvlyData.results) internetContext = `\n[Internet: ${JSON.stringify(tvlyData.results)}]`;
+                        if (tvlyData && tvlyData.results) internetContext = `\n[Internet Info: ${JSON.stringify(tvlyData.results)}]`;
                     }
                 } catch(e) {}
             }
 
             const universalSystemPrompt = `Kamu adalah Dazer AI. Jangan pakai markdown.
-            Konteks File: ${userContext}
-            ${internetContext}`;
+Jawab dengan SANGAT SINGKAT, PADAT, dan TEPAT SASARAN (Maksimal 3-4 kalimat).
+Konteks File: ${userContext}
+${internetContext}`;
 
             try {
                 const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -190,7 +196,8 @@ Durasi Tahan : ${body.holdDuration || '-'}`;
                     body: JSON.stringify({ 
                         model: 'llama-3.3-70b-versatile', 
                         messages: [{ role: 'system', content: universalSystemPrompt }, { role: 'user', content: message }], 
-                        temperature: 0.6 
+                        temperature: 0.5,
+                        max_tokens: 250 // HEMAT TOKEN: Batasi jawaban maksimal 250 token (sekitar ~180 kata)
                     })
                 });
 
@@ -203,7 +210,7 @@ Durasi Tahan : ${body.holdDuration || '-'}`;
                 let reply = cleanMarkdown(groqData.choices?.[0]?.message?.content || "Sistem telah memproses instruksi.");
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply }) };
             } catch (chatErr) {
-                console.error("!!! GROQ ERROR !!!", chatErr.message);
+                console.error("!!! GROQ CHATBOT ERROR !!!", chatErr.message);
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: `⚠️ Error Chatbot: ${chatErr.message}` }) };
             }
         }
