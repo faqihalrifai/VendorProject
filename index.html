@@ -107,7 +107,7 @@
 
         /* BUTTON ANALYZE */
         .btn-analyze {
-            padding: 12px 24px;
+            padding: 14px 24px;
             border-radius: 50px;
             cursor: pointer;
             border: 0;
@@ -115,7 +115,7 @@
             box-shadow: rgba(14, 165, 233, 0.3) 0 4px 14px 0;
             letter-spacing: 1px;
             text-transform: uppercase;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 800;
             color: #ffffff;
             transition: all 0.4s ease;
@@ -124,10 +124,10 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            min-height: 44px;
+            min-height: 48px;
         }
         @media (min-width: 640px) {
-            .btn-analyze { padding: 14px 32px; font-size: 13px; letter-spacing: 1.5px; min-height: 48px; }
+            .btn-analyze { padding: 15px 32px; font-size: 14px; letter-spacing: 1.5px; }
             .btn-analyze:hover { letter-spacing: 3px; background-color: #ffffff; color: #0ea5e9; box-shadow: rgba(14, 165, 233, 0.4) 0px 7px 29px 0px; }
         }
         .btn-analyze:active {
@@ -146,7 +146,7 @@
             align-items: center;
             justify-content: center;
             gap: 0.4rem;
-            padding: 0.35rem 0.75rem;
+            padding: 0.4rem 0.8rem;
             position: relative;
             cursor: pointer;
             overflow: hidden;
@@ -159,9 +159,9 @@
             color: var(--color);
             background: transparent;
             white-space: nowrap;
-            min-height: 32px;
+            min-height: 34px;
         }
-        @media (min-width: 640px) { .magic-btn { font-size: 11px; border-radius: 6px; min-height: 34px; padding: 0.4rem 0.85rem; } }
+        @media (min-width: 640px) { .magic-btn { font-size: 12px; min-height: 36px; padding: 0.4rem 1rem; } }
         .magic-btn:before {
             content: "";
             position: absolute;
@@ -182,7 +182,7 @@
         .flip-card {
             background-color: transparent;
             perspective: 1000px;
-            min-height: 160px; 
+            min-height: 150px; 
             width: 100%;
         }
         .flip-card-inner {
@@ -246,7 +246,7 @@
             border-radius: 50%;
             font-size: 11px;
         }
-        @media (min-width: 640px) { .h-loader { width: 8.5em; height: 8.5em; } }
+        @media (min-width: 640px) { .h-loader { width: 9em; height: 9em; } }
         
         .h-loader__fill, .h-loader__fill:before, .h-loader__fill-glow, .h-loader__middle, .h-loader__middle:before {
             border-radius: 50%;
@@ -285,7 +285,7 @@
             content: ""; display: block; inset: 0.25em;
         }
         .h-loader__value {
-            font-size: 1.5em;
+            font-size: 1.6em;
             font-weight: 900;
             color: var(--fg);
             display: flex;
@@ -295,7 +295,7 @@
             position: absolute;
             z-index: 2;
         }
-        @media (min-width: 640px) { .h-loader__value { font-size: 1.8em; } }
+        @media (min-width: 640px) { .h-loader__value { font-size: 2em; } }
 
         /* 2. HORIZONTAL PROGRESS BAR CSS */
         .modern-progress-wrapper {
@@ -329,18 +329,18 @@
             margin: 0 5px; background-color: transparent; animation: circle-keys var(--animation);
         }
         @media (min-width: 640px) {
-            .uiverse-loader .circle { width: 16px; height: 16px; margin: 0 6px; }
+            .uiverse-loader .circle { width: 18px; height: 18px; margin: 0 6px; }
         }
         .uiverse-loader .circle .dot {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px;
             border-radius: 50%; background-color: var(--color); animation: dot-keys var(--animation);
         }
-        @media (min-width: 640px) { .uiverse-loader .circle .dot { width: 10px; height: 10px; } }
+        @media (min-width: 640px) { .uiverse-loader .circle .dot { width: 12px; height: 12px; } }
         .uiverse-loader .circle .outline {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px;
             border-radius: 50%; animation: outline-keys var(--animation);
         }
-        @media (min-width: 640px) { .uiverse-loader .circle .outline { width: 16px; height: 16px; } }
+        @media (min-width: 640px) { .uiverse-loader .circle .outline { width: 18px; height: 18px; } }
         .uiverse-loader .circle:nth-child(2) { animation-delay: 0.3s; }
         .uiverse-loader .circle:nth-child(3) { animation-delay: 0.6s; }
         .uiverse-loader .circle:nth-child(4) { animation-delay: 0.9s; }
@@ -363,8 +363,8 @@
             100% { transform: scale(1); }
         }
         @keyframes outline-keys {
-            0% { transform: scale(0); outline: solid 14px var(--color); outline-offset: 0; opacity: 1; }
-            100% { transform: scale(1); outline: solid 0 transparent; outline-offset: 14px; opacity: 0; }
+            0% { transform: scale(0); outline: solid 18px var(--color); outline-offset: 0; opacity: 1; }
+            100% { transform: scale(1); outline: solid 0 transparent; outline-offset: 18px; opacity: 0; }
         }
 
         /* CLEAN CHATBOT UI */
@@ -376,14 +376,14 @@
         .chat-bubble {
             padding: 0.6rem 0.8rem;
             border-radius: 0.85rem;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             line-height: 1.5;
             position: relative;
             max-width: 90%;
             box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
             border: 1px solid #f1f5f9;
         }
-        @media (min-width: 640px) { .chat-bubble { max-width: 85%; padding: 0.6rem 0.85rem; font-size: 0.8rem;} }
+        @media (min-width: 640px) { .chat-bubble { max-width: 85%; padding: 0.6rem 0.85rem; } }
         .chat-bubble-ai { background-color: #f8fafc; color: #334155; border-top-left-radius: 0; }
         .chat-bubble-user { background-color: #f0f9ff; color: #0f172a; border-top-right-radius: 0; border-color: #bae6fd; margin-left: auto; }
 
@@ -411,21 +411,21 @@
     <!-- Navbar -->
     <nav class="w-full bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm" id="main-nav">
         <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-14 sm:h-14 items-center">
+            <div class="flex justify-between h-14 sm:h-16 items-center">
                 <div class="flex items-center gap-2 cursor-pointer group" onclick="resetApp()">
-                    <img src="android-chrome-192x192.png" alt="Dazer Logo" class="w-6 h-6 object-contain transition-transform group-hover:scale-105" onerror="this.outerHTML='<i data-lucide=\'bar-chart-2\' class=\'w-5 h-5 sm:w-6 sm:h-6 text-brand-600\'></i>'">
+                    <img src="android-chrome-192x192.png" alt="Dazer Logo" class="w-6 h-6 sm:w-7 sm:h-7 object-contain transition-transform group-hover:scale-105" onerror="this.outerHTML='<i data-lucide=\'bar-chart-2\' class=\'w-5 h-5 sm:w-6 sm:h-6 text-brand-600\'></i>'">
                     <span class="font-black text-base sm:text-lg tracking-tight text-slate-800 group-hover:text-brand-600 transition-colors">Dazer</span>
                 </div>
                 <div class="flex items-center gap-1.5 sm:gap-2">
-                    <button onclick="selfDestruct()" class="flex text-[10px] font-bold items-center gap-1 text-rose-600 bg-rose-50/80 hover:bg-rose-100/80 px-2.5 py-1.5 rounded-full transition-all border border-rose-200/50 shadow-sm" title="Hapus Semua Data Permanen">
-                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Hapus Cache</span>
+                    <button onclick="selfDestruct()" class="flex text-[10px] sm:text-[11px] font-bold items-center gap-1.5 text-rose-600 bg-rose-50/80 hover:bg-rose-100/80 px-2.5 sm:px-3 py-1.5 rounded-full transition-all border border-rose-200/50 shadow-sm" title="Hapus Semua Data Permanen">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> <span class="hidden sm:inline">Hapus Cache</span>
                     </button>
-                    <div class="flex items-center gap-1 bg-brand-50/80 px-2.5 py-1.5 rounded-full border border-brand-200/50 shadow-sm cursor-pointer hover:bg-brand-100 transition-colors" onclick="showUpgradeModal('info')" title="Sisa Siklus Analitik">
-                        <i data-lucide="zap" class="w-3.5 h-3.5 text-brand-500 fill-brand-500"></i>
-                        <span class="text-[11px] font-black text-brand-700" id="ai-token-display">5</span>
+                    <div class="flex items-center gap-1.5 bg-brand-50/80 px-2.5 sm:px-3 py-1.5 rounded-full border border-brand-200/50 shadow-sm cursor-pointer hover:bg-brand-100 transition-colors" onclick="showUpgradeModal('info')" title="Sisa Siklus Analitik">
+                        <i data-lucide="zap" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-500 fill-brand-500"></i>
+                        <span class="text-[11px] sm:text-[12px] font-black text-brand-700" id="ai-token-display">5</span>
                     </div>
-                    <button onclick="toggleHistoryModal()" class="text-[10px] font-bold flex items-center gap-1 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-full transition-all shadow-sm">
-                        <i data-lucide="history" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Arsip</span>
+                    <button onclick="toggleHistoryModal()" class="text-[10px] sm:text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-2.5 sm:px-3 py-1.5 rounded-full transition-all shadow-sm">
+                        <i data-lucide="history" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> <span class="hidden sm:inline">Arsip</span>
                     </button>
                 </div>
             </div>
@@ -570,7 +570,7 @@
                 </div>
             </div>
 
-            <div class="p-0 bg-transparent mt-2 sm:mt-3">
+            <div class="p-0 bg-transparent mt-1 sm:mt-2">
                 <button onclick="startAnalysis()" class="btn-analyze w-full">
                     Jalankan Mesin Analitik <i data-lucide="cpu" class="w-4 h-4 transition-transform"></i>
                 </button>
@@ -578,9 +578,9 @@
         </div>
 
         <!-- Clean Blue Loader (Centered perfectly) -->
-        <div id="loading-state" class="hidden flex-1 w-full flex flex-col items-center justify-center min-h-[60vh] fade-in-up px-4 text-center">
+        <div id="loading-state" class="hidden w-full max-w-2xl m-auto flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh] fade-in-up px-4 text-center">
             
-            <div class="uiverse-loader mb-4 sm:mb-5">
+            <div class="uiverse-loader mb-5 sm:mb-6">
               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
@@ -667,7 +667,7 @@
                             <p class="text-[10px] sm:text-[11px] font-bold text-center px-4 leading-relaxed">Menarik cetak biru logika...</p>
                         </div>
 
-                        <ul class="space-y-3 flex-grow overflow-y-auto custom-scrollbar pr-1 pb-3 hidden" id="insights-list"></ul>
+                        <ul class="space-y-2.5 sm:space-y-3 flex-grow overflow-y-auto custom-scrollbar pr-1 pb-3 hidden" id="insights-list"></ul>
                         
                         <div class="mt-auto pt-3 border-t border-slate-100 shrink-0">
                             <button onclick="runSimulation()" id="btn-simulate" class="w-full bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 text-slate-700 hover:text-brand-700 px-3 py-2.5 rounded-lg text-[10px] sm:text-[11px] font-black shadow-sm transition-all flex items-center justify-center gap-1.5 group">
@@ -769,7 +769,7 @@
                 <!-- Transformation Center -->
                 <div class="glass-card flex flex-col relative transition-all w-full" id="matrix-card">
                     <div class="p-3 sm:p-5 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 bg-white shrink-0">
-                        <div class="w-full xl:w-auto px-1 sm:px-0">
+                        <div class="w-full xl:w-auto">
                             <h3 class="font-black text-slate-900 text-[11px] sm:text-sm">Klinik Data (Pembersihan)</h3>
                             <p class="text-[9px] sm:text-[10px] text-slate-600 mt-0.5 font-semibold">Cari cepat: Coba ketik rata-rata, ganjil, atau anomali.</p>
                         </div>
