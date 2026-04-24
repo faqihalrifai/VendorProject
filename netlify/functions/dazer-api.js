@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD & AI Strategist (V7 - Full Groq & Strict Token Saver)
+// dazer-api.js - Backend KDD & AI Strategist (V8 - Full Groq, Anti-Spam & Detail Analysis)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -98,17 +98,21 @@ Durasi Tahan : ${body.holdDuration || '-'}`;
 
             if (!groqKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API Groq belum dimasukkan di Netlify."], cards: null }) };
 
+            // Prompt telah diubah agar meminta analisis yang sangat mendalam dan panjang
             const systemPrompt = `Kamu analis data Dazer AI. Analisis: ${userContext}.
 MENGEMBALIKAN OUTPUT DALAM FORMAT JSON MURNI:
 {
   "insights": ["aksi 1", "aksi 2", "aksi 3", "aksi 4", "aksi 5", "aksi 6", "aksi 7"],
   "cards": {
-    "metric": "singkat...", "segment": "singkat...", "correlation": "singkat...", "volatility": "singkat..."
+    "metric": "Jelaskan performa secara komprehensif berdasarkan angka di data...", 
+    "segment": "Jelaskan segmen secara detail...", 
+    "correlation": "Jelaskan korelasi antar variabel secara mendalam...", 
+    "volatility": "Jelaskan risiko dan volatilitas secara profesional..."
   }
 }
-ATURAN HEMAT TOKEN:
-1. "insights" harus 7 poin. Sangat padat, langsung ke inti (max 12 kata per poin).
-2. "cards" maksimal 2 kalimat pendek per aspek.
+ATURAN:
+1. "insights" harus 7 poin tindakan eksekutif. Penjelasan harus komprehensif, strategis, dan solutif.
+2. "cards" berikan analisis yang mendalam, panjang, logis, dan profesional (jangan terlalu ringkas).
 3. HANYA OUTPUT JSON MURNI. Dilarang memberi penjelasan di luar JSON.`;
 
             try {
@@ -121,8 +125,8 @@ ATURAN HEMAT TOKEN:
                             { role: 'system', content: systemPrompt }, 
                             { role: 'user', content: `Data: ${data}` }
                         ], 
-                        temperature: 0.1,
-                        max_tokens: 800, // HEMAT TOKEN: Paksa AI berhenti setelah 800 token
+                        temperature: 0.3, // Dinaikkan sedikit dari 0.1 agar bahasanya lebih luwes dan panjang
+                        max_tokens: 2500, // Token diperbesar menjadi 2500 agar AI bisa menulis panjang lebar untuk card
                         response_format: { type: "json_object" } 
                     })
                 });
@@ -197,7 +201,7 @@ ${internetContext}`;
                         model: 'llama-3.3-70b-versatile', 
                         messages: [{ role: 'system', content: universalSystemPrompt }, { role: 'user', content: message }], 
                         temperature: 0.5,
-                        max_tokens: 250 // HEMAT TOKEN: Batasi jawaban maksimal 250 token (sekitar ~180 kata)
+                        max_tokens: 250 // Batasi jawaban Chatbot maksimal 250 token agar responnya cepat
                     })
                 });
 
