@@ -73,6 +73,7 @@
             display: flex; 
             min-height: 100vh; 
             flex-direction: column;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* Glass Card */
@@ -92,10 +93,10 @@
         }
 
         /* Custom Scrollbar */
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f8fafc; border-radius: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .typewriter-cursor::after { content: '|'; animation: blink 1s step-start infinite; color: #0284c7; }
         @keyframes blink { 50% { opacity: 0; } }
@@ -105,36 +106,34 @@
 
         /* BUTTON ANALYZE */
         .btn-analyze {
-            padding: 17px 40px;
+            padding: 16px 32px;
             border-radius: 50px;
             cursor: pointer;
             border: 0;
             background-color: #0ea5e9;
             box-shadow: rgba(14, 165, 233, 0.3) 0 4px 14px 0;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 800;
             color: #ffffff;
-            transition: all 0.5s ease;
+            transition: all 0.4s ease;
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+            min-height: 54px; /* Touch friendly */
         }
-        .btn-analyze:hover {
-            letter-spacing: 3px;
-            background-color: #ffffff;
-            color: #0ea5e9;
-            box-shadow: rgba(14, 165, 233, 0.4) 0px 7px 29px 0px;
+        @media (min-width: 640px) {
+            .btn-analyze { padding: 17px 40px; font-size: 15px; letter-spacing: 1.5px; }
+            .btn-analyze:hover { letter-spacing: 3px; background-color: #ffffff; color: #0ea5e9; box-shadow: rgba(14, 165, 233, 0.4) 0px 7px 29px 0px; }
         }
         .btn-analyze:active {
-            letter-spacing: 3px;
             background-color: #ffffff;
             color: #0ea5e9;
             box-shadow: rgba(14, 165, 233, 0.4) 0px 0px 0px 0px;
-            transform: translateY(10px);
+            transform: translateY(4px);
             transition: 100ms;
         }
 
@@ -154,13 +153,14 @@
             transition: color 0.5s;
             z-index: 1;
             font-size: 12px;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: 700;
             color: var(--color);
             background: transparent;
             white-space: nowrap;
+            min-height: 40px;
         }
-        @media (min-width: 640px) { .magic-btn { font-size: 13px; } }
+        @media (min-width: 640px) { .magic-btn { font-size: 13px; border-radius: 6px; } }
         .magic-btn:before {
             content: "";
             position: absolute;
@@ -181,7 +181,7 @@
         .flip-card {
             background-color: transparent;
             perspective: 1000px;
-            height: 150px; 
+            min-height: 160px; 
             width: 100%;
         }
         .flip-card-inner {
@@ -192,9 +192,11 @@
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             transform-style: preserve-3d;
         }
-        .flip-card:hover .flip-card-inner {
-            transform: rotateY(180deg);
+        @media (hover: hover) {
+            .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
         }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); } /* For mobile touch */
+        
         .flip-card-front, .flip-card-back {
             position: absolute;
             width: 100%;
@@ -209,7 +211,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 1rem;
+            padding: 1.25rem 1rem;
         }
         .flip-card-back {
             background-color: #f8fafc;
@@ -238,11 +240,13 @@
                 0.5em 0.5em 1.5em hsl(var(--hue),10%,85%),
                 -0.5em -0.5em 1.5em hsl(var(--hue),10%,100%);
             position: relative;
-            width: 10em;
-            height: 10em;
+            width: 8em;
+            height: 8em;
             border-radius: 50%;
             font-size: 11px;
         }
+        @media (min-width: 640px) { .h-loader { width: 10em; height: 10em; } }
+        
         .h-loader__fill, .h-loader__fill:before, .h-loader__fill-glow, .h-loader__middle, .h-loader__middle:before {
             border-radius: 50%;
             position: absolute;
@@ -280,7 +284,7 @@
             content: ""; display: block; inset: 0.25em;
         }
         .h-loader__value {
-            font-size: 2.2em;
+            font-size: 1.8em;
             font-weight: 900;
             color: var(--fg);
             display: flex;
@@ -290,6 +294,7 @@
             position: absolute;
             z-index: 2;
         }
+        @media (min-width: 640px) { .h-loader__value { font-size: 2.2em; } }
 
         /* 2. HORIZONTAL PROGRESS BAR CSS */
         .modern-progress-wrapper {
@@ -298,18 +303,19 @@
             position: relative;
             padding: 3px;
             display: flex;
-            height: 16px;
+            height: 14px;
             width: 100%;
         }
+        @media (min-width: 640px) { .modern-progress-wrapper { height: 16px; } }
         .modern-progress-bar {
             border-radius: 100px;
-            height: 10px;
+            height: 100%;
             width: 0;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* UIVERSE LOADER - WARNA HITAM SESUAI REQUEST */
+        /* UIVERSE LOADER */
         .uiverse-loader {
             display: flex;
             justify-content: center;
@@ -319,17 +325,22 @@
         }
         .uiverse-loader .circle {
             display: flex; align-items: center; justify-content: center; position: relative;
-            width: 20px; height: 20px; border: solid 2px var(--color); border-radius: 50%;
-            margin: 0 8px; background-color: transparent; animation: circle-keys var(--animation);
+            width: 16px; height: 16px; border: solid 2px var(--color); border-radius: 50%;
+            margin: 0 6px; background-color: transparent; animation: circle-keys var(--animation);
+        }
+        @media (min-width: 640px) {
+            .uiverse-loader .circle { width: 20px; height: 20px; margin: 0 8px; }
         }
         .uiverse-loader .circle .dot {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 14px; height: 14px;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px;
             border-radius: 50%; background-color: var(--color); animation: dot-keys var(--animation);
         }
+        @media (min-width: 640px) { .uiverse-loader .circle .dot { width: 14px; height: 14px; } }
         .uiverse-loader .circle .outline {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px;
             border-radius: 50%; animation: outline-keys var(--animation);
         }
+        @media (min-width: 640px) { .uiverse-loader .circle .outline { width: 20px; height: 20px; } }
         .uiverse-loader .circle:nth-child(2) { animation-delay: 0.3s; }
         .uiverse-loader .circle:nth-child(3) { animation-delay: 0.6s; }
         .uiverse-loader .circle:nth-child(4) { animation-delay: 0.9s; }
@@ -363,15 +374,16 @@
             padding: 1rem;
         }
         .chat-bubble {
-            padding: 0.6rem 0.85rem;
-            border-radius: 0.75rem;
-            font-size: 0.8rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.85rem;
+            font-size: 0.85rem;
             line-height: 1.5;
             position: relative;
-            max-width: 85%;
+            max-width: 90%;
             box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05);
             border: 1px solid #f1f5f9;
         }
+        @media (min-width: 640px) { .chat-bubble { max-width: 85%; padding: 0.6rem 0.85rem; font-size: 0.8rem; } }
         .chat-bubble-ai { background-color: #f8fafc; color: #334155; border-top-left-radius: 0; }
         .chat-bubble-user { background-color: #f0f9ff; color: #0f172a; border-top-right-radius: 0; border-color: #bae6fd; margin-left: auto; }
 
@@ -386,6 +398,12 @@
         .mask-text { font-family: monospace; letter-spacing: 2px; color: #94a3b8; }
         .table-row-animate { animation: fadeSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; opacity: 0; }
         @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Mobile Touch Optimizations */
+        select, input[type="text"], button { font-size: 16px !important; } /* Prevents iOS auto-zoom */
+        @media (min-width: 640px) {
+            select, input[type="text"], button { font-size: inherit !important; }
+        }
     </style>
 </head>
 <body class="text-brand-900 antialiased selection:bg-brand-200 selection:text-brand-900">
@@ -394,19 +412,19 @@
     <nav class="w-full bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm" id="main-nav">
         <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-3 cursor-pointer group" onclick="resetApp()">
-                    <img src="android-chrome-192x192.png" alt="Dazer Logo" class="w-8 h-8 object-contain transition-transform group-hover:scale-105" onerror="this.outerHTML='<i data-lucide=\'bar-chart-2\' class=\'w-7 h-7 text-brand-600\'></i>'">
-                    <span class="font-black text-xl tracking-tight text-slate-800 group-hover:text-brand-600 transition-colors">Dazer</span>
+                <div class="flex items-center gap-2 sm:gap-3 cursor-pointer group" onclick="resetApp()">
+                    <img src="android-chrome-192x192.png" alt="Dazer Logo" class="w-7 h-7 sm:w-8 sm:h-8 object-contain transition-transform group-hover:scale-105" onerror="this.outerHTML='<i data-lucide=\'bar-chart-2\' class=\'w-6 h-6 sm:w-7 sm:h-7 text-brand-600\'></i>'">
+                    <span class="font-black text-lg sm:text-xl tracking-tight text-slate-800 group-hover:text-brand-600 transition-colors">Dazer</span>
                 </div>
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <button onclick="selfDestruct()" class="flex text-[11px] font-bold items-center gap-1.5 text-rose-600 bg-rose-50/80 hover:bg-rose-100/80 px-2 sm:px-3.5 py-1.5 rounded-full transition-all border border-rose-200/50 shadow-sm" title="Hapus Semua Data Permanen">
+                <div class="flex items-center gap-1.5 sm:gap-3">
+                    <button onclick="selfDestruct()" class="flex text-[11px] font-bold items-center gap-1.5 text-rose-600 bg-rose-50/80 hover:bg-rose-100/80 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full transition-all border border-rose-200/50 shadow-sm min-h-[36px]" title="Hapus Semua Data Permanen">
                         <i data-lucide="trash-2" class="w-4 h-4 sm:w-3.5 sm:h-3.5"></i> <span class="hidden sm:inline">Hapus Cache</span>
                     </button>
-                    <div class="flex items-center gap-1.5 bg-brand-50/80 px-2 sm:px-3.5 py-1.5 rounded-full border border-brand-200/50 shadow-sm cursor-pointer hover:bg-brand-100 transition-colors" onclick="showUpgradeModal('info')" title="Sisa Siklus Analitik">
+                    <div class="flex items-center gap-1.5 bg-brand-50/80 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-brand-200/50 shadow-sm cursor-pointer hover:bg-brand-100 transition-colors min-h-[36px]" onclick="showUpgradeModal('info')" title="Sisa Siklus Analitik">
                         <i data-lucide="zap" class="w-4 h-4 sm:w-3.5 sm:h-3.5 text-brand-500 fill-brand-500"></i>
                         <span class="text-[12px] font-black text-brand-700" id="ai-token-display">5</span>
                     </div>
-                    <button onclick="toggleHistoryModal()" class="text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-2 sm:px-3.5 py-1.5 rounded-full transition-all shadow-sm">
+                    <button onclick="toggleHistoryModal()" class="text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-full transition-all shadow-sm min-h-[36px]">
                         <i data-lucide="history" class="w-4 h-4 sm:w-3.5 sm:h-3.5"></i> <span class="hidden sm:inline">Arsip</span>
                     </button>
                 </div>
@@ -415,39 +433,39 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow w-full max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col">
+    <main class="flex-grow w-full max-w-[90rem] mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8 flex flex-col">
         
         <!-- Welcome & Hero Section -->
-        <div id="hero-section" class="w-full max-w-4xl mx-auto fade-in-up mt-4 sm:mt-8">
-            <div class="text-center mb-8 sm:mb-12 px-2">
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4 leading-tight">
+        <div id="hero-section" class="w-full max-w-4xl mx-auto fade-in-up mt-2 sm:mt-8">
+            <div class="text-center mb-6 sm:mb-12 px-2">
+                <h1 class="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-3 sm:mb-4 leading-tight">
                     Data Mentah Menjadi <br class="hidden sm:block"/>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400">Visualisasi Presisi</span>
                 </h1>
-                <p class="text-sm sm:text-base text-slate-700 font-semibold max-w-2xl mx-auto leading-relaxed mt-2">
+                <p class="text-xs sm:text-base text-slate-700 font-medium sm:font-semibold max-w-2xl mx-auto leading-relaxed mt-1 sm:mt-2">
                     Memurnikan data untuk menangkap pola kritis dan menyajikan wawasan pertumbuhan dalam satu tampilan elegan dengan Pendekatan Orkestrasi Cerdas Dazer.
                 </p>
                 
-                <div class="mt-6 text-[10px] sm:text-xs text-slate-500 font-bold flex flex-wrap items-center justify-center gap-3 bg-slate-100/50 py-2.5 px-5 rounded-full max-w-fit mx-auto border border-slate-200 shadow-sm text-left sm:text-center">
-                    <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 shrink-0"></i> 100% Pemrosesan Lokal</span>
+                <div class="mt-5 sm:mt-6 text-[10px] sm:text-xs text-slate-500 font-bold flex flex-wrap items-center justify-center gap-2 sm:gap-3 bg-slate-100/50 py-2 sm:py-2.5 px-4 sm:px-5 rounded-full max-w-fit mx-auto border border-slate-200 shadow-sm text-left sm:text-center">
+                    <span class="flex items-center gap-1 sm:gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0"></i> 100% Pemrosesan Lokal</span>
                     <span class="hidden sm:block text-slate-300">|</span>
-                    <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-4 h-4 text-amber-500 shrink-0"></i> Cepat & Ringan</span>
+                    <span class="flex items-center gap-1 sm:gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 shrink-0"></i> Cepat & Ringan</span>
                 </div>
             </div>
 
             <!-- Upload Zone -->
-            <div id="upload-zone" onclick="document.getElementById('file-input-add').click()" class="bg-white border-2 border-dashed border-slate-300 rounded-[2rem] p-6 sm:p-14 text-center cursor-pointer transition-all hover:border-brand-400 hover:bg-brand-50/30 group shadow-sm hover:shadow-lg relative overflow-hidden">
+            <div id="upload-zone" onclick="document.getElementById('file-input-add').click()" class="bg-white border-2 border-dashed border-slate-300 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-14 text-center cursor-pointer transition-all hover:border-brand-400 hover:bg-brand-50/30 group shadow-sm hover:shadow-lg relative overflow-hidden mx-1 sm:mx-0">
                 <input type="file" id="file-input-add" class="hidden" multiple accept=".csv, .xlsx, .xls, .json, .xml, .sql, .pdf, .txt" onchange="handleFileSelection(this.files, false); this.value=null;">
                 
                 <div class="flex flex-col items-center justify-center pointer-events-none relative z-10">
-                    <div class="bg-slate-50 p-5 sm:p-6 rounded-full text-slate-600 group-hover:scale-110 group-hover:text-brand-600 group-hover:bg-brand-50 transition-all duration-300 mb-4 sm:mb-5 border border-slate-200 shadow-sm">
-                        <i data-lucide="upload-cloud" class="w-10 h-10 sm:w-12 sm:h-12"></i>
+                    <div class="bg-slate-50 p-4 sm:p-6 rounded-full text-slate-600 group-hover:scale-110 group-hover:text-brand-600 group-hover:bg-brand-50 transition-all duration-300 mb-3 sm:mb-5 border border-slate-200 shadow-sm">
+                        <i data-lucide="upload-cloud" class="w-8 h-8 sm:w-12 sm:h-12"></i>
                     </div>
-                    <p class="text-lg sm:text-xl font-black text-slate-900 mb-2">Unggah File</p>
-                    <p class="text-[11px] sm:text-sm text-slate-600 font-medium mb-6 sm:mb-8 max-w-sm mx-auto leading-relaxed px-4">
+                    <p class="text-base sm:text-xl font-black text-slate-900 mb-1 sm:mb-2">Unggah File</p>
+                    <p class="text-[11px] sm:text-sm text-slate-600 font-medium mb-5 sm:mb-8 max-w-sm mx-auto leading-relaxed px-2 sm:px-4">
                         CSV, Excel, JSON, PDF, dan lainnya (Maks. 100MB)
                     </p>
-                    <button class="bg-brand-600 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl text-sm font-bold shadow-md group-hover:bg-brand-700 transition-all pointer-events-auto hover:-translate-y-0.5 w-full sm:w-auto max-w-[250px]">
+                    <button class="bg-brand-600 text-white px-6 sm:px-8 py-3.5 rounded-xl text-sm font-bold shadow-md group-hover:bg-brand-700 transition-all pointer-events-auto hover:-translate-y-0.5 w-full sm:w-auto max-w-[250px] min-h-[48px]">
                         Pilih Dokumen
                     </button>
                 </div>
@@ -455,27 +473,27 @@
         </div>
 
         <!-- Setup Screen -->
-        <div id="setup-screen" class="hidden w-full max-w-4xl mx-auto flex flex-col gap-6 animate-[fadeInUp_0.4s_ease-out]">
+        <div id="setup-screen" class="hidden w-full max-w-4xl mx-auto flex flex-col gap-4 sm:gap-6 animate-[fadeInUp_0.4s_ease-out]">
             <div class="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 flex flex-col shadow-md">
                 
-                <div class="flex flex-col mb-6 pb-6 border-b border-slate-100 gap-4">
+                <div class="flex flex-col mb-5 sm:mb-6 pb-5 sm:pb-6 border-b border-slate-100 gap-4">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <div>
-                            <h3 class="font-black text-slate-900 text-lg flex items-center gap-2">
-                                <i data-lucide="settings-2" class="w-5 h-5 text-brand-500"></i> Setup Orkestrasi Analisis
+                            <h3 class="font-black text-slate-900 text-base sm:text-lg flex items-center gap-2">
+                                <i data-lucide="settings-2" class="w-4 h-4 sm:w-5 sm:h-5 text-brand-500"></i> Setup Orkestrasi Analisis
                             </h3>
-                            <p class="text-xs text-slate-500 font-medium mt-1">Sesuaikan konteks bagaimana mesin AI kami memproses data Anda.</p>
+                            <p class="text-[11px] sm:text-xs text-slate-500 font-medium mt-1">Sesuaikan konteks bagaimana AI memproses data Anda.</p>
                         </div>
-                        <button onclick="runSaranAI()" id="btn-saran-ai" class="flex items-center gap-1.5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all hover:scale-105 whitespace-nowrap">
+                        <button onclick="runSaranAI()" id="btn-saran-ai" class="w-full sm:w-auto justify-center flex items-center gap-1.5 bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-4 py-2.5 sm:py-2 rounded-xl sm:rounded-lg text-[11px] sm:text-xs font-bold shadow-md hover:shadow-lg transition-all hover:scale-105 whitespace-nowrap min-h-[44px] sm:min-h-0">
                             <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Gunakan Saran AI
                         </button>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2 relative">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mt-2 relative">
                         <div class="flex flex-col gap-1.5 relative">
-                            <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Sektor Industri</label>
+                            <label class="text-[10px] sm:text-[11px] font-bold text-slate-700 uppercase tracking-wide">Sektor Industri</label>
                             <div class="relative">
-                                <select id="setup-industry" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 pr-10 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
+                                <select id="setup-industry" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 sm:p-3 pr-10 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[48px] sm:min-h-[44px]">
                                     <option value="Finansial dan Keuangan">Finansial dan Keuangan</option>
                                     <option value="Retail dan E-Commerce">Retail dan E-Commerce</option>
                                     <option value="Sumber Daya Manusia">Sumber Daya Manusia</option>
@@ -494,9 +512,9 @@
                             </div>
                         </div>
                         <div class="flex flex-col gap-1.5 relative">
-                            <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Tujuan Analisis</label>
+                            <label class="text-[10px] sm:text-[11px] font-bold text-slate-700 uppercase tracking-wide">Tujuan Analisis</label>
                             <div class="relative">
-                                <select id="setup-purpose" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 pr-10 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
+                                <select id="setup-purpose" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 sm:p-3 pr-10 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[48px] sm:min-h-[44px]">
                                     <option value="Identifikasi Tren Waktu">Identifikasi Tren Waktu</option>
                                     <option value="Perbandingan Antar Variabel">Perbandingan Antar Variabel</option>
                                     <option value="Pencarian Hubungan Sebab-Akibat">Pencarian Hubungan Sebab-Akibat</option>
@@ -506,9 +524,9 @@
                             </div>
                         </div>
                         <div class="flex flex-col gap-1.5 relative">
-                            <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Tingkat Kedetailan</label>
+                            <label class="text-[10px] sm:text-[11px] font-bold text-slate-700 uppercase tracking-wide">Tingkat Kedetailan</label>
                             <div class="relative">
-                                <select id="setup-detail" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 pr-10 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none">
+                                <select id="setup-detail" class="w-full text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-xl p-3 sm:p-3 pr-10 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[48px] sm:min-h-[44px]">
                                     <option value="Ringkasan Eksekutif" selected>Ringkasan Eksekutif</option>
                                     <option value="Eksplorasi Mendalam">Eksplorasi Mendalam</option>
                                     <option value="Fokus Proyeksi Prediktif">Fokus Proyeksi Prediktif</option>
@@ -521,56 +539,56 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 mb-1 -mt-2">
-                    <input type="checkbox" id="setup-default-checkbox" onchange="toggleSetupDefault(this.checked)" class="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 cursor-pointer">
-                    <label for="setup-default-checkbox" class="text-xs font-bold text-slate-700 cursor-pointer select-none">Gunakan konfigurasi cerdas default (Otomatis)</label>
+                <div class="flex items-center gap-2 mb-2 sm:mb-1 -mt-3 sm:-mt-2">
+                    <input type="checkbox" id="setup-default-checkbox" onchange="toggleSetupDefault(this.checked)" class="w-5 h-5 sm:w-4 sm:h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 cursor-pointer">
+                    <label for="setup-default-checkbox" class="text-[11px] sm:text-xs font-bold text-slate-700 cursor-pointer select-none py-1">Gunakan konfigurasi cerdas default (Otomatis)</label>
                 </div>
 
                 <!-- File List Section -->
-                <div class="flex flex-col gap-2 mb-4 mt-2">
+                <div class="flex flex-col gap-2 mb-3 sm:mb-4 mt-2">
                     <div class="flex justify-between items-center">
                         <h3 class="font-black text-slate-900 text-sm sm:text-base">File Antrean Ekstraksi</h3>
                         <span class="text-xs font-black text-brand-600 bg-brand-50 px-3 py-1.5 rounded-lg border border-brand-200" id="file-count-badge">1 File</span>
                     </div>
                 </div>
                 
-                <div id="file-list-container" class="flex flex-col gap-3 mb-5 max-h-[250px] overflow-y-auto custom-scrollbar pr-2">
+                <div id="file-list-container" class="flex flex-col gap-3 mb-4 sm:mb-5 max-h-[250px] overflow-y-auto custom-scrollbar pr-1 sm:pr-2">
                     <!-- Injected by JS -->
                 </div>
 
-                <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 sm:gap-4 pt-4 border-t border-slate-100">
                     <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full md:w-auto">
-                        <button onclick="document.getElementById('file-input-add').click()" class="flex-1 sm:flex-none justify-center text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-4 py-3 sm:py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                        <button onclick="document.getElementById('file-input-add').click()" class="flex-1 sm:flex-none justify-center text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-4 py-3 sm:py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2 min-h-[44px]">
                             <i data-lucide="folder-plus" class="w-4 h-4"></i> Tambah File
                         </button>
                         <input type="file" id="file-input-replace-only" class="hidden" multiple accept=".csv, .xlsx, .xls, .json, .xml, .sql, .pdf, .txt" onchange="handleFileSelection(this.files, true); this.value=null;">
-                        <button onclick="document.getElementById('file-input-replace-only').click()" class="flex-1 sm:flex-none justify-center text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-3 sm:py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
+                        <button onclick="document.getElementById('file-input-replace-only').click()" class="flex-1 sm:flex-none justify-center text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 px-4 py-3 sm:py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2 min-h-[44px]">
                             <i data-lucide="refresh-cw" class="w-4 h-4"></i> Ganti File
                         </button>
                     </div>
-                    <span class="text-xs font-black text-slate-600 bg-slate-50 px-4 py-3 sm:py-2.5 rounded-xl border border-slate-200 shrink-0 w-full md:w-auto text-center" id="storage-indicator">0 MB / 100 MB</span>
+                    <span class="text-[11px] sm:text-xs font-black text-slate-600 bg-slate-50 px-4 py-3 sm:py-2.5 rounded-xl border border-slate-200 shrink-0 w-full md:w-auto text-center" id="storage-indicator">0 MB / 100 MB</span>
                 </div>
             </div>
 
-            <div class="p-0 sm:p-2 bg-transparent mt-4">
-                <button onclick="startAnalysis()" class="btn-analyze">
-                    Jalankan Mesin Analitik AI <i data-lucide="cpu" class="w-5 h-5 transition-transform"></i>
+            <div class="p-0 bg-transparent mt-2 sm:mt-4">
+                <button onclick="startAnalysis()" class="btn-analyze w-full">
+                    Jalankan Mesin Analitik <i data-lucide="cpu" class="w-5 h-5 transition-transform"></i>
                 </button>
             </div>
         </div>
 
         <!-- Clean Blue Loader -->
-        <div id="loading-state" class="hidden w-full max-w-2xl mx-auto flex flex-col items-center justify-center py-20 sm:py-24 fade-in-up px-4 text-center">
+        <div id="loading-state" class="hidden w-full max-w-2xl mx-auto flex flex-col items-center justify-center py-16 sm:py-24 fade-in-up px-4 text-center">
             
-            <div class="uiverse-loader mb-8">
+            <div class="uiverse-loader mb-6 sm:mb-8">
               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
             </div>
 
-            <h3 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-3">Orkestrasi Multi-Model Berjalan...</h3>
-            <p class="text-[11px] sm:text-xs font-bold text-slate-700 bg-white px-4 sm:px-5 py-2.5 rounded-full shadow-sm border border-slate-200 inline-flex items-center gap-2 break-all max-w-full">
+            <h3 class="text-lg sm:text-2xl font-black text-slate-900 tracking-tight mb-3">Orkestrasi Dazer Berjalan...</h3>
+            <p class="text-[10px] sm:text-xs font-bold text-slate-700 bg-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-sm border border-slate-200 inline-flex items-center gap-2 break-all max-w-full">
                 <span id="loading-text" class="truncate">Menginisiasi proses data...</span>
             </p>
         </div>
@@ -578,42 +596,42 @@
         <!-- Dashboard Result -->
         <div id="dashboard" class="hidden transition-all w-full max-w-[90rem] mx-auto pb-12">
             
-            <div id="dashboard-controls" class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 sm:mb-8 gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
+            <div id="dashboard-controls" class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-5 sm:mb-8 gap-4 bg-white p-4 sm:p-6 rounded-2xl border border-slate-200 shadow-sm">
                 <div class="w-full lg:w-auto">
                     <h2 class="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 tracking-tight">Laporan Eksekutif</h2>
-                    <p class="text-slate-600 text-[11px] sm:text-xs md:text-sm mt-1 sm:mt-2 font-bold flex items-center gap-2 flex-wrap" id="dashboard-intent-display"></p>
+                    <p class="text-slate-600 text-[10px] sm:text-xs md:text-sm mt-1 sm:mt-2 font-bold flex items-center gap-2 flex-wrap" id="dashboard-intent-display"></p>
                 </div>
-                <div class="flex flex-wrap w-full lg:w-auto gap-3 items-center justify-start lg:justify-end">
-                    <button onclick="document.getElementById('file-input-replace-only').click()" class="magic-btn" style="--color: #0f172a;">
+                <div class="flex flex-wrap w-full lg:w-auto gap-2 sm:gap-3 items-center justify-start lg:justify-end">
+                    <button onclick="document.getElementById('file-input-replace-only').click()" class="magic-btn flex-1 sm:flex-none" style="--color: #0f172a;">
                         <i data-lucide="file-plus" class="w-3.5 h-3.5 shrink-0"></i> Analisis Baru
                     </button>
-                    <button id="btn-export-csv" onclick="exportCleanDataCSV(this)" class="magic-btn" style="--color: #047857;" title="Data Bersih">
+                    <button id="btn-export-csv" onclick="exportCleanDataCSV(this)" class="magic-btn flex-1 sm:flex-none" style="--color: #047857;" title="Data Bersih">
                         <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 shrink-0"></i> Unduh CSV
                     </button>
                     <button onclick="showUpgradeModal('pro')" class="magic-btn w-full sm:w-auto" style="--color: #b45309;">
-                        <i data-lucide="lock" class="w-3.5 h-3.5 shrink-0 text-current"></i> Ekspor PPTX (Pro)
+                        <i data-lucide="lock" class="w-3.5 h-3.5 shrink-0 text-current"></i> Ekspor Laporan (Pro)
                     </button>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-5 sm:gap-8" id="report-container">
+            <div class="flex flex-col gap-4 sm:gap-8" id="report-container">
                 
                 <!-- Square Scorecards -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5" id="scorecards-container"></div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-5" id="scorecards-container"></div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-stretch">
                     
                     <!-- Dazer Visual Planner -->
-                    <div class="glass-card flex flex-col p-2 sm:p-6 lg:col-span-2 min-h-[400px] lg:h-[550px]">
-                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 border-b border-slate-200 pb-3 sm:pb-4 px-2 sm:px-0 shrink-0 w-full mt-2 sm:mt-0">
+                    <div class="glass-card flex flex-col p-3 sm:p-6 lg:col-span-2 min-h-[350px] lg:h-[550px]">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-3 border-b border-slate-200 pb-3 sm:pb-4 px-1 sm:px-0 shrink-0 w-full mt-1 sm:mt-0">
                             <div class="relative group w-full sm:w-auto">
                                 <h3 class="font-black text-slate-900 text-sm sm:text-lg flex items-center gap-2 cursor-help">
                                     Dazer Visual Planner <i data-lucide="bar-chart" class="w-4 h-4 text-slate-500 shrink-0"></i>
                                 </h3>
                                 <p class="text-[10px] sm:text-xs text-slate-600 font-bold mt-1 line-clamp-1" id="chart-title">-</p>
                             </div>
-                            <div class="flex items-center w-full sm:w-auto bg-slate-50 p-1.5 rounded-xl border border-slate-200 shrink-0 relative">
-                                <select id="chart-type-selector" onchange="updateCustomChart()" class="w-full text-xs sm:text-sm font-bold text-slate-800 bg-transparent py-1.5 pl-3 pr-8 outline-none cursor-pointer appearance-none text-left">
+                            <div class="flex items-center w-full sm:w-auto bg-slate-50 p-1 sm:p-1.5 rounded-xl border border-slate-200 shrink-0 relative">
+                                <select id="chart-type-selector" onchange="updateCustomChart()" class="w-full text-xs sm:text-sm font-bold text-slate-800 bg-transparent py-2 sm:py-1.5 pl-3 pr-8 outline-none cursor-pointer appearance-none text-left min-h-[36px]">
                                     <option value="line" selected>Tren Garis</option>
                                     <option value="bar">Diagram Batang</option>
                                     <option value="doughnut">Proporsi Donat</option>
@@ -622,11 +640,11 @@
                             </div>
                         </div>
                         
-                        <div class="relative flex-grow w-full min-h-[300px] sm:min-h-[400px] mb-2 px-1 sm:px-0" id="canvas-container">
+                        <div class="relative flex-grow w-full min-h-[250px] sm:min-h-[400px] mb-2 px-1 sm:px-0" id="canvas-container">
                             <canvas id="mainChart"></canvas>
                         </div>
                         
-                        <div id="customLegend" class="flex flex-wrap justify-center gap-2.5 sm:gap-3 w-full pt-4 hidden shrink-0 max-h-[140px] overflow-y-auto custom-scrollbar content-start px-2 sm:px-0 mb-2 sm:mb-0"></div>
+                        <div id="customLegend" class="flex flex-wrap justify-center gap-2 sm:gap-3 w-full pt-3 sm:pt-4 hidden shrink-0 max-h-[140px] overflow-y-auto custom-scrollbar content-start px-1 sm:px-0 mb-1 sm:mb-0"></div>
                     </div>
 
                     <!-- Executive Action Intelligence -->
@@ -646,13 +664,13 @@
                               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
                               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
                             </div>
-                            <p class="text-xs font-bold text-center px-4 leading-relaxed">Menarik cetak biru logika tindakan...</p>
+                            <p class="text-[11px] sm:text-xs font-bold text-center px-4 leading-relaxed">Menarik cetak biru logika tindakan...</p>
                         </div>
 
                         <ul class="space-y-3 sm:space-y-4 flex-grow overflow-y-auto custom-scrollbar pr-2 pb-4 hidden" id="insights-list"></ul>
                         
-                        <div class="mt-auto pt-4 border-t border-slate-100 shrink-0">
-                            <button onclick="runSimulation()" id="btn-simulate" class="w-full bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 text-slate-700 hover:text-brand-700 px-4 py-3 rounded-xl text-[11px] sm:text-xs font-black shadow-sm transition-all flex items-center justify-center gap-2 group">
+                        <div class="mt-auto pt-3 sm:pt-4 border-t border-slate-100 shrink-0">
+                            <button onclick="runSimulation()" id="btn-simulate" class="w-full bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-300 text-slate-700 hover:text-brand-700 px-4 py-3 sm:py-3 rounded-xl text-[11px] sm:text-xs font-black shadow-sm transition-all flex items-center justify-center gap-2 group min-h-[44px]">
                                 <i data-lucide="flask-conical" class="w-4 h-4 group-hover:rotate-12 transition-transform text-brand-500"></i>
                                 <span id="simulate-btn-text">Simulasi Dampak Tindakan</span>
                             </button>
@@ -661,57 +679,56 @@
                 </div>
 
                 <!-- CARDS: Metric, Segment, Correlation & Volatility (FLIP CARDS) -->
-                <!-- Req 2: Isi Teks Flip Card Menunggu Respons AI Murni -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-                    <div class="flip-card">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
                         <div class="flip-card-inner">
                             <div class="flip-card-front">
-                                <i data-lucide="activity" class="w-8 h-8 text-indigo-500 mb-2"></i>
-                                <h3 class="font-black text-slate-900 text-sm">Indikator Performa</h3>
-                                <p class="text-[10px] text-slate-500 mt-1">Arahkan kursor untuk melihat</p>
+                                <i data-lucide="activity" class="w-7 h-7 sm:w-8 sm:h-8 text-indigo-500 mb-2"></i>
+                                <h3 class="font-black text-slate-900 text-xs sm:text-sm">Indikator Performa</h3>
+                                <p class="text-[9px] sm:text-[10px] text-slate-500 mt-1">Tap/Arahkan kursor melihat</p>
                             </div>
                             <div class="flip-card-back p-4">
-                                <h3 class="font-bold text-indigo-600 text-xs mb-1">Status Metrik:</h3>
-                                <div class="text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar w-full" id="metric-insight-text"></div>
+                                <h3 class="font-bold text-indigo-600 text-[11px] sm:text-xs mb-1">Status Metrik:</h3>
+                                <div class="text-[10px] sm:text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar w-full" id="metric-insight-text"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="flip-card">
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
                         <div class="flip-card-inner">
                             <div class="flip-card-front">
-                                <i data-lucide="pie-chart" class="w-8 h-8 text-teal-500 mb-2"></i>
-                                <h3 class="font-black text-slate-900 text-sm">Segmen Prioritas</h3>
-                                <p class="text-[10px] text-slate-500 mt-1">Arahkan kursor untuk melihat</p>
+                                <i data-lucide="pie-chart" class="w-7 h-7 sm:w-8 sm:h-8 text-teal-500 mb-2"></i>
+                                <h3 class="font-black text-slate-900 text-xs sm:text-sm">Segmen Prioritas</h3>
+                                <p class="text-[9px] sm:text-[10px] text-slate-500 mt-1">Tap/Arahkan kursor melihat</p>
                             </div>
                             <div class="flip-card-back p-4">
-                                <h3 class="font-bold text-teal-600 text-xs mb-1">Kelompok Utama:</h3>
-                                <div class="text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar w-full" id="segment-insight-text"></div>
+                                <h3 class="font-bold text-teal-600 text-[11px] sm:text-xs mb-1">Kelompok Utama:</h3>
+                                <div class="text-[10px] sm:text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar w-full" id="segment-insight-text"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="flip-card">
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
                         <div class="flip-card-inner">
                             <div class="flip-card-front">
-                                <i data-lucide="git-merge" class="w-8 h-8 text-purple-500 mb-2"></i>
-                                <h3 class="font-black text-slate-900 text-sm">Korelasi Variabel</h3>
-                                <p class="text-[10px] text-slate-500 mt-1">Arahkan kursor untuk melihat</p>
+                                <i data-lucide="git-merge" class="w-7 h-7 sm:w-8 sm:h-8 text-purple-500 mb-2"></i>
+                                <h3 class="font-black text-slate-900 text-xs sm:text-sm">Korelasi Variabel</h3>
+                                <p class="text-[9px] sm:text-[10px] text-slate-500 mt-1">Tap/Arahkan kursor melihat</p>
                             </div>
                             <div class="flip-card-back p-4">
-                                <h3 class="font-bold text-purple-600 text-xs mb-1">Hubungan Data:</h3>
-                                <div class="text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar w-full" id="correlation-insight-text"></div>
+                                <h3 class="font-bold text-purple-600 text-[11px] sm:text-xs mb-1">Hubungan Data:</h3>
+                                <div class="text-[10px] sm:text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar w-full" id="correlation-insight-text"></div>
                             </div>
                         </div>
                     </div>
-                    <div class="flip-card">
+                    <div class="flip-card" onclick="this.classList.toggle('flipped')">
                         <div class="flip-card-inner">
                             <div class="flip-card-front">
-                                <i data-lucide="activity-square" class="w-8 h-8 text-orange-500 mb-2"></i>
-                                <h3 class="font-black text-slate-900 text-sm">Indeks Volatilitas</h3>
-                                <p class="text-[10px] text-slate-500 mt-1">Arahkan kursor untuk melihat</p>
+                                <i data-lucide="activity-square" class="w-7 h-7 sm:w-8 sm:h-8 text-orange-500 mb-2"></i>
+                                <h3 class="font-black text-slate-900 text-xs sm:text-sm">Indeks Volatilitas</h3>
+                                <p class="text-[9px] sm:text-[10px] text-slate-500 mt-1">Tap/Arahkan kursor melihat</p>
                             </div>
                             <div class="flip-card-back p-4">
-                                <h3 class="font-bold text-orange-600 text-xs mb-1">Tingkat Risiko:</h3>
-                                <div class="text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar w-full" id="volatility-insight-text"></div>
+                                <h3 class="font-bold text-orange-600 text-[11px] sm:text-xs mb-1">Tingkat Risiko:</h3>
+                                <div class="text-[10px] sm:text-[11px] text-slate-700 font-medium leading-relaxed custom-scrollbar w-full" id="volatility-insight-text"></div>
                             </div>
                         </div>
                     </div>
@@ -721,18 +738,18 @@
                 <div class="glass-card flex flex-col p-4 sm:p-6 bg-white" id="prediction-card" style="display: none;">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 border-b border-slate-200 pb-3 sm:pb-4 gap-3">
                         <div class="flex flex-col">
-                            <h3 class="font-black text-slate-900 text-sm sm:text-lg flex items-center gap-2"><i data-lucide="trending-up" class="w-5 h-5 text-brand-500"></i> Prediksi Proyeksi Masa Depan</h3>
-                            <p class="text-[11px] sm:text-xs text-slate-600 font-semibold mt-1">Perkiraan lanjutan berdasarkan pola yang terbentuk.</p>
+                            <h3 class="font-black text-slate-900 text-sm sm:text-lg flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 sm:w-5 sm:h-5 text-brand-500"></i> Prediksi Proyeksi Masa Depan</h3>
+                            <p class="text-[10px] sm:text-xs text-slate-600 font-semibold mt-1">Perkiraan lanjutan berdasarkan pola yang terbentuk.</p>
                         </div>
                     </div>
-                    <div class="flex flex-col lg:flex-row gap-6 items-stretch">
-                        <div class="w-full lg:w-2/3 h-[300px] sm:h-[400px] relative">
+                    <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 items-stretch">
+                        <div class="w-full lg:w-2/3 h-[250px] sm:h-[400px] relative">
                             <canvas id="predictionChart"></canvas>
                         </div>
                         <div class="w-full lg:w-1/3 flex flex-col justify-center">
-                            <div class="bg-slate-50 border border-slate-200 p-5 sm:p-6 rounded-2xl shadow-sm h-full flex flex-col">
-                                <h4 class="font-black text-slate-900 text-sm sm:text-base mb-4 flex items-center gap-2"><i data-lucide="microscope" class="w-4 h-4 text-brand-500"></i> Kesimpulan Proyeksi</h4>
-                                <div class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed" id="prediction-insight-text">Mengkalkulasi model linier...</div>
+                            <div class="bg-slate-50 border border-slate-200 p-4 sm:p-6 rounded-2xl shadow-sm h-full flex flex-col">
+                                <h4 class="font-black text-slate-900 text-xs sm:text-base mb-3 sm:mb-4 flex items-center gap-2"><i data-lucide="microscope" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-500"></i> Kesimpulan Proyeksi</h4>
+                                <div class="text-[10px] sm:text-xs text-slate-700 font-medium leading-relaxed" id="prediction-insight-text">Mengkalkulasi model linier...</div>
                             </div>
                         </div>
                     </div>
@@ -751,56 +768,56 @@
 
                 <!-- Transformation Center -->
                 <div class="glass-card flex flex-col relative transition-all w-full" id="matrix-card">
-                    <div class="p-4 sm:p-6 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4 sm:gap-5 bg-white shrink-0">
-                        <div class="w-full xl:w-auto">
+                    <div class="p-3 sm:p-6 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 sm:gap-5 bg-white shrink-0">
+                        <div class="w-full xl:w-auto px-1 sm:px-0">
                             <h3 class="font-black text-slate-900 text-sm sm:text-lg">Klinik Data (Pembersihan)</h3>
-                            <p class="text-[11px] sm:text-xs md:text-sm text-slate-600 mt-1 font-semibold">Cari cepat: Coba ketik rata-rata, ganjil, atau anomali.</p>
+                            <p class="text-[10px] sm:text-xs md:text-sm text-slate-600 mt-1 font-semibold">Cari cepat: Coba ketik rata-rata, ganjil, atau anomali.</p>
                         </div>
                         
-                        <div class="flex flex-col md:flex-row w-full xl:w-auto gap-3 items-stretch md:items-center">
-                            <div class="flex flex-wrap gap-2 items-center bg-slate-50 p-2 rounded-xl border border-slate-200 w-full md:w-auto justify-center md:justify-start">
+                        <div class="flex flex-col md:flex-row w-full xl:w-auto gap-2 sm:gap-3 items-stretch md:items-center">
+                            <div class="flex flex-wrap gap-1.5 sm:gap-2 items-center bg-slate-50 p-1.5 sm:p-2 rounded-xl border border-slate-200 w-full md:w-auto justify-center md:justify-start">
                                 <span class="text-[10px] sm:text-[11px] font-black uppercase text-slate-500 mr-1 sm:mr-2 hidden md:block">Aksi:</span>
-                                <button onclick="cleanData('tidy')" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-brand-50 border border-slate-200 text-slate-800 hover:text-brand-700 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
-                                    <i data-lucide="sparkles" class="w-3.5 h-3.5 shrink-0"></i> Rapihkan
+                                <button onclick="cleanData('tidy')" class="flex-1 md:flex-none justify-center px-2 sm:px-3 py-2 bg-white hover:bg-brand-50 border border-slate-200 text-slate-800 hover:text-brand-700 rounded-lg text-[10px] sm:text-xs font-bold transition-all shadow-sm flex items-center gap-1 sm:gap-1.5 min-h-[36px]">
+                                    <i data-lucide="sparkles" class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0"></i> Rapihkan
                                 </button>
-                                <button onclick="cleanData('remove_dups')" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-amber-50 border border-slate-200 text-slate-800 hover:text-amber-700 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
-                                    <i data-lucide="eraser" class="w-3.5 h-3.5 shrink-0"></i> Hapus Ganda
+                                <button onclick="cleanData('remove_dups')" class="flex-1 md:flex-none justify-center px-2 sm:px-3 py-2 bg-white hover:bg-amber-50 border border-slate-200 text-slate-800 hover:text-amber-700 rounded-lg text-[10px] sm:text-xs font-bold transition-all shadow-sm flex items-center gap-1 sm:gap-1.5 min-h-[36px]">
+                                    <i data-lucide="eraser" class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0"></i> Ganda
                                 </button>
-                                <button onclick="toggleEditMode()" id="btn-edit" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-blue-50 border border-slate-200 text-slate-800 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5" title="Edit Tabel Manual">
-                                    <i data-lucide="edit-3" class="w-3.5 h-3.5 shrink-0"></i> Edit Tabel
+                                <button onclick="toggleEditMode()" id="btn-edit" class="flex-1 md:flex-none justify-center px-2 sm:px-3 py-2 bg-white hover:bg-blue-50 border border-slate-200 text-slate-800 rounded-lg text-[10px] sm:text-xs font-bold transition-all shadow-sm flex items-center gap-1 sm:gap-1.5 min-h-[36px]" title="Edit Tabel Manual">
+                                    <i data-lucide="edit-3" class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0"></i> Edit
                                 </button>
-                                <button onclick="togglePrivacyMode()" id="btn-privacy" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5" title="Sembunyikan data sensitif">
-                                    <i data-lucide="eye-off" class="w-3.5 h-3.5 shrink-0"></i> Sensor
+                                <button onclick="togglePrivacyMode()" id="btn-privacy" class="flex-1 md:flex-none justify-center px-2 sm:px-3 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-800 rounded-lg text-[10px] sm:text-xs font-bold transition-all shadow-sm flex items-center gap-1 sm:gap-1.5 min-h-[36px]" title="Sembunyikan data sensitif">
+                                    <i data-lucide="eye-off" class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0"></i> Sensor
                                 </button>
-                                <button onclick="undoData()" id="btn-undo" class="flex-1 md:flex-none justify-center px-3 py-2 sm:py-1.5 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5" disabled>
-                                    <i data-lucide="undo-2" class="w-3.5 h-3.5 shrink-0"></i> Batal
+                                <button onclick="undoData()" id="btn-undo" class="flex-1 md:flex-none justify-center px-2 sm:px-3 py-2 bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200 rounded-lg text-[10px] sm:text-xs font-bold transition-all flex items-center gap-1 sm:gap-1.5 min-h-[36px]" disabled>
+                                    <i data-lucide="undo-2" class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0"></i> Batal
                                 </button>
                             </div>
                             
                             <div class="flex gap-2 sm:gap-3 items-stretch md:items-center w-full md:w-auto relative">
                                 <div class="relative w-full md:w-56 lg:w-64">
                                     <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500"></i>
-                                    <input type="text" id="table-search" oninput="debounceSearch()" placeholder="Cari data..." class="w-full h-full min-h-[40px] pl-9 pr-3 py-2 text-xs sm:text-sm font-semibold border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all shadow-sm">
+                                    <input type="text" id="table-search" oninput="debounceSearch()" placeholder="Cari data..." class="w-full h-full min-h-[44px] pl-9 pr-3 py-2 text-xs sm:text-sm font-semibold border border-slate-300 rounded-xl focus:ring-2 focus:ring-brand-200 focus:border-brand-500 outline-none transition-all shadow-sm">
                                 </div>
-                                <button onclick="toggleFilterMenu()" class="p-2 sm:p-2.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-slate-800 transition-all shadow-sm flex items-center justify-center shrink-0" title="Filter Cepat">
+                                <button onclick="toggleFilterMenu()" class="px-3 sm:px-2.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-slate-800 transition-all shadow-sm flex items-center justify-center shrink-0 min-h-[44px]" title="Filter Cepat">
                                     <i data-lucide="filter" class="w-4 h-4"></i>
                                 </button>
-                                <button onclick="toggleMatrixFullscreen()" class="p-2 sm:p-2.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-slate-800 font-bold transition-all shadow-sm flex items-center justify-center shrink-0" title="Layar Penuh">
+                                <button onclick="toggleMatrixFullscreen()" class="px-3 sm:px-2.5 bg-white hover:bg-slate-100 border border-slate-300 rounded-xl text-slate-800 font-bold transition-all shadow-sm flex items-center justify-center shrink-0 min-h-[44px]" title="Layar Penuh">
                                     <i data-lucide="maximize" class="w-4 h-4" id="matrix-icon"></i>
                                 </button>
 
-                                <div id="quick-filter-menu" class="hidden absolute top-full right-12 mt-2 w-48 bg-white border border-slate-200 shadow-xl rounded-xl p-2 z-50">
+                                <div id="quick-filter-menu" class="hidden absolute top-full right-0 sm:right-12 mt-2 w-48 bg-white border border-slate-200 shadow-xl rounded-xl p-2 z-50">
                                     <p class="text-[10px] font-bold text-slate-500 px-2 py-1 uppercase tracking-wide">Filter Cepat</p>
-                                    <button onclick="applyQuickFilter('kosong')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Data Kosong</button>
-                                    <button onclick="applyQuickFilter('anomali')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Data Anomali</button>
-                                    <button onclick="applyQuickFilter('atas rata-rata')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Nilai Atas Rata-rata</button>
-                                    <button onclick="applyQuickFilter('ganjil')" class="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Angka Ganjil</button>
+                                    <button onclick="applyQuickFilter('kosong')" class="w-full text-left px-3 py-2.5 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Data Kosong</button>
+                                    <button onclick="applyQuickFilter('anomali')" class="w-full text-left px-3 py-2.5 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Data Anomali</button>
+                                    <button onclick="applyQuickFilter('atas rata-rata')" class="w-full text-left px-3 py-2.5 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Nilai Atas Rata-rata</button>
+                                    <button onclick="applyQuickFilter('ganjil')" class="w-full text-left px-3 py-2.5 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">Angka Ganjil</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="overflow-y-auto overflow-x-auto max-h-[400px] sm:max-h-[600px] w-full bg-white custom-scrollbar relative" id="table-scroll-container">
+                    <div class="overflow-y-auto overflow-x-auto max-h-[350px] sm:max-h-[600px] w-full bg-white custom-scrollbar relative" id="table-scroll-container">
                         <div id="table-loading-overlay" class="hidden absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center transition-all duration-300">
                             <div class="uiverse-loader mb-4" style="transform: scale(0.6); --animation: 1.5s ease-in-out infinite;">
                                 <div class="circle"><div class="dot"></div><div class="outline"></div></div>
@@ -808,40 +825,40 @@
                                 <div class="circle"><div class="dot"></div><div class="outline"></div></div>
                                 <div class="circle"><div class="dot"></div><div class="outline"></div></div>
                             </div>
-                            <span class="text-sm font-black text-slate-800 mb-3" id="table-loading-text">Memproses data...</span>
-                            <div class="w-48 h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                            <span class="text-[11px] sm:text-sm font-black text-slate-800 mb-3" id="table-loading-text">Memproses data...</span>
+                            <div class="w-32 sm:w-48 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                                 <div class="h-full bg-brand-500 w-0 transition-all duration-300 ease-out" id="table-loading-progress"></div>
                             </div>
                         </div>
                         <table class="min-w-full text-left border-collapse w-full relative" style="table-layout: auto;" id="data-table">
-                            <thead id="preview-thead" class="sticky-header text-[11px] sm:text-xs md:text-sm border-b border-slate-200 shadow-sm"></thead>
-                            <tbody id="preview-tbody" class="divide-y divide-slate-200 text-slate-800 text-[11px] sm:text-xs md:text-sm font-medium"></tbody>
+                            <thead id="preview-thead" class="sticky-header text-[10px] sm:text-xs border-b border-slate-200 shadow-sm"></thead>
+                            <tbody id="preview-tbody" class="divide-y divide-slate-200 text-slate-800 text-[10px] sm:text-xs font-medium"></tbody>
                         </table>
                         <div id="table-scroll-trigger" class="h-12 w-full flex items-center justify-center"></div>
                     </div>
-                    <div class="bg-slate-50 border-t border-slate-200 px-4 py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-[10px] sm:text-[11px] md:text-xs font-bold text-slate-600 shrink-0">
+                    <div class="bg-slate-50 border-t border-slate-200 px-3 sm:px-4 py-2.5 sm:py-3 flex flex-col sm:flex-row justify-between items-center sm:items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[11px] font-bold text-slate-600 shrink-0">
                         <span id="row-count-display">Menampilkan 0 baris</span>
-                        <span class="flex items-center gap-1"><i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 shrink-0"></i> Scroll ke bawah untuk memuat sisanya</span>
+                        <span class="flex items-center gap-1 text-center"><i data-lucide="mouse-pointer-click" class="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0"></i> Scroll ke bawah untuk memuat sisanya</span>
                     </div>
                 </div>
 
                 <div class="glass-card flex flex-col bg-white w-full">
                     <div class="p-4 sm:p-6 border-b border-slate-200 shrink-0 bg-slate-50">
                         <h3 class="font-black text-slate-900 text-sm sm:text-lg">Statistik Atribut & Skema Data</h3>
-                        <p class="text-[11px] sm:text-xs md:text-sm text-slate-600 mt-1 font-semibold" id="stats-subtitle">Tabel rangkuman dari seluruh variabel yang ada.</p>
+                        <p class="text-[10px] sm:text-xs text-slate-600 mt-1 font-semibold" id="stats-subtitle">Tabel rangkuman dari seluruh variabel yang ada.</p>
                     </div>
-                    <div class="overflow-y-auto overflow-x-auto max-h-[350px] w-full custom-scrollbar bg-white p-4 sm:p-6" id="statistics-container"></div>
+                    <div class="overflow-y-auto overflow-x-auto max-h-[300px] sm:max-h-[350px] w-full custom-scrollbar bg-white p-3 sm:p-6" id="statistics-container"></div>
                 </div>
 
                 <!-- Chatbot UI -->
-                <div class="glass-card flex flex-col bg-white h-[500px] sm:h-[600px] w-full border border-brand-200 shadow-sm">
-                    <div class="bg-brand-600 text-white p-3 sm:p-4 flex items-center gap-3 shrink-0 rounded-t-[1.25rem]">
+                <div class="glass-card flex flex-col bg-white h-[450px] sm:h-[600px] w-full border border-brand-200 shadow-sm">
+                    <div class="bg-brand-600 text-white p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3 shrink-0 rounded-t-[1.25rem]">
                         <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/20 flex items-center justify-center border border-white/30 shadow-sm shrink-0">
                             <i data-lucide="bot" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                         </div>
                         <div>
                             <h3 class="font-bold text-sm sm:text-base">Dazer AI Assistant</h3>
-                            <p class="text-[10px] sm:text-xs text-brand-100 font-medium line-clamp-1">Didukung Groq + Tavily</p>
+                            <p class="text-[9px] sm:text-[10px] text-brand-100 font-medium line-clamp-1 uppercase tracking-wider">Didukung oleh Dazer Intelligence</p>
                         </div>
                     </div>
                     
@@ -849,9 +866,9 @@
                     
                     <div class="p-2 sm:p-3 shrink-0 bg-slate-50 border-t border-slate-100 rounded-b-[1.25rem]">
                         <div class="relative flex items-center gap-2">
-                            <input type="text" id="ai-chat-input" placeholder="Tanyakan seputar data Anda..." class="w-full bg-white rounded-full text-xs sm:text-sm font-medium text-slate-800 px-4 py-2.5 outline-none focus:ring-2 focus:ring-brand-200 border border-slate-300 shadow-sm transition-all" onkeypress="handleChatEnter(event)">
-                            <button onclick="sendChatMessage()" class="shrink-0 bg-brand-600 text-white hover:bg-brand-700 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all shadow-md">
-                                <i data-lucide="send" class="w-4 h-4 sm:w-4 sm:h-4 ml-0.5"></i>
+                            <input type="text" id="ai-chat-input" placeholder="Ketik pesan disini..." class="w-full bg-white rounded-full text-[11px] sm:text-sm font-medium text-slate-800 px-4 py-2.5 sm:py-3 outline-none focus:ring-2 focus:ring-brand-200 border border-slate-300 shadow-sm transition-all min-h-[44px]" onkeypress="handleChatEnter(event)">
+                            <button onclick="sendChatMessage()" class="shrink-0 bg-brand-600 text-white hover:bg-brand-700 w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center transition-all shadow-md min-h-[40px] min-w-[40px]">
+                                <i data-lucide="send" class="w-4 h-4 ml-0.5"></i>
                             </button>
                         </div>
                     </div>
@@ -861,13 +878,13 @@
         </div>
     </main>
 
-    <footer class="bg-white border-t border-slate-200 mt-auto py-6">
-        <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-3">
+    <footer class="bg-white border-t border-slate-200 mt-auto py-5 sm:py-6">
+        <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-2 sm:gap-3">
             <div class="flex items-center gap-2">
                 <i data-lucide="bar-chart-2" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-500"></i>
-                <span class="font-black text-slate-900 text-[11px] sm:text-xs tracking-wide">DATA ANALYZER PLATFORM</span>
+                <span class="font-black text-slate-900 text-[10px] sm:text-xs tracking-wide">DATA ANALYZER PLATFORM</span>
             </div>
-            <p class="text-slate-600 text-[10px] sm:text-[11px] font-bold text-center">
+            <p class="text-slate-600 text-[9px] sm:text-[11px] font-bold text-center">
                 &copy; 2026 Dazer. Seluruh Hak Cipta Dilindungi.
             </p>
         </div>
@@ -875,15 +892,15 @@
 
     <div id="history-modal" class="fixed inset-0 z-[99999] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeHistoryModal()"></div>
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden relative z-10 transform scale-95 opacity-0 transition-all duration-300" id="history-modal-content">
-            <div class="p-4 sm:p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden relative z-10 transform scale-95 opacity-0 transition-all duration-300" id="history-modal-content">
+            <div class="p-3 sm:p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50">
                 <h3 class="text-sm sm:text-base font-black text-slate-900">Arsip Laporan</h3>
-                <button onclick="closeHistoryModal()" class="text-slate-500 hover:text-slate-800 bg-white border border-slate-300 p-1.5 rounded-lg shadow-sm">
+                <button onclick="closeHistoryModal()" class="text-slate-500 hover:text-slate-800 bg-white border border-slate-300 p-1.5 sm:p-2 rounded-lg shadow-sm min-h-[36px] min-w-[36px] flex items-center justify-center">
                     <i data-lucide="x" class="w-4 h-4"></i>
                 </button>
             </div>
             <div class="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar" id="history-list">
-                <p class="text-sm text-slate-500 text-center py-8 font-medium">Belum ada riwayat sesi yang tersimpan.</p>
+                <p class="text-xs sm:text-sm text-slate-500 text-center py-8 font-medium">Belum ada riwayat sesi yang tersimpan.</p>
             </div>
         </div>
     </div>
@@ -891,66 +908,66 @@
     <!-- Upgrade Modal -->
     <div id="upgrade-modal" class="fixed inset-0 z-[999999] hidden flex items-center justify-center p-4 sm:p-6">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm" onclick="closeUpgradeModal()"></div>
-        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md relative z-10 modal-enter border border-slate-100 overflow-hidden group">
+        <div class="bg-white rounded-[1.5rem] sm:rounded-[2rem] shadow-2xl w-full max-w-md relative z-10 modal-enter border border-slate-100 overflow-hidden group">
             <div class="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 rounded-full bg-brand-400/20 blur-3xl pointer-events-none"></div>
             <div class="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-blue-400/20 blur-3xl pointer-events-none"></div>
 
-            <button onclick="closeUpgradeModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 bg-slate-100/50 hover:bg-slate-100 p-2 rounded-full transition-all z-20">
+            <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 sm:top-5 sm:right-5 text-slate-400 hover:text-slate-700 bg-slate-100/50 hover:bg-slate-100 p-2 rounded-full transition-all z-20 min-h-[36px] min-w-[36px] flex items-center justify-center">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
 
-            <div class="p-8 relative z-10">
-                <div class="flex justify-center mb-5">
+            <div class="p-6 sm:p-8 relative z-10">
+                <div class="flex justify-center mb-4 sm:mb-5">
                     <div class="relative">
                         <div class="absolute inset-0 bg-brand-400 blur-lg opacity-40 rounded-full"></div>
-                        <div class="w-16 h-16 bg-gradient-to-br from-brand-600 to-blue-800 rounded-2xl flex items-center justify-center relative shadow-lg transform rotate-3">
-                            <i data-lucide="crown" class="w-8 h-8 text-white transform -rotate-3"></i>
+                        <div class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-brand-600 to-blue-800 rounded-2xl flex items-center justify-center relative shadow-lg transform rotate-3">
+                            <i data-lucide="crown" class="w-6 h-6 sm:w-8 sm:h-8 text-white transform -rotate-3"></i>
                         </div>
                     </div>
                 </div>
                 
-                <div class="text-center mb-6">
-                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mb-2">Dazer <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-blue-700">Premium</span></h3>
-                    <p class="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed" id="upgrade-reason">Akses kapabilitas analitik AI tanpa batas.</p>
+                <div class="text-center mb-5 sm:mb-6">
+                    <h3 class="text-xl sm:text-3xl font-black text-slate-900 tracking-tight mb-1 sm:mb-2">Dazer <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-blue-700">Premium</span></h3>
+                    <p class="text-slate-500 text-[11px] sm:text-sm font-medium leading-relaxed px-2" id="upgrade-reason">Akses kapabilitas analitik cerdas tanpa batas.</p>
                 </div>
 
-                <div class="flex items-end justify-center gap-1 mb-6 bg-slate-50 py-4 rounded-2xl border border-slate-100">
-                    <span class="text-3xl font-black text-slate-900">Rp149k</span>
-                    <span class="text-sm font-bold text-slate-500 mb-1">/bln</span>
+                <div class="flex items-end justify-center gap-1 mb-5 sm:mb-6 bg-slate-50 py-3 sm:py-4 rounded-xl sm:rounded-2xl border border-slate-100">
+                    <span class="text-2xl sm:text-3xl font-black text-slate-900">Rp149k</span>
+                    <span class="text-xs sm:text-sm font-bold text-slate-500 mb-0.5 sm:mb-1">/bln</span>
                 </div>
 
-                <ul class="space-y-3.5 mb-8">
-                    <li class="flex items-start gap-3">
-                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i></div>
-                        <span class="text-sm font-semibold text-slate-700 leading-snug">Siklus Analisis Data Tanpa Batas (Unlimited)</span>
+                <ul class="space-y-3 sm:space-y-3.5 mb-6 sm:mb-8">
+                    <li class="flex items-start gap-2.5 sm:gap-3">
+                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600"></i></div>
+                        <span class="text-[11px] sm:text-sm font-semibold text-slate-700 leading-snug">Siklus Analisis Data Tanpa Batas (Unlimited)</span>
                     </li>
-                    <li class="flex items-start gap-3">
-                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i></div>
-                        <span class="text-sm font-semibold text-slate-700 leading-snug">Dazer Universal Chatbot Tanpa Batas</span>
+                    <li class="flex items-start gap-2.5 sm:gap-3">
+                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600"></i></div>
+                        <span class="text-[11px] sm:text-sm font-semibold text-slate-700 leading-snug">Asisten Chatbot Cerdas Tanpa Batas</span>
                     </li>
-                    <li class="flex items-start gap-3">
-                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i></div>
-                        <span class="text-sm font-semibold text-slate-700 leading-snug">Kapasitas Unggah Skala Besar (Hingga 10GB/File)</span>
+                    <li class="flex items-start gap-2.5 sm:gap-3">
+                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600"></i></div>
+                        <span class="text-[11px] sm:text-sm font-semibold text-slate-700 leading-snug">Kapasitas Unggah Skala Besar (Hingga 10GB/File)</span>
                     </li>
-                    <li class="flex items-start gap-3">
-                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i></div>
-                        <span class="text-sm font-semibold text-slate-700 leading-snug">Ekspor Dokumen Eksekutif Lanjutan (PPTX/PDF/Word)</span>
+                    <li class="flex items-start gap-2.5 sm:gap-3">
+                        <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600"></i></div>
+                        <span class="text-[11px] sm:text-sm font-semibold text-slate-700 leading-snug">Ekspor Dokumen Eksekutif (PPTX/PDF)</span>
                     </li>
                 </ul>
 
-                <button onclick="closeUpgradeModal(); showNotification('Mengarahkan ke Secure Payment Gateway...', 'info')" class="w-full bg-slate-900 hover:bg-black text-white font-bold text-sm py-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:-translate-y-1 relative overflow-hidden group/btn">
+                <button onclick="closeUpgradeModal(); showNotification('Mengarahkan ke Gateway Pembayaran...', 'info')" class="w-full bg-slate-900 hover:bg-black text-white font-bold text-[11px] sm:text-sm py-3.5 sm:py-4 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all hover:-translate-y-1 relative overflow-hidden group/btn min-h-[48px]">
                     <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite]"></div>
-                    <span class="relative flex items-center justify-center gap-2">Tingkatkan Sekarang <i data-lucide="arrow-right" class="w-4 h-4"></i></span>
+                    <span class="relative flex items-center justify-center gap-2">Tingkatkan Sekarang <i data-lucide="arrow-right" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></span>
                 </button>
-                <p class="text-center text-[10px] text-slate-400 mt-4 font-semibold flex items-center justify-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Pembayaran dienkripsi 256-bit SSL</p>
+                <p class="text-center text-[9px] sm:text-[10px] text-slate-400 mt-3 sm:mt-4 font-semibold flex items-center justify-center gap-1"><i data-lucide="lock" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i> Pembayaran dienkripsi 256-bit SSL</p>
             </div>
         </div>
     </div>
 
     <!-- Notification Banner -->
-    <div id="notification" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 z-[999999] bg-slate-900 text-white max-w-max w-auto px-5 py-3 rounded-full flex items-center justify-center gap-2.5 shadow-[0_10px_40px_rgb(0,0,0,0.2)] transition-all duration-400 border border-slate-700 text-xs font-medium whitespace-nowrap">
-        <i data-lucide="info" class="w-4 h-4 shrink-0 text-brand-400" id="notification-icon"></i>
-        <p id="notification-text" class="m-0 tracking-wide"></p>
+    <div id="notification" class="hidden fixed top-4 sm:top-6 left-1/2 transform -translate-x-1/2 z-[999999] bg-slate-900 text-white max-w-[90vw] sm:max-w-max w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-full flex items-center justify-center gap-2 sm:gap-2.5 shadow-[0_10px_40px_rgb(0,0,0,0.2)] transition-all duration-400 border border-slate-700 text-[10px] sm:text-xs font-medium whitespace-normal sm:whitespace-nowrap text-center sm:text-left">
+        <i data-lucide="info" class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 text-brand-400" id="notification-icon"></i>
+        <p id="notification-text" class="m-0 tracking-wide leading-tight"></p>
     </div>
 
     <script>
@@ -1094,7 +1111,7 @@
             
             const btn = document.getElementById('btn-saran-ai');
             const origHTML = btn.innerHTML;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Membaca File...`;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 sm:w-3.5 sm:h-3.5 animate-spin"></i> Membaca...`;
             lucide.createIcons();
 
             setTimeout(() => {
@@ -1201,7 +1218,7 @@
             }
             const chatInput = document.getElementById('ai-chat-input');
             if(chatInput) {
-                chatInput.placeholder = `Tanya analisis data... (Sisa ${globalChatQuota})`;
+                chatInput.placeholder = `Ketik pesan disini... (Sisa ${globalChatQuota})`;
             }
         }
 
@@ -1210,8 +1227,8 @@
             const r = document.getElementById('upgrade-reason');
             if(context === 'analisis') r.innerText = "Kredit gratis (5x) untuk siklus analitik telah habis.";
             else if(context === 'chat') r.innerText = "Batas 5x interaksi obrolan per-sesi telah tercapai.";
-            else if(context === 'pro') r.innerText = "Fitur Ekspor Laporan PPTX eksklusif hanya untuk pengguna Premium.";
-            else r.innerText = "Buka seluruh potensi analitik kelas enterprise.";
+            else if(context === 'pro') r.innerText = "Fitur Ekspor Laporan eksklusif hanya untuk pengguna Premium.";
+            else r.innerText = "Buka seluruh potensi analitik cerdas tanpa batas.";
             m.classList.remove('hidden');
             lucide.createIcons();
         }
@@ -1242,22 +1259,22 @@
                 let trashBtnHTML = '';
                 if(globalFilesArray.length > 1) {
                     trashBtnHTML = `
-                        <button onclick="removeFile(${idx})" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0" title="Hapus file ini">
+                        <button onclick="removeFile(${idx})" class="p-2 sm:p-2.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors shrink-0 min-h-[40px] min-w-[40px] flex items-center justify-center" title="Hapus file ini">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     `;
                 }
 
                 html += `
-                    <div class="bg-white p-3.5 sm:p-4 rounded-xl border border-slate-200 shadow-sm gap-3 flex flex-col hover:border-brand-300 transition-all">
+                    <div class="bg-white p-3 sm:p-4 rounded-xl border border-slate-200 shadow-sm gap-2.5 flex flex-col hover:border-brand-300 transition-all">
                         <div class="flex justify-between items-center w-full">
-                            <div class="flex items-center gap-3 min-w-0 pr-2">
-                                <div class="bg-brand-50 p-2 rounded-lg border border-brand-100 shadow-sm shrink-0">
-                                    <i data-lucide="file-text" class="text-brand-500 w-4 h-4"></i>
+                            <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 pr-2">
+                                <div class="bg-brand-50 p-2 sm:p-2.5 rounded-lg border border-brand-100 shadow-sm shrink-0">
+                                    <i data-lucide="file-text" class="text-brand-500 w-4 h-4 sm:w-4 sm:h-4"></i>
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="text-xs sm:text-sm font-bold text-slate-800 truncate">${f.name}</p>
-                                    <p class="text-[10px] sm:text-[11px] text-slate-500 font-semibold">${(f.size/1024).toFixed(1)} KB • Ekstensi: ${f.extension.toUpperCase()}</p>
+                                    <p class="text-[11px] sm:text-sm font-bold text-slate-800 truncate">${f.name}</p>
+                                    <p class="text-[9px] sm:text-[11px] text-slate-500 font-semibold">${(f.size/1024).toFixed(1)} KB • Ekstensi: ${f.extension.toUpperCase()}</p>
                                 </div>
                             </div>
                             ${trashBtnHTML}
@@ -1459,23 +1476,23 @@
                 
                 const simBox = document.createElement('div');
                 simBox.id = 'sim-box-active';
-                simBox.className = "mt-4 p-5 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl shadow-sm animate-[fadeInUp_0.4s_ease-out] relative overflow-hidden";
+                simBox.className = "mt-4 p-4 sm:p-5 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl sm:rounded-2xl shadow-sm animate-[fadeInUp_0.4s_ease-out] relative overflow-hidden";
                 simBox.innerHTML = `
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-400/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
-                    <div class="absolute bottom-0 left-0 w-24 h-24 bg-teal-400/10 rounded-full blur-xl -ml-10 -mb-10 pointer-events-none"></div>
-                    <div class="relative z-10 flex flex-col gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2.5 bg-white rounded-xl shadow-sm shrink-0 border border-emerald-100">
-                                <i data-lucide="trending-up" class="w-5 h-5 text-emerald-600"></i>
+                    <div class="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-emerald-400/10 rounded-full blur-2xl -mr-8 -mt-8 sm:-mr-10 sm:-mt-10 pointer-events-none"></div>
+                    <div class="absolute bottom-0 left-0 w-20 h-20 sm:w-24 sm:h-24 bg-teal-400/10 rounded-full blur-xl -ml-8 -mb-8 sm:-ml-10 sm:-mb-10 pointer-events-none"></div>
+                    <div class="relative z-10 flex flex-col gap-2.5 sm:gap-3">
+                        <div class="flex items-center gap-2.5 sm:gap-3">
+                            <div class="p-2 sm:p-2.5 bg-white rounded-lg sm:rounded-xl shadow-sm shrink-0 border border-emerald-100">
+                                <i data-lucide="trending-up" class="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600"></i>
                             </div>
                             <div>
-                                <h5 class="text-sm font-black text-emerald-900 tracking-tight">Proyeksi Berhasil Dioptimasi</h5>
-                                <p class="text-[11px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5">Skenario Positif</p>
+                                <h5 class="text-xs sm:text-sm font-black text-emerald-900 tracking-tight">Proyeksi Berhasil Dioptimasi</h5>
+                                <p class="text-[9px] sm:text-[11px] font-bold text-emerald-600 uppercase tracking-widest mt-0.5">Skenario Positif</p>
                             </div>
                         </div>
-                        <div class="bg-white/60 p-3 rounded-xl border border-emerald-100/50 mt-1">
-                            <p class="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed">
-                                Penerapan rekomendasi eksekutif secara disiplin dapat memicu eskalasi metrik hingga <b class="text-emerald-700 text-sm">+${incPct}%</b> melampaui lintasan organik saat ini. Visualisasi hijau di atas mengilustrasikan potensi nilai tambah tersebut.
+                        <div class="bg-white/60 p-2.5 sm:p-3 rounded-lg sm:rounded-xl border border-emerald-100/50 mt-1">
+                            <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-700 font-medium leading-relaxed">
+                                Penerapan rekomendasi eksekutif secara disiplin dapat memicu eskalasi metrik hingga <b class="text-emerald-700 text-xs sm:text-sm">+${incPct}%</b> melampaui lintasan organik saat ini. Visualisasi hijau di atas mengilustrasikan potensi nilai tambah tersebut.
                             </p>
                         </div>
                     </div>
@@ -1505,9 +1522,9 @@
 
             let texts = [
                 "Menyiapkan bahan data mentah...", 
-                "Menganalisis pola dan anomali (DeepSeek)...", 
-                "Menyusun laporan eksekutif (DeepSeek)...", 
-                "Menyiapkan asisten interaktif (Groq + Tavily)...", 
+                "Menganalisis pola dan anomali data...", 
+                "Menyusun laporan eksekutif cerdas...", 
+                "Menyiapkan asisten interaktif Dazer...", 
                 "Menyajikan visualisasi data..."
             ];
             
@@ -1555,7 +1572,7 @@
             document.getElementById('dashboard').classList.remove('hidden');
 
             const intentDisplay = document.getElementById('dashboard-intent-display');
-            if (intentDisplay) intentDisplay.innerHTML = `<i data-lucide="file-check" class="w-4 h-4 text-brand-500"></i> ${data.intentStr}`;
+            if (intentDisplay) intentDisplay.innerHTML = `<i data-lucide="file-check" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-500"></i> ${data.intentStr}`;
 
             const scorecardsContainer = document.getElementById('scorecards-container');
             if (scorecardsContainer) {
@@ -1564,15 +1581,15 @@
                     let actionBtn = '';
                     if (sc.filter) {
                         let color = sc.filter === 'anomali' ? '#e11d48' : '#d97706';
-                        actionBtn = `<button onclick="triggerFilter('${sc.filter}')" class="magic-btn mt-2" style="--color: ${color}; height: 2.2em; font-size: 10px; width: max-content; border-width: 1.5px; padding: 0 1rem;">${sc.sub}</button>`;
+                        actionBtn = `<button onclick="triggerFilter('${sc.filter}')" class="magic-btn mt-2 w-full sm:w-max" style="--color: ${color}; height: 2.2em; font-size: 10px; border-width: 1.5px; padding: 0 0.75rem;">${sc.sub}</button>`;
                     } else {
-                        actionBtn = `<p class="text-[10px] font-bold text-slate-500 mt-2">${sc.sub}</p>`;
+                        actionBtn = `<p class="text-[9px] sm:text-[10px] font-bold text-slate-500 mt-2">${sc.sub}</p>`;
                     }
                     
                     scHTML += `
-                        <div class="bg-white p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center items-center text-center hover:border-brand-300 hover:shadow-md transition-all group gap-2 aspect-square">
-                            <h4 class="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-brand-500 transition-colors line-clamp-2">${sc.title}</h4>
-                            <div class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight truncate w-full px-2">${sc.value}</div>
+                        <div class="bg-white p-3.5 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center items-center text-center hover:border-brand-300 hover:shadow-md transition-all group gap-1.5 sm:gap-2 aspect-square min-h-[140px] sm:min-h-[160px]">
+                            <h4 class="text-[9px] sm:text-[10px] lg:text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-brand-500 transition-colors line-clamp-2 px-1">${sc.title}</h4>
+                            <div class="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight truncate w-full px-1 sm:px-2">${sc.value}</div>
                             ${actionBtn}
                         </div>
                     `;
@@ -1597,16 +1614,16 @@
             const chatBox = document.getElementById('chat-messages');
             chatBox.innerHTML = ''; 
             
-            let greeting = `Halo! Saya Asisten AI Anda yang didukung oleh Groq & Tavily. Data dari ${fileName} sudah siap kita bahas.\n\nAnda punya 5 kesempatan bertanya. Mau kita mulai dari mana?`;
+            let greeting = `Halo! Saya Dazer AI Assistant Anda. Data dari ${fileName} sudah siap kita bahas.\n\nAnda punya 5 kesempatan bertanya. Mau kita mulai dari mana?`;
             
             let greetingId = 'greeting-' + Date.now();
             chatBox.innerHTML += `
                 <div class="flex flex-col items-start w-full mb-2 animate-[fadeInUp_0.4s_ease-out]">
                     <div class="chat-bubble chat-bubble-ai">
-                        <p class="text-[11px] sm:text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-wrap" id="${greetingId}"></p>
+                        <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-wrap" id="${greetingId}"></p>
                         <div class="mt-3 flex flex-wrap gap-2 transition-opacity duration-500 opacity-0" id="greeting-btns">
-                            <button onclick="document.getElementById('ai-chat-input').value='Tolong buatkan ringkasan dari dokumen ini.'; sendChatMessage();" class="text-[10px] sm:text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1.5 rounded-md font-bold transition-all">Ringkas Data</button>
-                            <button onclick="document.getElementById('ai-chat-input').value='Bagaimana cara meningkatkan hasil dari data ini?'; sendChatMessage();" class="text-[10px] sm:text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 py-1.5 rounded-md font-bold transition-all">Saran Peningkatan</button>
+                            <button onclick="document.getElementById('ai-chat-input').value='Tolong buatkan ringkasan dari dokumen ini.'; sendChatMessage();" class="text-[9px] sm:text-[10px] lg:text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2.5 sm:px-3 py-1.5 rounded-md font-bold transition-all min-h-[32px]">Ringkas Data</button>
+                            <button onclick="document.getElementById('ai-chat-input').value='Bagaimana cara meningkatkan hasil dari data ini?'; sendChatMessage();" class="text-[9px] sm:text-[10px] lg:text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 px-2.5 sm:px-3 py-1.5 rounded-md font-bold transition-all min-h-[32px]">Saran Peningkatan</button>
                         </div>
                     </div>
                 </div>`;
@@ -1683,11 +1700,11 @@
                         let cleanHead = header.replace(/\*/g,'').substring(0, 30);
                         statRows += `
                             <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
-                                <td class="py-3 px-4"><span class="font-bold text-xs text-slate-800">${cleanHead}</span></td>
-                                <td class="py-3 px-4 text-center"><span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Angka</span></td>
-                                <td class="py-3 px-4"><span class="text-xs font-semibold text-slate-700">${avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</span><span class="text-[10px] text-slate-400 block">Rata-rata</span></td>
-                                <td class="py-3 px-4"><span class="text-xs text-slate-600">Min: ${min.toLocaleString('id-ID')} | Max: ${max.toLocaleString('id-ID')}</span></td>
-                                <td class="py-3 px-4">${outliers > 0 ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded"> ${outliers} Anomali</span>` : `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded"> Normal</span>`}</td>
+                                <td class="py-2.5 sm:py-3 px-3 sm:px-4"><span class="font-bold text-[10px] sm:text-xs text-slate-800">${cleanHead}</span></td>
+                                <td class="py-2.5 sm:py-3 px-3 sm:px-4 text-center"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Angka</span></td>
+                                <td class="py-2.5 sm:py-3 px-3 sm:px-4"><span class="text-[10px] sm:text-xs font-semibold text-slate-700">${avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</span><span class="text-[8px] sm:text-[10px] text-slate-400 block mt-0.5">Rata-rata</span></td>
+                                <td class="py-2.5 sm:py-3 px-3 sm:px-4"><span class="text-[9px] sm:text-[11px] text-slate-600 break-words">Min: ${min.toLocaleString('id-ID')}<br/>Max: ${max.toLocaleString('id-ID')}</span></td>
+                                <td class="py-2.5 sm:py-3 px-3 sm:px-4">${outliers > 0 ? `<span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 sm:px-2 py-1 rounded whitespace-nowrap"> ${outliers} Anomali</span>` : `<span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 sm:px-2 py-1 rounded whitespace-nowrap"> Normal</span>`}</td>
                             </tr>
                         `;
                     }
@@ -1708,30 +1725,30 @@
                     
                     statRows += `
                         <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
-                            <td class="py-3 px-4"><span class="font-bold text-xs text-slate-800">${cleanHead}</span></td>
-                            <td class="py-3 px-4 text-center"><span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Kategori</span></td>
-                            <td class="py-3 px-4"><span class="text-xs font-semibold text-slate-700 truncate max-w-[120px] block" title="${mode}">${mode}</span><span class="text-[10px] text-slate-400 block">Sering Muncul</span></td>
-                            <td class="py-3 px-4"><span class="text-xs text-slate-600">${uniqueVals.size.toLocaleString('id-ID')} Variasi</span></td>
-                            <td class="py-3 px-4">${colMiss > 0 ? `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded"> ${colMiss} Sel Kosong</span>` : `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded"> Lengkap</span>`}</td>
+                            <td class="py-2.5 sm:py-3 px-3 sm:px-4"><span class="font-bold text-[10px] sm:text-xs text-slate-800">${cleanHead}</span></td>
+                            <td class="py-2.5 sm:py-3 px-3 sm:px-4 text-center"><span class="text-[9px] sm:text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Kategori</span></td>
+                            <td class="py-2.5 sm:py-3 px-3 sm:px-4"><span class="text-[10px] sm:text-xs font-semibold text-slate-700 truncate max-w-[80px] sm:max-w-[120px] block" title="${mode}">${mode}</span><span class="text-[8px] sm:text-[10px] text-slate-400 block mt-0.5">Sering Muncul</span></td>
+                            <td class="py-2.5 sm:py-3 px-3 sm:px-4"><span class="text-[9px] sm:text-[11px] text-slate-600">${uniqueVals.size.toLocaleString('id-ID')} Variasi</span></td>
+                            <td class="py-2.5 sm:py-3 px-3 sm:px-4">${colMiss > 0 ? `<span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 sm:px-2 py-1 rounded whitespace-nowrap"> ${colMiss} Sel Kosong</span>` : `<span class="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 sm:px-2 py-1 rounded whitespace-nowrap"> Lengkap</span>`}</td>
                         </tr>
                     `;
                 }
             });
             
             setHTML('statistics-container', statRows ? `
-                <table class="w-full text-left border-collapse whitespace-nowrap border border-slate-200 rounded-xl">
+                <table class="w-full text-left border-collapse border border-slate-200 rounded-xl">
                     <thead class="bg-slate-100/50 border-b border-slate-200">
                         <tr>
-                            <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Atribut Kolom</th>
-                            <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider text-center">Tipe Data</th>
-                            <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Metrik Utama</th>
-                            <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Rentang Nilai</th>
-                            <th class="py-3 px-4 text-[10px] font-black text-slate-500 uppercase tracking-wider">Kesehatan</th>
+                            <th class="py-2.5 sm:py-3 px-3 sm:px-4 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Atribut Kolom</th>
+                            <th class="py-2.5 sm:py-3 px-3 sm:px-4 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-wider text-center whitespace-nowrap">Tipe Data</th>
+                            <th class="py-2.5 sm:py-3 px-3 sm:px-4 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Metrik Utama</th>
+                            <th class="py-2.5 sm:py-3 px-3 sm:px-4 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Rentang Nilai</th>
+                            <th class="py-2.5 sm:py-3 px-3 sm:px-4 text-[9px] sm:text-[10px] font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Kesehatan</th>
                         </tr>
                     </thead>
                     <tbody>${statRows}</tbody>
                 </table>
-            ` : '<div class="text-center text-xs sm:text-sm font-bold text-slate-600 py-12 bg-slate-50 rounded-xl border border-slate-200">Data belum cukup untuk membuat ringkasan statistik.</div>');
+            ` : '<div class="text-center text-xs sm:text-sm font-bold text-slate-600 py-10 sm:py-12 bg-slate-50 rounded-xl border border-slate-200">Data belum cukup untuk membuat ringkasan statistik.</div>');
 
             let primaryNumericCol = numericCols.length > 0 ? numericCols.sort((a,b) => b.sum - a.sum)[0] : null;
             let outlierCountTotal = numericCols.reduce((a,c) => a + c.outliers, 0);
@@ -1744,8 +1761,8 @@
             const overallHealthScore = Math.round((completenessPct + qualityPct + uniquePct) / 3);
             
             setHTML('data-health-container', `
-                <div class="col-span-1 bg-white flex flex-col justify-center items-center p-5 sm:p-6 hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default border-b lg:border-b-0 sm:border-r lg:border-r border-slate-200 group health-card">
-                    <div class="relative w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
+                <div class="col-span-1 bg-white flex flex-col justify-center items-center p-4 sm:p-6 hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default border-b lg:border-b-0 sm:border-r lg:border-r border-slate-200 group health-card">
+                    <div class="relative w-20 h-20 sm:w-28 sm:h-28 flex items-center justify-center">
                         <div class="h-loader" data-target="${overallHealthScore / 100}">
                             <div class="h-loader__fill-glow"></div>
                             <div class="h-loader__fill"></div>
@@ -1756,48 +1773,48 @@
                             </div>
                         </div>
                     </div>
-                    <p class="text-[9px] sm:text-[10px] font-black text-slate-600 uppercase tracking-widest mt-4">Skor Kelayakan</p>
+                    <p class="text-[9px] sm:text-[10px] font-black text-slate-600 uppercase tracking-widest mt-3 sm:mt-4">Skor Kelayakan</p>
                 </div>
-                <div class="col-span-1 bg-white p-5 sm:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-b lg:border-b-0 sm:border-r-0 lg:border-r border-slate-200 health-card">
-                    <div class="mb-4 flex justify-between items-start gap-2 relative z-10">
+                <div class="col-span-1 bg-white p-4 sm:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-b lg:border-b-0 sm:border-r-0 lg:border-r border-slate-200 health-card">
+                    <div class="mb-3 sm:mb-4 flex justify-between items-start gap-2 relative z-10">
                         <div>
-                            <p class="text-xs sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Kelengkapan Data</p>
-                            <p class="text-[10px] sm:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Defisit <b>${missingValueCount.toLocaleString('id-ID')} sel kosong</b>. Pengisian data menjamin komputasi presisi tanpa bias.</p>
+                            <p class="text-[11px] sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Kelengkapan Data</p>
+                            <p class="text-[9px] sm:text-[11px] text-slate-600 font-medium mt-1 sm:mt-1.5 leading-relaxed">Defisit <b>${missingValueCount.toLocaleString('id-ID')} sel kosong</b>. Pengisian data menjamin komputasi presisi tanpa bias.</p>
                         </div>
                         <div class="p-1.5 sm:p-2 rounded-lg shrink-0 ${completenessPct >= 90 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'} shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="${completenessPct >= 90 ? 'check-circle' : 'alert-triangle'}" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div>
                     </div>
-                    <div class="flex items-center gap-3 relative z-10">
-                        <div class="text-base sm:text-lg font-black ${completenessPct >= 90 ? 'text-emerald-600' : 'text-amber-600'} w-10 sm:w-12 shrink-0">${completenessPct.toFixed(0)}%</div>
+                    <div class="flex items-center gap-2 sm:gap-3 relative z-10 mt-auto">
+                        <div class="text-sm sm:text-lg font-black ${completenessPct >= 90 ? 'text-emerald-600' : 'text-amber-600'} w-8 sm:w-12 shrink-0">${completenessPct.toFixed(0)}%</div>
                         <div class="modern-progress-wrapper w-full">
                             <div class="modern-progress-bar ${completenessPct >= 90 ? 'bg-emerald-500' : 'bg-amber-500'}" data-target-width="${completenessPct}%"></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-span-1 bg-white p-5 sm:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-b sm:border-b-0 lg:border-b-0 sm:border-r lg:border-r border-slate-200 health-card">
-                    <div class="mb-4 flex justify-between items-start gap-2 relative z-10">
+                <div class="col-span-1 bg-white p-4 sm:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-b sm:border-b-0 lg:border-b-0 sm:border-r lg:border-r border-slate-200 health-card">
+                    <div class="mb-3 sm:mb-4 flex justify-between items-start gap-2 relative z-10">
                         <div>
-                            <p class="text-xs sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Konsistensi Logika</p>
-                            <p class="text-[10px] sm:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Terdapat <b>${outlierCountTotal.toLocaleString('id-ID')} deviasi anomali</b>. Meminimalisir angka meleset ini akan menstabilkan grafik.</p>
+                            <p class="text-[11px] sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Konsistensi Logika</p>
+                            <p class="text-[9px] sm:text-[11px] text-slate-600 font-medium mt-1 sm:mt-1.5 leading-relaxed">Terdapat <b>${outlierCountTotal.toLocaleString('id-ID')} deviasi anomali</b>. Meminimalisir angka meleset ini akan menstabilkan grafik.</p>
                         </div>
                         <div class="p-1.5 sm:p-2 rounded-lg shrink-0 ${qualityPct >= 90 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'} shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="${qualityPct >= 90 ? 'check-circle' : 'alert-triangle'}" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div>
                     </div>
-                    <div class="flex items-center gap-3 relative z-10">
-                        <div class="text-base sm:text-lg font-black ${qualityPct >= 90 ? 'text-emerald-600' : 'text-rose-600'} w-10 sm:w-12 shrink-0">${qualityPct.toFixed(0)}%</div>
+                    <div class="flex items-center gap-2 sm:gap-3 relative z-10 mt-auto">
+                        <div class="text-sm sm:text-lg font-black ${qualityPct >= 90 ? 'text-emerald-600' : 'text-rose-600'} w-8 sm:w-12 shrink-0">${qualityPct.toFixed(0)}%</div>
                         <div class="modern-progress-wrapper w-full">
                             <div class="modern-progress-bar ${qualityPct >= 90 ? 'bg-emerald-500' : 'bg-rose-500'}" data-target-width="${qualityPct}%"></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-span-1 bg-white p-5 sm:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-none health-card">
-                    <div class="mb-4 flex justify-between items-start gap-2 relative z-10">
+                <div class="col-span-1 bg-white p-4 sm:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-none health-card">
+                    <div class="mb-3 sm:mb-4 flex justify-between items-start gap-2 relative z-10">
                         <div>
-                            <p class="text-xs sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Keunikan Baris</p>
-                            <p class="text-[10px] sm:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Ditemukan <b>${duplicateRows.toLocaleString('id-ID')} pola duplikat</b> identik. Menghapus data kembar akan menyaring kualitas akhir.</p>
+                            <p class="text-[11px] sm:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Keunikan Baris</p>
+                            <p class="text-[9px] sm:text-[11px] text-slate-600 font-medium mt-1 sm:mt-1.5 leading-relaxed">Ditemukan <b>${duplicateRows.toLocaleString('id-ID')} pola duplikat</b> identik. Menghapus data kembar akan menyaring kualitas akhir.</p>
                         </div>
                         <div class="p-1.5 sm:p-2 rounded-lg shrink-0 ${uniquePct >= 95 ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-100 text-brand-700'} shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="${uniquePct >= 95 ? 'check-circle' : 'alert-triangle'}" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i></div>
                     </div>
-                    <div class="flex items-center gap-3 relative z-10">
-                        <div class="text-base sm:text-lg font-black ${uniquePct >= 95 ? 'text-emerald-600' : 'text-brand-600'} w-10 sm:w-12 shrink-0">${uniquePct.toFixed(0)}%</div>
+                    <div class="flex items-center gap-2 sm:gap-3 relative z-10 mt-auto">
+                        <div class="text-sm sm:text-lg font-black ${uniquePct >= 95 ? 'text-emerald-600' : 'text-brand-600'} w-8 sm:w-12 shrink-0">${uniquePct.toFixed(0)}%</div>
                         <div class="modern-progress-wrapper w-full">
                             <div class="modern-progress-bar ${uniquePct >= 95 ? 'bg-emerald-500' : 'bg-brand-500'}" data-target-width="${uniquePct}%"></div>
                         </div>
@@ -1875,8 +1892,8 @@
                  cTitle = `Persebaran Angka`;
             }
 
-            // Req 2: Placeholder Flip Cards sebelum AI murni selesai memuat
-            let loaderPulse = `<div class="flex items-center justify-start gap-2 text-brand-600 animate-pulse"><i data-lucide="brain-circuit" class="w-4 h-4"></i><span class="text-xs font-bold">AI menganalisis...</span></div>`;
+            // Placeholder Flip Cards sebelum AI murni selesai memuat
+            let loaderPulse = `<div class="flex items-center justify-start gap-1.5 sm:gap-2 text-brand-600 animate-pulse"><i data-lucide="brain-circuit" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i><span class="text-[10px] sm:text-xs font-bold">Menganalisis...</span></div>`;
             document.getElementById('metric-insight-text').innerHTML = loaderPulse;
             document.getElementById('segment-insight-text').innerHTML = loaderPulse;
             document.getElementById('correlation-insight-text').innerHTML = loaderPulse;
@@ -1900,7 +1917,7 @@
                  document.getElementById('prediction-card').style.display = 'none';
             }
 
-            // Panggil API Backend (DeepSeek)
+            // Panggil API Backend
             getAIInsights({ numRows, overallHealthScore, completenessPct, qualityPct, anomalies: outlierCountTotal }, setupIndustry, primaryNumericCol, catCols);
         }
 
@@ -1944,16 +1961,16 @@
                 data: {
                     labels: histLabels,
                     datasets: [
-                        { label: 'Garis Masa Lalu', data: [...histData, null, null, null], borderColor: '#0ea5e9', backgroundColor: gradPast, fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#ffffff', pointBorderColor: '#0ea5e9', pointBorderWidth: 2, borderWidth: 3 },
-                        { label: 'Garis Perkiraan Masa Depan', data: projData, borderColor: '#f59e0b', borderDash: [5, 5], backgroundColor: gradFuture, fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 7, pointBackgroundColor: '#ffffff', pointBorderColor: '#f59e0b', pointBorderWidth: 2, borderWidth: 3 }
+                        { label: 'Garis Masa Lalu', data: [...histData, null, null, null], borderColor: '#0ea5e9', backgroundColor: gradPast, fill: true, tension: 0.4, pointRadius: window.innerWidth < 640 ? 3 : 4, pointHoverRadius: 6, pointBackgroundColor: '#ffffff', pointBorderColor: '#0ea5e9', pointBorderWidth: 2, borderWidth: window.innerWidth < 640 ? 2 : 3 },
+                        { label: 'Garis Perkiraan Masa Depan', data: projData, borderColor: '#f59e0b', borderDash: [5, 5], backgroundColor: gradFuture, fill: true, tension: 0.4, pointRadius: window.innerWidth < 640 ? 4 : 5, pointHoverRadius: 7, pointBackgroundColor: '#ffffff', pointBorderColor: '#f59e0b', pointBorderWidth: 2, borderWidth: window.innerWidth < 640 ? 2 : 3 }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
                     plugins: { legend: {display: false}, datalabels: {display: false}, tooltip: { backgroundColor: '#0f172a', titleFont: {family:'Inter', size:12, weight:'bold'}, bodyFont: {family:'Inter', size:11}, padding: 10, cornerRadius: 8, boxPadding: 4 } },
                     scales: { 
-                        y: {display: true, grid: {color: '#f1f5f9', borderDash: [4,4]}, border: {display: false}, ticks: {color: '#94a3b8', font: {size: 10, family: 'Inter', weight:'500'}, maxTicksLimit:5}}, 
-                        x: {grid: {display: false}, border: {display: false}, ticks: {font: {size: 10, family: 'Inter', weight: '600'}, color: '#64748b', maxRotation: 45, minRotation:0}} 
+                        y: {display: true, grid: {color: '#f1f5f9', borderDash: [4,4]}, border: {display: false}, ticks: {color: '#94a3b8', font: {size: 9, family: 'Inter', weight:'500'}, maxTicksLimit:5}}, 
+                        x: {grid: {display: false}, border: {display: false}, ticks: {font: {size: 9, family: 'Inter', weight: '600'}, color: '#64748b', maxRotation: 45, minRotation:0}} 
                     }
                 }
             });
@@ -1964,9 +1981,9 @@
             const targetName = currentReportData.primaryColName || "angka dominan";
 
             document.getElementById('prediction-insight-text').innerHTML = `
-                <div class="space-y-3">
-                    <p class="leading-relaxed text-slate-700 text-[11px] sm:text-xs">Dari kebiasaan masa lalu yang terekam pada <b>${targetName}</b>, kami melihat bahwa laju angkanya sedang dalam posisi <b>${trendText}</b> sebesar <b>${percentage}%</b>.</p>
-                    <p class="leading-relaxed text-slate-700 text-[11px] sm:text-xs">Jika rutinitas Anda berjalan lancar seperti biasa, kami perkirakan nilainya berpeluang menyentuh kisaran angka <b>${futureVal}</b> pada periode selanjutnya di masa depan.</p>
+                <div class="space-y-2 sm:space-y-3">
+                    <p class="leading-relaxed text-slate-700 text-[10px] sm:text-[11px] lg:text-xs">Dari kebiasaan masa lalu yang terekam pada <b>${targetName}</b>, kami melihat bahwa laju angkanya sedang dalam posisi <b>${trendText}</b> sebesar <b>${percentage}%</b>.</p>
+                    <p class="leading-relaxed text-slate-700 text-[10px] sm:text-[11px] lg:text-xs">Jika rutinitas Anda berjalan lancar seperti biasa, kami perkirakan nilainya berpeluang menyentuh kisaran angka <b>${futureVal}</b> pada periode selanjutnya di masa depan.</p>
                 </div>
             `;
             lucide.createIcons();
@@ -1987,7 +2004,7 @@
             const input = document.getElementById('table-search');
             if(input) input.value = keyword;
             initFilterView(keyword);
-            showNotification(`Tabel berhasil disaring untuk mencari: ${keyword}`, "success");
+            showNotification(`Tabel disaring: ${keyword}`, "success");
         }
 
         function initFilterView(query = "") {
@@ -2039,8 +2056,8 @@
                 document.getElementById('row-count-display').innerHTML = `Menampilkan <b class="text-brand-600">${filteredViewData.length.toLocaleString('id-ID')}</b> dari <b class="text-slate-900">${totalOriginal.toLocaleString('id-ID')}</b> baris asli.`;
             }
             
-            let headHTML = '<tr><th class="px-2 sm:px-3 py-2.5 font-black uppercase text-slate-500 w-8 sm:w-10 border-r border-slate-200 text-[10px] sm:text-xs">No.</th>';
-            globalHeaders.forEach(col => { headHTML += `<th class="px-2 sm:px-3 py-2.5 font-black break-words text-slate-800 text-[10px] sm:text-xs leading-tight">${col.replace(/\*/g,'')}</th>`; });
+            let headHTML = '<tr><th class="px-2 sm:px-3 py-2.5 font-black uppercase text-slate-500 w-8 sm:w-10 border-r border-slate-200 text-[9px] sm:text-[10px] whitespace-nowrap">No.</th>';
+            globalHeaders.forEach(col => { headHTML += `<th class="px-2 sm:px-3 py-2.5 font-black break-words text-slate-800 text-[9px] sm:text-[10px] leading-tight whitespace-nowrap">${col.replace(/\*/g,'')}</th>`; });
             setHTML('preview-thead', headHTML + '</tr>');
 
             const container = document.getElementById('table-scroll-container');
@@ -2066,7 +2083,7 @@
                 const rowData = globalExtractedData[actualIndex];
                 
                 html += `<tr class="table-row-animate hover:bg-brand-50/50 transition-colors group border-b border-slate-200 last:border-0" style="animation-delay: ${(i - currentlyRendered) * 15}ms">`;
-                html += `<td data-label="No." class="px-2 sm:px-3 py-2.5 font-bold text-slate-500 w-8 sm:w-10 border-r border-slate-200 group-hover:text-brand-600 bg-white md:sticky left-0 z-10 md:text-center text-left text-[10px] sm:text-xs">${actualIndex}</td>`;
+                html += `<td data-label="No." class="px-2 sm:px-3 py-2.5 font-bold text-slate-500 w-8 sm:w-10 border-r border-slate-200 group-hover:text-brand-600 bg-white md:sticky left-0 z-10 text-center md:text-left text-[9px] sm:text-[10px]">${actualIndex}</td>`;
                 
                 rowData.forEach((cell, cellIdx) => {
                     let val = cell !== undefined && cell !== null ? cell.toString() : '';
@@ -2083,7 +2100,7 @@
                     }
 
                     let headerName = globalHeaders[cellIdx] ? globalHeaders[cellIdx].replace(/\*/g,'').replace(/"/g, '&quot;') : '';
-                    let editAttr = isEditMode ? `contenteditable="true" onblur="handleCellEdit(${actualIndex}, ${cellIdx}, this.innerText)" class="px-2 sm:px-3 py-2.5 break-words text-slate-700 text-[10px] sm:text-xs leading-tight outline-none focus:bg-blue-50 focus:ring-1 ring-inset ring-blue-400 cursor-text"` : `class="px-2 sm:px-3 py-2.5 break-words text-slate-700 text-[10px] sm:text-xs leading-tight"`;
+                    let editAttr = isEditMode ? `contenteditable="true" onblur="handleCellEdit(${actualIndex}, ${cellIdx}, this.innerText)" class="px-2 sm:px-3 py-2.5 break-words text-slate-700 text-[9px] sm:text-[10px] leading-tight outline-none focus:bg-blue-50 focus:ring-1 ring-inset ring-blue-400 cursor-text"` : `class="px-2 sm:px-3 py-2.5 break-words text-slate-700 text-[9px] sm:text-[10px] leading-tight"`;
                     
                     html += `<td data-label="${headerName}" ${editAttr}>${val}</td>`;
                 });
@@ -2129,10 +2146,10 @@
                 legendContainer.classList.remove('hidden'); legendContainer.innerHTML = '';
                 currentChartData.labels.forEach((label, i) => {
                     const item = document.createElement('div');
-                    item.className = 'custom-legend-item flex items-start justify-between gap-3 px-4 py-2.5 bg-slate-50/80 rounded-xl border border-slate-100 shadow-sm w-full sm:w-[calc(50%-0.5rem)] h-auto min-h-[45px]';
+                    item.className = 'custom-legend-item flex items-start justify-between gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 bg-slate-50/80 rounded-xl border border-slate-100 shadow-sm w-full sm:w-[calc(50%-0.5rem)] h-auto min-h-[45px]';
                     const color = baseColors[i % baseColors.length];
                     const percent = currentChartData.total > 0 ? Math.round((currentChartData.data[i] / currentChartData.total) * 100) : 0;
-                    item.innerHTML = `<div class="flex items-start gap-2.5 pt-0.5"><span class="w-3 h-3 rounded-full shrink-0 shadow-sm mt-0.5" style="background-color: ${color}"></span><span class="text-xs font-bold text-slate-700 break-words whitespace-normal text-left leading-relaxed">${label}</span></div><span class="text-xs font-black text-slate-900 shrink-0 bg-white px-2 py-1 rounded-md shadow-sm border border-slate-100">${percent}%</span>`;
+                    item.innerHTML = `<div class="flex items-start gap-2 sm:gap-2.5 pt-0.5"><span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0 shadow-sm mt-0.5" style="background-color: ${color}"></span><span class="text-[10px] sm:text-xs font-bold text-slate-700 break-words whitespace-normal text-left leading-relaxed">${label}</span></div><span class="text-[10px] sm:text-xs font-black text-slate-900 shrink-0 bg-white px-1.5 sm:px-2 py-1 rounded-md shadow-sm border border-slate-100">${percent}%</span>`;
                     legendContainer.appendChild(item);
                 });
             } else if (legendContainer) {
@@ -2146,17 +2163,17 @@
                     datasets: [{
                         label: 'Nilai Terkait', data: currentChartData.data,
                         backgroundColor: isPie ? baseColors : (isBar ? bgColors : bgColors[0]), borderColor: isPie ? '#ffffff' : (isBar ? 'transparent' : '#0ea5e9'), 
-                        borderWidth: isPie ? 2 : (isLine ? 3 : 0), borderRadius: isPie ? 8 : (isBar ? { topLeft: 6, topRight: 6, bottomLeft: 0, bottomRight: 0 } : 0), 
+                        borderWidth: isPie ? 2 : (isLine ? 3 : 0), borderRadius: isPie ? 8 : (isBar ? { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 } : 0), 
                         barThickness: isBar ? Math.min(48, 400 / currentChartData.labels.length) : undefined, fill: isLine, tension: 0.4, hoverOffset: isPie ? 10 : 0,
-                        pointBackgroundColor: '#ffffff', pointBorderColor: '#0ea5e9', pointBorderWidth: 2, pointRadius: isLine ? 4 : 0, pointHoverRadius: isLine ? 6 : 0, pointHoverBorderWidth: 2,
+                        pointBackgroundColor: '#ffffff', pointBorderColor: '#0ea5e9', pointBorderWidth: 2, pointRadius: isLine ? (window.innerWidth < 640 ? 3 : 4) : 0, pointHoverRadius: isLine ? 6 : 0, pointHoverBorderWidth: 2,
                     }]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false, animation: { duration: 1000, easing: 'easeOutQuart' }, layout: { padding: { top: isPie ? 20 : 30, bottom: 20, left: 10, right: 10 } }, cutout: isPie ? '65%' : undefined, interaction: { mode: isLine ? 'index' : 'nearest', intersect: !isLine },
-                    plugins: { legend: { display: false }, centerText: { text: isPie ? new Intl.NumberFormat('id-ID', {notation:'compact'}).format(currentChartData.total) : "" }, tooltip: { backgroundColor: '#0f172a', titleColor: '#ffffff', bodyColor: '#cbd5e1', titleFont: {family:'Inter', size: 12, weight: '800'}, bodyFont: {family:'Inter', size: 11, weight: '600'}, padding: 12, cornerRadius: 8, displayColors: true, boxPadding: 4, usePointStyle: true, callbacks: { label: function(c) { return " " + new Intl.NumberFormat('id-ID').format(c.parsed.y); } } },
-                        datalabels: { display: function(context) { if(isPie) return true; if(isLine && currentChartData.labels.length > 8) return context.dataIndex % 2 === 0; return true; }, color: isPie ? '#ffffff' : (isBar ? '#334155' : '#0ea5e9'), align: isPie ? 'center' : (isBar ? 'end' : 'top'), anchor: isPie ? 'center' : (isBar ? 'end' : 'center'), offset: isPie ? 0 : 6, font: { family: 'Inter', weight: '800', size: 11 }, formatter: (value, context) => { if(isPie && currentChartData.total > 0) return Math.round((value / currentChartData.total) * 100) + '%'; if(typeof value === 'number') { if(value >= 1000000) return (value/1000000).toFixed(1) + 'M'; if(value >= 1000) return (value/1000).toFixed(1) + 'K'; return value.toLocaleString('id-ID'); } return value; } }
+                    plugins: { legend: { display: false }, centerText: { text: isPie ? new Intl.NumberFormat('id-ID', {notation:'compact'}).format(currentChartData.total) : "" }, tooltip: { backgroundColor: '#0f172a', titleColor: '#ffffff', bodyColor: '#cbd5e1', titleFont: {family:'Inter', size: 11, weight: '800'}, bodyFont: {family:'Inter', size: 10, weight: '600'}, padding: 10, cornerRadius: 8, displayColors: true, boxPadding: 4, usePointStyle: true, callbacks: { label: function(c) { return " " + new Intl.NumberFormat('id-ID').format(c.parsed.y); } } },
+                        datalabels: { display: function(context) { if(isPie) return true; if(isLine && currentChartData.labels.length > 8) return context.dataIndex % 2 === 0; return true; }, color: isPie ? '#ffffff' : (isBar ? '#334155' : '#0ea5e9'), align: isPie ? 'center' : (isBar ? 'end' : 'top'), anchor: isPie ? 'center' : (isBar ? 'end' : 'center'), offset: isPie ? 0 : 4, font: { family: 'Inter', weight: '800', size: window.innerWidth < 640 ? 9 : 11 }, formatter: (value, context) => { if(isPie && currentChartData.total > 0) return Math.round((value / currentChartData.total) * 100) + '%'; if(typeof value === 'number') { if(value >= 1000000) return (value/1000000).toFixed(1) + 'M'; if(value >= 1000) return (value/1000).toFixed(1) + 'K'; return value.toLocaleString('id-ID'); } return value; } }
                     },
-                    scales: isPie ? {} : { y: { display: true, beginAtZero: true, border: {display: false}, grid: {color: '#e2e8f0', drawBorder: false, borderDash: [4, 4], tickLength: 0}, ticks: {font: {size: 10, family: 'Inter', weight: '600'}, color: '#64748b', padding: 8, maxTicksLimit: 5} }, x: { border: {display: false}, grid: {display: false}, ticks: {font: {size: 10, family: 'Inter', weight: '700'}, color: '#475569', padding: 6, maxRotation:45, minRotation:0} } }
+                    scales: isPie ? {} : { y: { display: true, beginAtZero: true, border: {display: false}, grid: {color: '#e2e8f0', drawBorder: false, borderDash: [4, 4], tickLength: 0}, ticks: {font: {size: 9, family: 'Inter', weight: '600'}, color: '#64748b', padding: 6, maxTicksLimit: 5} }, x: { border: {display: false}, grid: {display: false}, ticks: {font: {size: 9, family: 'Inter', weight: '700'}, color: '#475569', padding: 4, maxRotation:45, minRotation:0} } }
                 }
             });
         }
@@ -2183,7 +2200,7 @@
 
         function exportCleanDataCSV(btnElement) {
             if(!globalExtractedData || globalExtractedData.length === 0) return showNotification("Belum ada data untuk diunduh.", "error");
-            const originalHTML = btnElement.innerHTML; btnElement.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin shrink-0"></i> Mengekstrak...`; btnElement.disabled = true; lucide.createIcons();
+            const originalHTML = btnElement.innerHTML; btnElement.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin shrink-0"></i> Mengekstrak...`; btnElement.disabled = true; lucide.createIcons();
             setTimeout(() => {
                 let csvContent = "data:text/csv;charset=utf-8,";
                 globalExtractedData.forEach(rowArray => { let row = rowArray.map(cell => `"${String(cell !== undefined ? cell : '').replace(/"/g, '""')}"`).join(","); csvContent += row + "\r\n"; });
@@ -2211,7 +2228,6 @@
                     dominantCategory: catCols.length > 0 ? catCols[0].mode : '-'
                 };
                 
-                // Menginstruksikan backend untuk mengembalikan 7-8 aksi dan isi dari 4 kartu
                 const payloadContext = `Industri: ${industryContext}. Kolom Penting: ${globalHeaders.join(', ')}. WAJIB sertakan 7-8 insights tindakan eksekutif murni, dan isi analisis data untuk 4 kartu (metric, segment, correlation, volatility).`;
 
                 const response = await fetch(API_ENDPOINT, {
@@ -2232,23 +2248,21 @@
                 }
             } catch (e) {}
 
-            // Mengisi Teks pada ke 4 Flip Cards murni dari AI (Req 2)
             if (isBackendSuccess && cardsData) {
-                document.getElementById('metric-insight-text').innerHTML = cardsData.metric || 'Data analisis performa belum tersedia.';
-                document.getElementById('segment-insight-text').innerHTML = cardsData.segment || 'Data analisis segmen belum tersedia.';
-                document.getElementById('correlation-insight-text').innerHTML = cardsData.correlation || 'Data analisis korelasi belum tersedia.';
-                document.getElementById('volatility-insight-text').innerHTML = cardsData.volatility || 'Data analisis volatilitas belum tersedia.';
+                document.getElementById('metric-insight-text').innerHTML = cardsData.metric || 'Data performa belum tersedia.';
+                document.getElementById('segment-insight-text').innerHTML = cardsData.segment || 'Data segmen belum tersedia.';
+                document.getElementById('correlation-insight-text').innerHTML = cardsData.correlation || 'Data korelasi belum tersedia.';
+                document.getElementById('volatility-insight-text').innerHTML = cardsData.volatility || 'Data volatilitas belum tersedia.';
             } else {
-                const errText = "Gagal memuat analisis murni dari AI. Mohon pastikan API berfungsi dengan baik.";
+                const errText = "Gagal memuat analisis. Pastikan koneksi internet stabil.";
                 document.getElementById('metric-insight-text').innerText = errText;
                 document.getElementById('segment-insight-text').innerText = errText;
                 document.getElementById('correlation-insight-text').innerText = errText;
                 document.getElementById('volatility-insight-text').innerText = errText;
             }
 
-            // Tindakan Eksekutif Murni 100% tanpa teks template (Req 1)
             if (!isBackendSuccess || insights.length === 0) {
-                insights = ["Sistem gagal menarik cetak biru tindakan eksekutif dari AI. Mohon ulangi analisis atau periksa koneksi backend Anda."];
+                insights = ["Sistem gagal menarik cetak biru tindakan eksekutif. Mohon ulangi analisis atau periksa koneksi Anda."];
             }
 
             document.getElementById('insights-loader').classList.add('hidden');
@@ -2261,9 +2275,9 @@
                 if(isDash) return; 
 
                 inHTML += `
-                    <li class="flex gap-3 items-start p-3 rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
-                        <div class="mt-0.5 shrink-0"><i data-lucide="check-circle" class="w-4 h-4 text-brand-600"></i></div>
-                        <span class="text-[11px] sm:text-xs font-semibold text-slate-700 leading-relaxed typewriter-target" id="ins-${i}"></span>
+                    <li class="flex gap-2.5 sm:gap-3 items-start p-2.5 sm:p-3 rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
+                        <div class="mt-0.5 shrink-0"><i data-lucide="check-circle" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-600"></i></div>
+                        <span class="text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-700 leading-relaxed typewriter-target" id="ins-${i}"></span>
                     </li>`;
             });
             setHTML('insights-list', inHTML);
@@ -2274,7 +2288,7 @@
                 if(ins.trim() === "-") return;
                 setTimeout(() => { 
                     const t = document.getElementById(`ins-${i}`); 
-                    if(t) typeWriterEffect(t, ins, 10); // Mengetik lebih cepat karena itemnya ada 7-8
+                    if(t) typeWriterEffect(t, ins, 10);
                 }, displayIndex * 400); 
                 displayIndex++;
             });
@@ -2329,7 +2343,7 @@
                             if(!uniqueSet.has(str) && str.replace(/\|/g, '').trim() !== "") { uniqueSet.add(str); cleanDataArr.push(globalExtractedData[i]); } 
                         }
                         let removed = initialRows - (cleanDataArr.length - 1); globalExtractedData = cleanDataArr;
-                        showNotification(`Berhasil menghapus ${removed.toLocaleString('id-ID')} baris data yang kembar.`, "success");
+                        showNotification(`Berhasil menghapus ${removed.toLocaleString('id-ID')} baris data.`, "success");
                     }
                     const input = document.getElementById('table-search');
                     if(input) initFilterView(input.value); 
@@ -2351,7 +2365,7 @@
             chatBox.innerHTML += `
                 <div class="flex flex-col items-end w-full mb-2 animate-[fadeInUp_0.3s_ease-out]">
                     <div class="chat-bubble chat-bubble-user shadow-sm">
-                        <p class="text-[11px] sm:text-xs font-semibold text-slate-800">${msg}</p>
+                        <p class="text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-800">${msg}</p>
                     </div>
                 </div>`;
             input.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
@@ -2360,7 +2374,7 @@
             const typingId = 'typing-' + Date.now();
             chatBox.innerHTML += `
                 <div class="flex flex-col items-start w-full mb-2" id="${typingId}">
-                    <div class="chat-bubble chat-bubble-ai shadow-sm flex items-center justify-center h-8 sm:h-10 px-6 typing-indicator">
+                    <div class="chat-bubble chat-bubble-ai shadow-sm flex items-center justify-center h-8 sm:h-10 px-4 sm:px-6 typing-indicator">
                         <div class="uiverse-loader" style="transform: scale(0.35); margin-top: -15px; --animation: 1.5s ease-in-out infinite;">
                             <div class="circle"><div class="dot"></div><div class="outline"></div></div>
                             <div class="circle"><div class="dot"></div><div class="outline"></div></div>
@@ -2396,7 +2410,7 @@
                 chatBox.innerHTML += `
                     <div class="flex flex-col items-start w-full mb-2 animate-[fadeInUp_0.4s_ease-out]">
                         <div class="chat-bubble chat-bubble-ai shadow-sm">
-                            <p class="text-[11px] sm:text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-wrap" id="${replyId}"></p>
+                            <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-wrap" id="${replyId}"></p>
                         </div>
                     </div>`;
                 
@@ -2409,7 +2423,7 @@
                 let fallbackReply = `Permintaan Anda: " ${msg} " sudah saya terima.\n\nData ini memiliki total ${(globalExtractedData.length - 1).toLocaleString('id-ID')} baris dengan nilai kesehatan ${currentReportData?.overallHealthScore || 100} persen. Apakah ada bagian spesifik yang ingin diubah?`;
                 
                 if (msg.toLowerCase().includes('ringkas') || msg.toLowerCase().includes('summary') || msg.toLowerCase().includes('rangkum')) {
-                    fallbackReply = `Baik, mari kita buat sesederhana mungkin:\nData Anda sangat sehat (mencapai ${currentReportData?.overallHealthScore || 100} persen). Anda punya total ${(globalExtractedData.length - 1).toLocaleString('id-ID')} catatan. Fokus utama Anda sebaiknya ditaruh pada saran tindakan di panel Executive Action agar kerja Anda lebih efektif.`;
+                    fallbackReply = `Baik, mari kita buat sesederhana mungkin:\nData Anda sangat sehat (mencapai ${currentReportData?.overallHealthScore || 100} persen). Anda punya total ${(globalExtractedData.length - 1).toLocaleString('id-ID')} catatan. Fokus utama Anda sebaiknya ditaruh pada saran tindakan di panel Tindakan Eksekutif agar kerja Anda lebih efektif.`;
                 } else if (msg.toLowerCase().includes('saran') || msg.toLowerCase().includes('meningkatkan') || msg.toLowerCase().includes('efisiensi')) {
                     fallbackReply = `Saran paling jitu untuk saat ini: Lihat kolom kategori yang dominan. Sebagian besar kejadian Anda menumpuk di sana. Pindahkan tenaga tim Anda ke sana, dan bersihkan ${currentReportData?.scorecards[3]?.value || 0} angka yang aneh, maka operasional Anda akan langsung melesat!`;
                 }
@@ -2418,7 +2432,7 @@
                 chatBox.innerHTML += `
                     <div class="flex flex-col items-start w-full mb-2 animate-[fadeInUp_0.4s_ease-out]">
                         <div class="chat-bubble chat-bubble-ai shadow-sm">
-                            <p class="text-[11px] sm:text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-wrap" id="${fallbackId}"></p>
+                            <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-wrap" id="${fallbackId}"></p>
                         </div>
                     </div>`;
                 
@@ -2438,7 +2452,7 @@
             const n = document.getElementById('notification'); const i = document.getElementById('notification-icon');
             let iconColor = type === 'error' ? 'text-rose-400' : (type === 'warning' ? 'text-amber-400' : (type === 'info' ? 'text-blue-400' : 'text-emerald-400'));
             let iconName = type === 'error' ? 'alert-circle' : (type === 'warning' ? 'alert-triangle' : (type === 'info' ? 'info' : 'check-circle'));
-            i.className = `w-4 h-4 shrink-0 ${iconColor}`; i.setAttribute('data-lucide', iconName); document.getElementById('notification-text').innerText = msg; 
+            i.className = `w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 ${iconColor}`; i.setAttribute('data-lucide', iconName); document.getElementById('notification-text').innerText = msg; 
             n.classList.remove('hidden', 'opacity-0', '-translate-y-4'); n.classList.add('opacity-100', 'translate-y-0'); lucide.createIcons();
             setTimeout(() => { n.classList.remove('opacity-100', 'translate-y-0'); n.classList.add('opacity-0', '-translate-y-4'); setTimeout(() => n.classList.add('hidden'), 400); }, 4500);
         }
