@@ -1,8 +1,8 @@
 {
   "name": "dazer-analytics",
   "version": "1.0.0",
-  "description": "Backend dependencies untuk Netlify Functions Dazer Analytics",
-  "main": "index.html",
+  "description": "Backend dependencies untuk Netlify Functions Dazer Analytics (DeepSeek & Groq)",
+  "main": "index.js",
   "engines": {
     "node": ">=18.0.0"
   },
@@ -12,7 +12,10 @@
   "keywords": [
     "analytics",
     "ai",
-    "netlify"
+    "netlify",
+    "deepseek",
+    "groq",
+    "tavily"
   ],
   "author": "Faqih Al Rifai",
   "license": "ISC",
