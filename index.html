@@ -314,7 +314,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            --color: #111111; /* Warna Hitam Original */
+            --color: #111111; 
             --animation: 2s ease-in-out infinite;
         }
         .uiverse-loader .circle {
@@ -1504,9 +1504,9 @@
             document.getElementById('loading-state').classList.remove('hidden');
 
             let texts = [
-                "Menyiapkan bahan (Docling & Unstructured)...", 
-                "Menganalisis secara mendalam (DeepSeek)...", 
-                "Merangkum laporan eksekutif (Gemini)...", 
+                "Menyiapkan bahan data mentah...", 
+                "Menganalisis pola dan anomali (DeepSeek)...", 
+                "Menyusun laporan eksekutif (DeepSeek)...", 
                 "Menyiapkan asisten interaktif (Groq + Tavily)...", 
                 "Menyajikan visualisasi data..."
             ];
@@ -1900,7 +1900,7 @@
                  document.getElementById('prediction-card').style.display = 'none';
             }
 
-            // Panggil API Backend (Gemini + DeepSeek)
+            // Panggil API Backend (DeepSeek)
             getAIInsights({ numRows, overallHealthScore, completenessPct, qualityPct, anomalies: outlierCountTotal }, setupIndustry, primaryNumericCol, catCols);
         }
 
