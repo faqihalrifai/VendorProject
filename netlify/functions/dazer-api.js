@@ -98,7 +98,7 @@ Durasi Tahan : ${body.holdDuration || '-'}`;
 
             if (!groqKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API Groq belum dimasukkan di Netlify."], cards: null }) };
 
-            // Prompt telah diubah agar meminta analisis yang sangat mendalam dan panjang
+            // Prompt telah diubah agar meminta analisis yang mendalam dan panjang
             const systemPrompt = `Kamu analis data Dazer AI. Analisis: ${userContext}.
 MENGEMBALIKAN OUTPUT DALAM FORMAT JSON MURNI:
 {
@@ -111,8 +111,8 @@ MENGEMBALIKAN OUTPUT DALAM FORMAT JSON MURNI:
   }
 }
 ATURAN:
-1. "insights" harus 7 poin tindakan eksekutif. Penjelasan harus komprehensif, strategis, dan solutif.
-2. "cards" berikan analisis yang mendalam, panjang, logis, dan profesional (jangan terlalu ringkas).
+1. "insights" harus 7 poin tindakan eksekutif. Masing-masing WAJIB terdiri dari 3 kalimat penjelasan yang komprehensif, strategis, solutif, mudah dipahami, dan tidak membingungkan.
+2. "cards" berikan analisis yang jelas dan padat, Masing-masing WAJIB cukup 2 kalimat saja.
 3. HANYA OUTPUT JSON MURNI. Dilarang memberi penjelasan di luar JSON.`;
 
             try {
@@ -126,7 +126,7 @@ ATURAN:
                             { role: 'user', content: `Data: ${data}` }
                         ], 
                         temperature: 0.3, // Dinaikkan sedikit dari 0.1 agar bahasanya lebih luwes dan panjang
-                        max_tokens: 2500, // Token diperbesar menjadi 2500 agar AI bisa menulis panjang lebar untuk card
+                        max_tokens: 2500, // Token diperbesar menjadi 2500 agar AI bisa menulis panjang lebar
                         response_format: { type: "json_object" } 
                     })
                 });
