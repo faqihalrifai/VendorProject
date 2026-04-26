@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD & AI Strategist (V8 - Full Groq, Anti-Spam & Detail Analysis)
+// dazer-api.js - Backend KDD (V9 - Multi-API: DeepSeek, Groq, Gemini, Wolfram, Tavily)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -18,23 +18,21 @@ exports.handler = async (event, context) => {
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "CORS Preflight OK" }) };
     if (event.httpMethod !== 'POST') return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: 'Method Not Allowed' }) };
 
-    // --- ANTI-SPAM & ANTI-BOROS TOKEN BERBASIS IP ---
+    // --- ANTI-SPAM BERBASIS IP ---
     const clientIp = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown-ip';
     const currentTime = Date.now();
     const limitData = rateLimitMap.get(clientIp) || { count: 0, firstRequest: currentTime };
     
-    // Reset limit setiap 10 menit (600.000 ms)
     if (currentTime - limitData.firstRequest > 600000) { 
         limitData.count = 1; limitData.firstRequest = currentTime; 
     } else {
         limitData.count += 1;
-        // Maksimal 15 request per 10 menit per IP
-        if (limitData.count > 15) { 
+        if (limitData.count > 20) { 
             return { 
                 statusCode: 200, headers: corsHeaders, 
                 body: JSON.stringify({ 
-                    reply: "Sistem mendeteksi lalu lintas tinggi dari perangkat Anda. Untuk menghemat sumber daya, mohon jeda 10 menit.", 
-                    insights: ["Limit penggunaan sistem tercapai. Harap tunggu beberapa saat sebelum menganalisa kembali."], 
+                    reply: "Sistem mendeteksi lalu lintas tinggi. Mohon jeda 10 menit.", 
+                    insights: ["Limit sistem tercapai. Harap tunggu beberapa saat."], 
                     cards: null 
                 }) 
             };
@@ -47,42 +45,37 @@ exports.handler = async (event, context) => {
         try { body = JSON.parse(event.body); } 
         catch (err) { return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Format request ditolak." }) }; }
 
-        const { action, message, context: userContext, data } = body;
+        const { action, message, context: userContext, data, modelType, algorithm } = body;
 
         // ==========================================
-        // ACTION 1: SILENT LOGGER (EMAIL)
+        // ACTION 1: SILENT LOGGER (NODEMAILER)
         // ==========================================
         if (action === 'notify_upload' || (!action && body.sessionId && body.fileName)) {
             const emailPass = process.env.NODEMAILER_PASS; 
             if(emailPass) {
                 try {
-                    let transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'faqihalrf@gmail.com', pass: emailPass } });
+                    let transporter = nodemailer.createTransport({ 
+                        service: 'gmail', 
+                        auth: { user: 'dazer.help@gmail.com', pass: emailPass } 
+                    });
                     
-                    const emailContent = `=== DETAIL SESI & FILE ===
-Nama File    : ${body.fileName || '-'}
+                    const emailContent = `=== DETAIL SESI KDD ===
+File         : ${body.fileName || '-'}
 Ukuran       : ${body.size || '-'}
-File Hash    : ${body.fileHash || '-'}
-Kategori     : ${body.category || '-'}
 Dimensi Data : ${body.dataDimension || '-'}
-Daftar Kolom : ${body.columns || '-'}
-Teknik KDD   : ${body.miningTechnique || '-'}
+Sektor       : ${body.category || '-'}
 
 === INFO PERANGKAT & LOKASI ===
 ID Sesi      : ${body.sessionId || '-'}
 Perangkat    : ${body.device || '-'}
-Resolusi     : ${body.resolution || '-'}
-Baterai      : ${body.battery || '-'}
 IP Address   : ${body.ipAddress || '-'}
-ISP/Provider : ${body.isp || '-'}
 Lokasi       : ${body.location || '-'}
-Tipe Koneksi : ${body.connection || '-'}
-Waktu Lokal  : ${body.localTime || '-'}
-Durasi Tahan : ${body.holdDuration || '-'}`;
+Waktu Lokal  : ${body.localTime || '-'}`;
 
                     await transporter.sendMail({ 
-                        from: '"Dazer KDD" <faqihalrf@gmail.com>', 
-                        to: "faqihalrf@gmail.com", 
-                        subject: `[DAZER] Aktivitas Baru: ${body.fileName || 'Data Upload'}`, 
+                        from: '"Dazer Intelligence" <dazer.help@gmail.com>', 
+                        to: "dazer.help@gmail.com", 
+                        subject: `[DAZER] Aktivitas KDD Baru: ${body.fileName || 'Data Upload'}`, 
                         text: emailContent 
                     });
                 } catch (e) { console.error("Email Error:", e.message); }
@@ -91,42 +84,28 @@ Durasi Tahan : ${body.holdDuration || '-'}`;
         }
 
         // ==========================================
-        // ACTION 2: ANALISA KDD UTAMA (GROQ LLAMA-3.3-70B)
+        // ACTION 2: ANALISA DASHBOARD (DEEPSEEK API)
         // ==========================================
         if (action === 'analyze_data') {
-            const groqKey = process.env.GROQ_API_KEY; 
+            const dsKey = process.env.DEEPSEEK_API_KEY; 
+            if (!dsKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API DeepSeek belum dikonfigurasi."], cards: null }) };
 
-            if (!groqKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API Groq belum dimasukkan di Netlify."], cards: null }) };
-
-            // Prompt telah diubah agar meminta analisis yang mendalam dan panjang
-            const systemPrompt = `Kamu analis data Dazer AI. Analisis: ${userContext}.
-MENGEMBALIKAN OUTPUT DALAM FORMAT JSON MURNI:
-{
-  "insights": ["aksi 1", "aksi 2", "aksi 3", "aksi 4", "aksi 5", "aksi 6", "aksi 7"],
-  "cards": {
-    "metric": "Jelaskan performa secara komprehensif berdasarkan angka di data...", 
-    "segment": "Jelaskan segmen secara detail...", 
-    "correlation": "Jelaskan korelasi antar variabel secara mendalam...", 
-    "volatility": "Jelaskan risiko dan volatilitas secara profesional..."
-  }
-}
-ATURAN:
-1. "insights" harus 7 poin tindakan eksekutif. Masing-masing WAJIB terdiri dari 3 kalimat penjelasan yang komprehensif, strategis, solutif, mudah dipahami, dan tidak membingungkan.
-2. "cards" berikan analisis yang jelas dan padat, Masing-masing WAJIB cukup 2 kalimat saja.
-3. HANYA OUTPUT JSON MURNI. Dilarang memberi penjelasan di luar JSON.`;
+            // SYSTEM PROMPT SANGAT RINGKAS (HEMAT TOKEN)
+            const systemPrompt = `Kamu AI Dazer. Konteks: ${userContext}. Jawab HANYA format JSON valid tanpa markdown teks luar:
+{"insights":["3 kalimat tindakan eksekutif.","3 kalimat... (total 7 poin)"],"cards":{"metric":"2 kalimat padat","segment":"2 kalimat padat","correlation":"2 kalimat padat","volatility":"2 kalimat padat"}}`;
 
             try {
-                const aiResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                // Memanggil DeepSeek Chat API
+                const aiResponse = await fetch('https://api.deepseek.com/chat/completions', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${groqKey}` },
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${dsKey}` },
                     body: JSON.stringify({ 
-                        model: 'llama-3.3-70b-versatile', 
+                        model: 'deepseek-chat', 
                         messages: [
                             { role: 'system', content: systemPrompt }, 
-                            { role: 'user', content: `Data: ${data}` }
+                            { role: 'user', content: `Statistik Data Lokal: ${data}` }
                         ], 
-                        temperature: 0.3, // Dinaikkan sedikit dari 0.1 agar bahasanya lebih luwes dan panjang
-                        max_tokens: 2500, // Token diperbesar menjadi 2500 agar AI bisa menulis panjang lebar
+                        temperature: 0.2, 
                         response_format: { type: "json_object" } 
                     })
                 });
@@ -144,26 +123,25 @@ ATURAN:
                     const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
                     parsedData = JSON.parse(jsonMatch ? jsonMatch[0] : textResponse);
                     if (Array.isArray(parsedData.insights)) {
-                        parsedData.insights = parsedData.insights.map(item => cleanMarkdown(item)).filter(i => i.trim().length > 5).slice(0, 8);
+                        parsedData.insights = parsedData.insights.map(item => cleanMarkdown(item)).filter(i => i.trim().length > 5).slice(0, 7);
                     }
                 } catch (err) {}
 
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsedData) };
 
             } catch (apiErr) {
-                console.error("!!! GROQ ANALYZER ERROR !!!", apiErr.message);
+                console.error("!!! DEEPSEEK ANALYZER ERROR !!!", apiErr.message);
                 return { 
                     statusCode: 200, headers: corsHeaders, 
                     body: JSON.stringify({ 
-                        insights: ["⚠️ SISTEM AI MENGALAMI KENDALA TEKNIS", `Pesan: ${apiErr.message}`], 
-                        cards: null 
+                        insights: ["⚠️ SISTEM AI MENGALAMI KENDALA", `Pesan: ${apiErr.message}`], cards: null 
                     }) 
                 };
             }
         }
 
         // ==========================================
-        // ACTION 3: CHATBOT (GROQ + TAVILY AI ASSISTANT)
+        // ACTION 3: CHATBOT (GROQ + TAVILY)
         // ==========================================
         if (action === 'chat') {
             const groqKey = process.env.GROQ_API_KEY;
@@ -172,26 +150,25 @@ ATURAN:
             if (!groqKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Error: API Groq belum dikonfigurasi." }) };
 
             let internetContext = "";
-            const needsInternet = message.toLowerCase().match(/(pasar|berita|tren|luar|bandingkan|saat ini|sekarang|2026|2027|harga|apa|siapa|kapan|dimana|kenapa|bagaimana|terbaru|hari ini)/);
+            const needsInternet = message.toLowerCase().match(/(pasar|berita|tren|luar|bandingkan|sekarang|2026|harga|apa|siapa|terbaru|hari ini)/);
             
             if (needsInternet && tvlyKey) {
                 try {
                     const tvlyRes = await fetch('https://api.tavily.com/search', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ api_key: tvlyKey, query: message, search_depth: "basic", max_results: 2 }) // HEMAT: Turunkan hasil internet
+                        body: JSON.stringify({ api_key: tvlyKey, query: message, search_depth: "basic", max_results: 1 }) // HEMAT: Max 1 hasil
                     });
                     if (tvlyRes.ok) {
                         const tvlyData = await tvlyRes.json();
-                        if (tvlyData && tvlyData.results) internetContext = `\n[Internet Info: ${JSON.stringify(tvlyData.results)}]`;
+                        if (tvlyData && tvlyData.results) internetContext = `[NetInfo: ${JSON.stringify(tvlyData.results)}]`;
                     }
                 } catch(e) {}
             }
 
-            const universalSystemPrompt = `Kamu adalah Dazer AI. Jangan pakai markdown.
-Jawab dengan SANGAT SINGKAT, PADAT, dan TEPAT SASARAN (Maksimal 3-4 kalimat).
-Konteks File: ${userContext}
-${internetContext}`;
+            // PROMPT RINGKAS
+            const universalSystemPrompt = `Dazer AI. Jawab maks 3 kalimat padat. Tanpa markdown bintang.
+Konteks: ${userContext} ${internetContext}`;
 
             try {
                 const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -200,22 +177,62 @@ ${internetContext}`;
                     body: JSON.stringify({ 
                         model: 'llama-3.3-70b-versatile', 
                         messages: [{ role: 'system', content: universalSystemPrompt }, { role: 'user', content: message }], 
-                        temperature: 0.5,
-                        max_tokens: 250 // Batasi jawaban Chatbot maksimal 250 token agar responnya cepat
+                        temperature: 0.4,
+                        max_tokens: 200 // Hemat Token Chat
                     })
                 });
-
-                if (!groqResponse.ok) {
-                    const errBody = await groqResponse.text();
-                    throw new Error(`HTTP ${groqResponse.status} - ${errBody}`);
-                }
 
                 const groqData = await groqResponse.json();
                 let reply = cleanMarkdown(groqData.choices?.[0]?.message?.content || "Sistem telah memproses instruksi.");
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply }) };
             } catch (chatErr) {
-                console.error("!!! GROQ CHATBOT ERROR !!!", chatErr.message);
-                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: `⚠️ Error Chatbot: ${chatErr.message}` }) };
+                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: `⚠️ Error Chat: ${chatErr.message}` }) };
+            }
+        }
+
+        // ==========================================
+        // ACTION 4: MODELING LAB (GEMINI + WOLFRAM)
+        // Disiapkan untuk halaman model.html
+        // ==========================================
+        if (action === 'run_model') {
+            const geminiKey = process.env.GEMINI_API_KEY;
+            const wolframId = process.env.WOLFRAM_APP_ID;
+
+            if (!geminiKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "API Gemini belum dikonfigurasi." }) };
+
+            let mathValidation = "";
+            // Simulasi Perhitungan Matematis Presisi via Wolfram Alpha jika APP ID tersedia
+            if (wolframId && modelType === 'Clustering') {
+                try {
+                    const wolframQ = encodeURIComponent(`k-means clustering definition and formula`);
+                    const wRes = await fetch(`http://api.wolframalpha.com/v1/result?appid=${wolframId}&i=${wolframQ}`);
+                    if (wRes.ok) mathValidation = await wRes.text();
+                } catch(e) {}
+            }
+
+            // Prompt untuk Gemini 1.5 Flash
+            const prompt = `Lakukan simulasi Data Mining.
+Teknik: ${modelType}
+Algoritma: ${algorithm}
+Hitungan Wolfram: ${mathValidation}
+Data User: ${data}
+Evaluasi pola ini dan berikan output narasi hasil evaluasi akurasi/pembagian datanya secara saintifik.`;
+
+            try {
+                const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+
+                const geminiData = await geminiRes.json();
+                const modelResult = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "Model gagal dikalkulasi.";
+
+                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: modelResult }) };
+            } catch (geminiErr) {
+                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: geminiErr.message }) };
             }
         }
 
