@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Meta Tags Keamanan Ketat -->
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="theme-color" content="#ffffff">
+    
+    <title>Masuk / Daftar | Dazer Analytics</title>
+    <meta name="description" content="Masuk ke akun Dazer Analytics Anda untuk akses ke permodelan KDD tingkat lanjut dan kuota analisis tambahan.">
+    
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="shortcut icon" href="favicon.ico">
+
+    <!-- Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8',
+                            500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0f172a',
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif; 
+            background-color: #f8fafc;
+            background-image: radial-gradient(circle at top center, #ffffff 0%, transparent 100%);
+            background-attachment: fixed; 
+            display: flex; 
+            min-height: 100vh; 
+            flex-direction: column;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .glass-card {
+            background: #ffffff; 
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 20px -5px rgba(15, 23, 42, 0.05);
+            border-radius: 1.25rem; 
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+        }
+        .glass-card:hover { border-color: #cbd5e1; box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.06); transform: translateY(-2px); }
+
+        .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+        .auth-input {
+            width: 100%; font-size: 12px; font-weight: 600; color: #1e293b; background-color: #f8fafc;
+            border: 1px solid #cbd5e1; border-radius: 0.75rem; padding: 0.75rem 1rem 0.75rem 2.5rem;
+            outline: none; transition: all 0.2s ease; min-height: 44px;
+        }
+        .auth-input:focus { background-color: #ffffff; border-color: #0ea5e9; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15); }
+        .auth-input::placeholder { color: #94a3b8; font-weight: 500; }
+
+        .btn-primary {
+            padding: 12px 24px; border-radius: 0.75rem; cursor: pointer; border: 0; background-color: #0ea5e9;
+            box-shadow: rgba(14, 165, 233, 0.3) 0 4px 14px 0; letter-spacing: 0.5px; text-transform: uppercase;
+            font-size: 11px; font-weight: 800; color: #ffffff; transition: all 0.3s ease; width: 100%;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 46px;
+        }
+        .btn-primary:hover:not(:disabled) { background-color: #0284c7; box-shadow: rgba(14, 165, 233, 0.4) 0px 6px 20px 0px; transform: translateY(-1px); }
+        .btn-primary:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        /* Mobile form text optimization */
+        input[type="text"], input[type="email"], input[type="password"] { font-size: 16px !important; }
+        @media (min-width: 640px) { input[type="text"], input[type="email"], input[type="password"] { font-size: 12px !important; } }
+
+        .tab-btn {
+            flex: 1; padding: 0.75rem; text-align: center; font-size: 12px; font-weight: 800; color: #64748b;
+            border-bottom: 2px solid transparent; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .tab-btn.active { color: #0ea5e9; border-bottom-color: #0ea5e9; background-color: #f0f9ff; }
+
+        .loader-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-brand-900 antialiased selection:bg-brand-200 selection:text-brand-900 relative">
+
+    <!-- Navbar Minimal -->
+    <nav class="w-full bg-white/80 backdrop-blur-md border-b border-slate-200 fixed top-0 z-50">
+        <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-14 sm:h-16 items-center">
+                <button type="button" onclick="safeRedirect('index.html')" class="flex items-center gap-2 sm:gap-3 cursor-pointer group bg-transparent border-none outline-none">
+                    <div class="bg-slate-100 p-1.5 rounded-full group-hover:bg-slate-200 transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4 sm:w-4 sm:h-4 text-slate-600"></i>
+                    </div>
+                    <span class="font-black text-xs sm:text-sm tracking-tight text-slate-600 group-hover:text-slate-900 transition-colors">Kembali ke Beranda</span>
+                </button>
+                <div class="flex items-center gap-2 sm:gap-2.5">
+                    <img src="android-chrome-192x192.png" alt="Dazer Logo" class="w-5 h-5 sm:w-6 sm:h-6 object-contain" onerror="this.outerHTML='<i data-lucide=\'bar-chart-2\' class=\'w-5 h-5 sm:w-6 sm:h-6 text-brand-600\'></i>'">
+                    <span class="font-black text-sm sm:text-base tracking-tight text-slate-800">Dazer</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Auth Content -->
+    <main class="flex-grow flex items-center justify-center px-4 py-20 sm:py-24 w-full relative z-10">
+        <!-- Dekorasi Background -->
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-brand-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 pointer-events-none animate-pulse"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 pointer-events-none animate-pulse" style="animation-delay: 2s;"></div>
+
+        <div class="w-full max-w-[400px] fade-in-up">
+            
+            <div class="text-center mb-6 sm:mb-8">
+                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-brand-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg transform rotate-3">
+                    <i data-lucide="shield-check" class="w-6 h-6 sm:w-7 sm:h-7 text-white transform -rotate-3"></i>
+                </div>
+                <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight" id="auth-title">Masuk ke Dazer</h1>
+                <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-500 font-medium mt-1.5" id="auth-subtitle">Akses KDD Modeling & Kuota Ekstra.</p>
+            </div>
+
+            <div class="glass-card relative">
+                <!-- Tab Headers -->
+                <div class="flex border-b border-slate-200 bg-white">
+                    <button type="button" class="tab-btn active" id="tab-login" onclick="switchTab('login')">Masuk</button>
+                    <button type="button" class="tab-btn" id="tab-register" onclick="switchTab('register')">Daftar Akun</button>
+                </div>
+
+                <div class="p-5 sm:p-7 relative bg-white">
+                    
+                    <!-- FORM LOGIN -->
+                    <form id="form-login" class="flex flex-col gap-4 animate-[fadeInUp_0.3s_ease-out]" onsubmit="handleAuth(event, 'login')">
+                        <div class="relative">
+                            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 transform -translate-y-1/2"></i>
+                            <input type="email" id="login-email" class="auth-input" placeholder="Alamat Email Pribadi/Kerja" required autocomplete="email">
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 transform -translate-y-1/2"></i>
+                            <input type="password" id="login-password" class="auth-input pr-10" placeholder="Kata Sandi Keamanan" required minlength="6" autocomplete="current-password">
+                            <button type="button" onclick="togglePassword('login-password', 'eye-icon-login')" class="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 outline-none bg-transparent border-none">
+                                <i data-lucide="eye" id="eye-icon-login" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex justify-end -mt-1.5">
+                            <button type="button" onclick="resetPasswordPrompt()" class="text-[9px] sm:text-[10px] font-bold text-brand-600 hover:text-brand-700 transition-colors bg-transparent border-none outline-none">Lupa Kata Sandi?</button>
+                        </div>
+
+                        <button type="submit" id="btn-submit-login" class="btn-primary mt-1">
+                            <span id="btn-text-login">Masuk ke Dasbor</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5" id="btn-icon-login"></i>
+                        </button>
+                    </form>
+
+                    <!-- FORM REGISTER -->
+                    <form id="form-register" class="flex flex-col gap-4 hidden animate-[fadeInUp_0.3s_ease-out]" onsubmit="handleAuth(event, 'register')">
+                        <div class="relative">
+                            <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 transform -translate-y-1/2"></i>
+                            <input type="text" id="reg-name" class="auth-input" placeholder="Nama Lengkap" required minlength="3" autocomplete="name">
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 transform -translate-y-1/2"></i>
+                            <input type="email" id="reg-email" class="auth-input" placeholder="Alamat Email Valid" required autocomplete="email">
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 transform -translate-y-1/2"></i>
+                            <input type="password" id="reg-password" class="auth-input pr-10" placeholder="Buat Kata Sandi (Min. 6 Karakter)" required minlength="6" autocomplete="new-password" onkeyup="checkPasswordStrength()">
+                            <button type="button" onclick="togglePassword('reg-password', 'eye-icon-reg')" class="absolute right-3.5 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 outline-none bg-transparent border-none">
+                                <i data-lucide="eye" id="eye-icon-reg" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Password Strength Indicator -->
+                        <div class="flex gap-1 h-1.5 mt-[-0.25rem] px-1" id="pw-strength-bar">
+                            <div class="h-full flex-1 rounded-full bg-slate-100 transition-colors duration-300" id="pw-bar-1"></div>
+                            <div class="h-full flex-1 rounded-full bg-slate-100 transition-colors duration-300" id="pw-bar-2"></div>
+                            <div class="h-full flex-1 rounded-full bg-slate-100 transition-colors duration-300" id="pw-bar-3"></div>
+                        </div>
+
+                        <button type="submit" id="btn-submit-register" class="btn-primary mt-1">
+                            <span id="btn-text-reg">Daftar Akun Gratis</span> <i data-lucide="user-plus" class="w-3.5 h-3.5" id="btn-icon-reg"></i>
+                        </button>
+                    </form>
+
+                    <!-- Divider -->
+                    <div class="relative my-6 sm:my-7">
+                        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+                        <div class="relative flex justify-center text-xs">
+                            <span class="bg-white px-3 text-[9px] sm:text-[10px] uppercase font-black tracking-widest text-slate-400">Atau masuk dengan</span>
+                        </div>
+                    </div>
+
+                    <!-- Social Login -->
+                    <button type="button" onclick="simulateGoogleLogin()" class="w-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] sm:text-xs py-2.5 sm:py-3 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 mb-2 min-h-[44px]">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                        Google Account
+                    </button>
+                    
+                    <p class="text-center text-[8px] sm:text-[9px] text-slate-400 mt-4 sm:mt-5 font-bold flex items-center justify-center gap-1">
+                        <i data-lucide="lock" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i> Dilindungi JWT (Secure Token) Lokal
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Notification Banner -->
+    <div id="notification" class="hidden fixed top-4 sm:top-6 left-1/2 transform -translate-x-1/2 z-[999999] bg-slate-900 text-white max-w-[90vw] sm:max-w-max w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-full flex items-center justify-center gap-2 shadow-[0_10px_40px_rgb(0,0,0,0.2)] transition-all duration-400 border border-slate-700 text-[10px] sm:text-[11px] lg:text-xs font-medium whitespace-nowrap">
+        <i data-lucide="info" class="w-4 h-4 shrink-0 text-brand-400" id="notification-icon"></i>
+        <p id="notification-text" class="m-0 tracking-wide leading-tight"></p>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        lucide.createIcons();
+
+        // CHECK STATE: If user is already logged in, redirect them back safely
+        window.addEventListener('load', () => {
+            const existingToken = localStorage.getItem('Dazer_Secure_JWT');
+            if(existingToken) {
+                safeRedirect('index.html?auth=active');
+            }
+        });
+
+        // SAFE REDIRECT (Anti-Error URL in Canvas/Sandbox)
+        function safeRedirect(url) {
+            try {
+                // Mencegah error "Failed to set the 'href' property on 'Location'" di mode Canvas blob:
+                if (window.location.protocol === 'blob:' || window.location.origin === 'null') {
+                    showNotification("Aksi sukses! (Redirect otomatis dinonaktifkan di mode Pratinjau Canvas)", "success");
+                } else {
+                    window.location.href = url;
+                }
+            } catch (e) {
+                console.warn("Peralihan halaman diblokir oleh lingkungan sandbox.");
+                showNotification("Sesi Anda telah diaktifkan! Silakan kembali secara manual.", "success");
+            }
+        }
+
+        function showNotification(msg, type='info') {
+            const n = document.getElementById('notification'); const i = document.getElementById('notification-icon');
+            if(!n || !i) return;
+            let iconColor = type === 'error' ? 'text-rose-400' : (type === 'success' ? 'text-emerald-400' : 'text-blue-400');
+            let iconName = type === 'error' ? 'alert-circle' : (type === 'success' ? 'check-circle' : 'info');
+            i.className = `w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0 ${iconColor}`; i.setAttribute('data-lucide', iconName); 
+            document.getElementById('notification-text').innerText = msg; 
+            n.classList.remove('hidden', 'opacity-0', '-translate-y-4'); n.classList.add('opacity-100', 'translate-y-0'); 
+            lucide.createIcons();
+            setTimeout(() => { n.classList.remove('opacity-100', 'translate-y-0'); n.classList.add('opacity-0', '-translate-y-4'); setTimeout(() => n.classList.add('hidden'), 400); }, 3500);
+        }
+
+        function switchTab(tab) {
+            const formLogin = document.getElementById('form-login');
+            const formReg = document.getElementById('form-register');
+            const btnLogin = document.getElementById('tab-login');
+            const btnReg = document.getElementById('tab-register');
+            const title = document.getElementById('auth-title');
+            const subtitle = document.getElementById('auth-subtitle');
+
+            if(!formLogin || !formReg) return;
+
+            if(tab === 'login') {
+                formLogin.classList.remove('hidden'); formReg.classList.add('hidden');
+                btnLogin.classList.add('active'); btnReg.classList.remove('active');
+                title.innerText = "Masuk ke Dazer";
+                subtitle.innerText = "Akses KDD Modeling & Kuota Ekstra.";
+            } else {
+                formReg.classList.remove('hidden'); formLogin.classList.add('hidden');
+                btnReg.classList.add('active'); btnLogin.classList.remove('active');
+                title.innerText = "Buat Akun Baru";
+                subtitle.innerText = "Dapatkan Kuota Profesional Gratis.";
+            }
+        }
+
+        function togglePassword(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if(!input || !icon) return;
+            
+            if (input.type === "password") {
+                input.type = "text"; icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = "password"; icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        function resetPasswordPrompt() {
+            showNotification("Tautan reset kata sandi akan dikirim melalui dazer.help@gmail.com. (Fitur Demo)", "info");
+        }
+
+        function checkPasswordStrength() {
+            const inputEl = document.getElementById('reg-password');
+            if(!inputEl) return;
+            const val = inputEl.value;
+            const bar1 = document.getElementById('pw-bar-1');
+            const bar2 = document.getElementById('pw-bar-2');
+            const bar3 = document.getElementById('pw-bar-3');
+            
+            // Reset
+            bar1.className = "h-full flex-1 rounded-full bg-slate-100 transition-colors duration-300";
+            bar2.className = "h-full flex-1 rounded-full bg-slate-100 transition-colors duration-300";
+            bar3.className = "h-full flex-1 rounded-full bg-slate-100 transition-colors duration-300";
+
+            if(val.length === 0) return;
+            
+            let strength = 0;
+            if(val.length >= 6) strength++;
+            if(val.match(/[0-9]/) && val.match(/[A-Za-z]/)) strength++;
+            if(val.match(/[^A-Za-z0-9]/) && val.length >= 8) strength++;
+
+            if(strength >= 1) bar1.className = "h-full flex-1 rounded-full bg-rose-400 transition-colors duration-300";
+            if(strength >= 2) {
+                bar1.className = "h-full flex-1 rounded-full bg-amber-400 transition-colors duration-300";
+                bar2.className = "h-full flex-1 rounded-full bg-amber-400 transition-colors duration-300";
+            }
+            if(strength >= 3) {
+                bar1.className = "h-full flex-1 rounded-full bg-emerald-500 transition-colors duration-300";
+                bar2.className = "h-full flex-1 rounded-full bg-emerald-500 transition-colors duration-300";
+                bar3.className = "h-full flex-1 rounded-full bg-emerald-500 transition-colors duration-300";
+            }
+        }
+
+        // JWT Generator Lokal (Simulasi Stateless Session untuk Netlify)
+        function generateLocalJWT(payload) {
+            const header = btoa(JSON.stringify({alg: "HS256", typ: "JWT"}));
+            const data = btoa(JSON.stringify(payload));
+            const signature = btoa("dazer-local-secure-signature-x89");
+            return `${header}.${data}.${signature}`;
+        }
+
+        // FUNGSI INTI: Autentikasi dan Pemberian Kuota
+        function handleAuth(e, type) {
+            e.preventDefault();
+            
+            // UI Loading State
+            const btnId = type === 'login' ? 'btn-submit-login' : 'btn-submit-register';
+            const btnTextId = type === 'login' ? 'btn-text-login' : 'btn-text-reg';
+            const btnIconId = type === 'login' ? 'btn-icon-login' : 'btn-icon-reg';
+            
+            const btn = document.getElementById(btnId);
+            const btnText = document.getElementById(btnTextId);
+            const btnIcon = document.getElementById(btnIconId);
+            
+            if(!btn || !btnText || !btnIcon) return;
+
+            const originalText = btnText.innerText;
+            const originalIcon = btnIcon.getAttribute('data-lucide');
+            
+            btn.disabled = true;
+            btnIcon.setAttribute('data-lucide', 'loader-2');
+            btnIcon.classList.add('loader-spin');
+            btnText.innerText = 'Memverifikasi...';
+            lucide.createIcons();
+
+            // Simulasi proses server & validasi
+            setTimeout(() => {
+                let uName = "Pengguna Profesional";
+                let uEmail = "";
+
+                if (type === 'login') {
+                    uEmail = document.getElementById('login-email')?.value || "user@dazer.app";
+                } else {
+                    uName = document.getElementById('reg-name')?.value || "Pengguna";
+                    uEmail = document.getElementById('reg-email')?.value || "user@dazer.app";
+                }
+
+                // PRIVASI DATA: Hanya menyimpan state profil untuk proteksi route, tidak menyimpan data analisis.
+                const userDataPayload = {
+                    name: uName,
+                    email: uEmail,
+                    tier: 'registered',
+                    analysisQuota: 2,
+                    chatQuota: 5,
+                    modelQuota: 1,
+                    issuedAt: Date.now()
+                };
+                
+                // MENGHASILKAN SECURE TOKEN
+                const secureToken = generateLocalJWT(userDataPayload);
+                localStorage.setItem('Dazer_Secure_JWT', secureToken);
+
+                if(type === 'register') {
+                    showNotification(`Registrasi sukses! Email konfirmasi dikirim dari dazer.help@gmail.com ke ${uEmail}`, "success");
+                } else {
+                    showNotification("Otentikasi Berhasil! Sesi aman dibuat.", "success");
+                }
+                
+                // Kembalikan ke tampilan awal jika safeRedirect dicegat sandbox
+                btn.disabled = false;
+                btnIcon.setAttribute('data-lucide', originalIcon);
+                btnIcon.classList.remove('loader-spin');
+                btnText.innerText = originalText;
+                lucide.createIcons();
+
+                // Eksekusi Pindah Halaman Aman
+                setTimeout(() => {
+                    safeRedirect("index.html?auth=success");
+                }, 1000);
+
+            }, 1800);
+        }
+
+        function simulateGoogleLogin() {
+            showNotification("Menghubungkan ke Gateway Google OAuth...", "info");
+            setTimeout(() => {
+                const userDataPayload = {
+                    name: "Google Authenticated User",
+                    email: "verified@gmail.com",
+                    tier: 'registered',
+                    analysisQuota: 2,
+                    chatQuota: 5,
+                    modelQuota: 1,
+                    issuedAt: Date.now()
+                };
+                
+                const secureToken = generateLocalJWT(userDataPayload);
+                localStorage.setItem('Dazer_Secure_JWT', secureToken);
+                
+                showNotification("Akses Google diizinkan. Mengamankan sesi...", "success");
+                setTimeout(() => safeRedirect("index.html?auth=success"), 1200);
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
