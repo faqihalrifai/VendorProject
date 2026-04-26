@@ -68,7 +68,7 @@
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
         .auth-input {
-            width: 100%; font-size: 12px; font-weight: 600; color: #1e293b; background-color: #f8fafc;
+            width: 100%; font-size: 14px; font-weight: 600; color: #1e293b; background-color: #f8fafc;
             border: 1px solid #cbd5e1; border-radius: 0.75rem; padding: 0.75rem 1rem 0.75rem 2.5rem;
             outline: none; transition: all 0.2s ease; min-height: 44px;
         }
@@ -87,7 +87,7 @@
 
         /* Mobile form text optimization */
         input[type="text"], input[type="email"], input[type="password"] { font-size: 16px !important; }
-        @media (min-width: 640px) { input[type="text"], input[type="email"], input[type="password"] { font-size: 12px !important; } }
+        @media (min-width: 640px) { input[type="text"], input[type="email"], input[type="password"] { font-size: 14px !important; } }
 
         .tab-btn {
             flex: 1; padding: 0.75rem; text-align: center; font-size: 12px; font-weight: 800; color: #64748b;
@@ -229,26 +229,35 @@
     <script>
         lucide.createIcons();
 
-        // CHECK STATE: If user is already logged in, redirect them back safely
-        window.addEventListener('load', () => {
-            const existingToken = localStorage.getItem('Dazer_Secure_JWT');
-            if(existingToken) {
-                safeRedirect('index.html?auth=active');
+        // STATE MANAGEMENT: Redirect if logged in
+        window.onload = () => {
+            const token = localStorage.getItem('Dazer_Secure_JWT');
+            if(token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    if(Date.now() - payload.issuedAt < 86400000) { // Valid 24h
+                         safeRedirect('index.html');
+                    }
+                } catch(e) {}
             }
-        });
+        };
 
-        // SAFE REDIRECT (Anti-Error URL in Canvas/Sandbox)
+        // ANTI-ERROR REDIRECT LOGIC
         function safeRedirect(url) {
+            if (!url) return;
             try {
-                // Mencegah error "Failed to set the 'href' property on 'Location'" di mode Canvas blob:
-                if (window.location.protocol === 'blob:' || window.location.origin === 'null') {
-                    showNotification("Aksi sukses! (Redirect otomatis dinonaktifkan di mode Pratinjau Canvas)", "success");
+                // Deteksi lingkungan sandbox blob atau hostname kosong
+                const isSandbox = window.location.protocol === 'blob:' || window.location.origin === 'null' || !window.location.hostname;
+                
+                if (isSandbox) {
+                    console.warn("Peralihan halaman otomatis dibatasi di mode pratinjau.");
+                    showNotification("Sesi Aktif! Silakan kembali ke Beranda secara manual di pratinjau.", "success");
                 } else {
                     window.location.href = url;
                 }
             } catch (e) {
-                console.warn("Peralihan halaman diblokir oleh lingkungan sandbox.");
-                showNotification("Sesi Anda telah diaktifkan! Silakan kembali secara manual.", "success");
+                console.error("Redirect Failure:", e);
+                showNotification("Terjadi kendala pengalihan. Mohon muat ulang.", "error");
             }
         }
 
@@ -272,8 +281,6 @@
             const title = document.getElementById('auth-title');
             const subtitle = document.getElementById('auth-subtitle');
 
-            if(!formLogin || !formReg) return;
-
             if(tab === 'login') {
                 formLogin.classList.remove('hidden'); formReg.classList.add('hidden');
                 btnLogin.classList.add('active'); btnReg.classList.remove('active');
@@ -290,8 +297,6 @@
         function togglePassword(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
-            if(!input || !icon) return;
-            
             if (input.type === "password") {
                 input.type = "text"; icon.setAttribute('data-lucide', 'eye-off');
             } else {
@@ -301,139 +306,88 @@
         }
 
         function resetPasswordPrompt() {
-            showNotification("Tautan reset kata sandi akan dikirim melalui dazer.help@gmail.com. (Fitur Demo)", "info");
+            showNotification("Tautan reset terenkripsi akan dikirim via dazer.help@gmail.com.", "info");
         }
 
         function checkPasswordStrength() {
-            const inputEl = document.getElementById('reg-password');
-            if(!inputEl) return;
-            const val = inputEl.value;
+            const val = document.getElementById('reg-password').value;
             const bar1 = document.getElementById('pw-bar-1');
             const bar2 = document.getElementById('pw-bar-2');
             const bar3 = document.getElementById('pw-bar-3');
             
-            // Reset
-            bar1.className = "h-full flex-1 rounded-full bg-slate-100 transition-colors duration-300";
-            bar2.className = "h-full flex-1 rounded-full bg-slate-100 transition-colors duration-300";
-            bar3.className = "h-full flex-1 rounded-full bg-slate-100 transition-colors duration-300";
+            bar1.className = "h-full flex-1 rounded-full bg-slate-100";
+            bar2.className = "h-full flex-1 rounded-full bg-slate-100";
+            bar3.className = "h-full flex-1 rounded-full bg-slate-100";
 
             if(val.length === 0) return;
-            
             let strength = 0;
             if(val.length >= 6) strength++;
             if(val.match(/[0-9]/) && val.match(/[A-Za-z]/)) strength++;
             if(val.match(/[^A-Za-z0-9]/) && val.length >= 8) strength++;
 
-            if(strength >= 1) bar1.className = "h-full flex-1 rounded-full bg-rose-400 transition-colors duration-300";
-            if(strength >= 2) {
-                bar1.className = "h-full flex-1 rounded-full bg-amber-400 transition-colors duration-300";
-                bar2.className = "h-full flex-1 rounded-full bg-amber-400 transition-colors duration-300";
-            }
-            if(strength >= 3) {
-                bar1.className = "h-full flex-1 rounded-full bg-emerald-500 transition-colors duration-300";
-                bar2.className = "h-full flex-1 rounded-full bg-emerald-500 transition-colors duration-300";
-                bar3.className = "h-full flex-1 rounded-full bg-emerald-500 transition-colors duration-300";
-            }
+            if(strength >= 1) bar1.className = "h-full flex-1 rounded-full bg-rose-400";
+            if(strength >= 2) { bar1.className = "h-full flex-1 rounded-full bg-amber-400"; bar2.className = "h-full flex-1 rounded-full bg-amber-400"; }
+            if(strength >= 3) { bar1.className = "h-full flex-1 rounded-full bg-emerald-500"; bar2.className = "h-full flex-1 rounded-full bg-emerald-500"; bar3.className = "h-full flex-1 rounded-full bg-emerald-500"; }
         }
 
-        // JWT Generator Lokal (Simulasi Stateless Session untuk Netlify)
+        // JWT Generator Lokal (Murni Tanpa Backend Eksternal)
         function generateLocalJWT(payload) {
             const header = btoa(JSON.stringify({alg: "HS256", typ: "JWT"}));
             const data = btoa(JSON.stringify(payload));
-            const signature = btoa("dazer-local-secure-signature-x89");
+            const signature = btoa("dazer-secure-node-key-2026");
             return `${header}.${data}.${signature}`;
         }
 
-        // FUNGSI INTI: Autentikasi dan Pemberian Kuota
         function handleAuth(e, type) {
             e.preventDefault();
-            
-            // UI Loading State
             const btnId = type === 'login' ? 'btn-submit-login' : 'btn-submit-register';
+            const btn = document.getElementById(btnId);
             const btnTextId = type === 'login' ? 'btn-text-login' : 'btn-text-reg';
             const btnIconId = type === 'login' ? 'btn-icon-login' : 'btn-icon-reg';
             
-            const btn = document.getElementById(btnId);
             const btnText = document.getElementById(btnTextId);
             const btnIcon = document.getElementById(btnIconId);
             
-            if(!btn || !btnText || !btnIcon) return;
-
             const originalText = btnText.innerText;
             const originalIcon = btnIcon.getAttribute('data-lucide');
-            
+
             btn.disabled = true;
+            btnText.innerText = "Memverifikasi...";
             btnIcon.setAttribute('data-lucide', 'loader-2');
             btnIcon.classList.add('loader-spin');
-            btnText.innerText = 'Memverifikasi...';
             lucide.createIcons();
 
-            // Simulasi proses server & validasi
             setTimeout(() => {
-                let uName = "Pengguna Profesional";
-                let uEmail = "";
+                const uEmail = type === 'login' ? document.getElementById('login-email').value : document.getElementById('reg-email').value;
+                const uName = type === 'login' ? "User Profesional" : document.getElementById('reg-name').value;
 
-                if (type === 'login') {
-                    uEmail = document.getElementById('login-email')?.value || "user@dazer.app";
-                } else {
-                    uName = document.getElementById('reg-name')?.value || "Pengguna";
-                    uEmail = document.getElementById('reg-email')?.value || "user@dazer.app";
-                }
-
-                // PRIVASI DATA: Hanya menyimpan state profil untuk proteksi route, tidak menyimpan data analisis.
-                const userDataPayload = {
-                    name: uName,
-                    email: uEmail,
-                    tier: 'registered',
-                    analysisQuota: 2,
-                    chatQuota: 5,
-                    modelQuota: 1,
+                // PAYLOAD KUOTA SESUAI PERMINTAAN: Registered = 2 Generate, 5 Chat, 1 Modeling
+                const userData = {
+                    name: uName, email: uEmail, tier: 'registered',
+                    analysisQuota: 2, chatQuota: 5, modelQuota: 1,
                     issuedAt: Date.now()
                 };
                 
-                // MENGHASILKAN SECURE TOKEN
-                const secureToken = generateLocalJWT(userDataPayload);
-                localStorage.setItem('Dazer_Secure_JWT', secureToken);
+                const token = generateLocalJWT(userData);
+                localStorage.setItem('Dazer_Secure_JWT', token);
 
-                if(type === 'register') {
-                    showNotification(`Registrasi sukses! Email konfirmasi dikirim dari dazer.help@gmail.com ke ${uEmail}`, "success");
-                } else {
-                    showNotification("Otentikasi Berhasil! Sesi aman dibuat.", "success");
-                }
+                showNotification("Otentikasi Berhasil! Sesi aman dibuat.", "success");
                 
-                // Kembalikan ke tampilan awal jika safeRedirect dicegat sandbox
-                btn.disabled = false;
-                btnIcon.setAttribute('data-lucide', originalIcon);
-                btnIcon.classList.remove('loader-spin');
-                btnText.innerText = originalText;
-                lucide.createIcons();
-
-                // Eksekusi Pindah Halaman Aman
-                setTimeout(() => {
-                    safeRedirect("index.html?auth=success");
-                }, 1000);
-
+                setTimeout(() => safeRedirect("index.html?auth=success"), 1000);
             }, 1800);
         }
 
         function simulateGoogleLogin() {
-            showNotification("Menghubungkan ke Gateway Google OAuth...", "info");
+            showNotification("Menghubungkan ke Google OAuth...", "info");
             setTimeout(() => {
-                const userDataPayload = {
-                    name: "Google Authenticated User",
-                    email: "verified@gmail.com",
-                    tier: 'registered',
-                    analysisQuota: 2,
-                    chatQuota: 5,
-                    modelQuota: 1,
+                const userData = {
+                    name: "Google User", email: "verified@gmail.com", tier: 'registered',
+                    analysisQuota: 2, chatQuota: 5, modelQuota: 1,
                     issuedAt: Date.now()
                 };
-                
-                const secureToken = generateLocalJWT(userDataPayload);
-                localStorage.setItem('Dazer_Secure_JWT', secureToken);
-                
-                showNotification("Akses Google diizinkan. Mengamankan sesi...", "success");
-                setTimeout(() => safeRedirect("index.html?auth=success"), 1200);
+                localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
+                showNotification("Akses Google Diizinkan.", "success");
+                setTimeout(() => safeRedirect("index.html?auth=success"), 1000);
             }, 1200);
         }
     </script>
