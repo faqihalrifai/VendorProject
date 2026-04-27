@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V19 Final - Quad-Cloud + Dynamic URL Recovery)
+// dazer-api.js - Backend KDD (V20 Final - Quad-Cloud + Ultra-Clean Auth)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -94,32 +94,34 @@ FILE    : ${body.fileName || '-'} (${body.size || '-'})
         }
 
         // ============================================================
-        // ACTION 2: RESET PASSWORD (DYNAMIC URL DETECTION)
+        // ACTION 2: RESET PASSWORD (SIMPLE & CLEAN EMAIL)
         // ============================================================
         if (action === 'forgot_password') {
             if (emailPass && email) {
                 try {
                     let transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'dazer.help@gmail.com', pass: emailPass } });
                     
-                    // Deteksi Host secara dinamis agar tidak 404
                     const host = event.headers.host || "dazer-premium.netlify.app";
                     const protocol = (host.includes("localhost") || host.includes("127.0.0.1")) ? "http" : "https";
                     const link = `${protocol}://${host}/auth.html?reset=true&email=${encodeURIComponent(email)}`;
                     
                     await transporter.sendMail({ 
-                        from: '"Dazer Support" <dazer.help@gmail.com>', 
+                        from: '"Dazer" <dazer.help@gmail.com>', 
                         to: email, 
-                        subject: `Instruksi Pemulihan Akun Dazer`, 
-                        html: `<div style="font-family:sans-serif; max-width:500px; padding:30px; border:1px solid #e2e8f0; border-radius:15px; color:#1e293b; margin:auto;">
-                                <h2 style="color:#0ea5e9;">Halo Pengguna,</h2>
-                                <p>Klik tombol di bawah untuk mengatur ulang kata sandi Anda secara otomatis.</p>
-                                <div style="text-align:center; margin:30px 0;">
-                                    <a href="${link}" style="background:#0ea5e9; color:#fff; padding:12px 25px; text-decoration:none; border-radius:10px; font-weight:bold; display:inline-block;">Atur Ulang Sandi</a>
-                                </div>
-                                <p style="font-size:11px; color:#94a3b8; text-align:center;">Link ini hanya valid untuk situs: <b>${host}</b></p>
-                               </div>`
+                        subject: `Pulihkan Akun Dazer Anda`, 
+                        html: `
+                            <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; max-width:480px; margin:0 auto; padding:40px 20px; color:#334155;">
+                                <h1 style="font-size:24px; font-weight:800; color:#0f172a; margin-bottom:16px;">Pulihkan Akun</h1>
+                                <p style="font-size:15px; line-height:1.6; color:#64748b; margin-bottom:32px;">Klik tombol di bawah untuk mengatur ulang kata sandi Anda. Tautan ini akan segera membawa Anda ke halaman pemulihan aman.</p>
+                                <a href="${link}" style="display:inline-block; background-color:#0ea5e9; color:#ffffff; padding:14px 28px; border-radius:12px; font-weight:700; text-decoration:none; font-size:14px;">Atur Ulang Kata Sandi</a>
+                                <p style="font-size:12px; color:#94a3b8; margin-top:40px; border-top:1px solid #f1f5f9; padding-top:20px;">
+                                    Abaikan jika Anda tidak meminta ini.<br/>
+                                    Diterbitkan oleh Dazer Analytics untuk <b>${email}</b>
+                                </p>
+                            </div>
+                        `
                     });
-                    return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "Link pemulihan terkirim ke " + email }) };
+                    return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "Tautan pemulihan telah dikirim ke email." }) };
                 } catch (e) { return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "Gagal mengirim email." }) }; }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "Email tidak valid." }) };
