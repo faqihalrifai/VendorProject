@@ -113,7 +113,7 @@ Keluarkan HANYA format JSON valid tanpa markdown tambahan:
                 // Menggunakan Official Google SDK
                 const genAI = new GoogleGenerativeAI(geminiKey);
                 const model = genAI.getGenerativeModel({
-                    model: "gemini-1.5-flash",
+                    model: "gemini-1.5-flash-latest", // Update spesifik agar tidak 404
                     systemInstruction: systemPrompt
                 });
 
@@ -129,7 +129,8 @@ Keluarkan HANYA format JSON valid tanpa markdown tambahan:
                 
                 let parsedData = { insights: ["-"], cards: null };
                 try {
-                    parsedData = JSON.parse(textResponse);
+                    const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
+                    parsedData = JSON.parse(jsonMatch ? jsonMatch[0] : textResponse);
                     if (Array.isArray(parsedData.insights)) {
                         parsedData.insights = parsedData.insights.map(item => cleanMarkdown(item)).filter(i => i.trim().length > 5).slice(0, 7);
                     }
@@ -233,7 +234,7 @@ Berikan output narasi eksekutif tentang pola yang berhasil ditambang, hubunganny
             try {
                 // Menggunakan Official Google SDK
                 const genAI = new GoogleGenerativeAI(geminiKey);
-                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" }); // Update spesifik agar tidak 404
 
                 const result = await model.generateContent(prompt);
                 const modelResult = result.response.text() || "Model gagal dikalkulasi karena keterbatasan sampel data.";
