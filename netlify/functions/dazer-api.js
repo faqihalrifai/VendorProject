@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V10 - Native Fetch API, Anti-Cache Netlify)
+// dazer-api.js - Backend KDD (V11 - Native Fetch API, Final Fix 1.5 Series)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -88,19 +88,15 @@ Waktu Lokal  : ${body.localTime || '-'}`;
         // Mengerjakan Kartu Eksekutif & Ceklis Tindakan
         // ==========================================
         if (action === 'analyze_data') {
-            const geminiKey = (process.env.GEMINI_API_KEY || "").trim();
+            // Menggunakan Fallback Default Key sesuai instruksi
+            const geminiKey = (process.env.GEMINI_API_KEY || "gen-lang-client-0971690214").trim();
             
-            // Validasi Kunci API Super Ketat
-            if (!geminiKey || !geminiKey.startsWith("AIza")) { 
+            if (!geminiKey) { 
                 return { 
                     statusCode: 200, 
                     headers: corsHeaders, 
                     body: JSON.stringify({ 
-                        insights: [
-                            "⚠️ API Key Gemini Tidak Valid atau Kosong!", 
-                            "Key yang Anda masukkan salah.",
-                            "Silakan buat API Key yang asli (berawalan 'AIzaSy...') di Google AI Studio lalu simpan di Netlify."
-                        ], 
+                        insights: ["⚠️ API Key Gemini Kosong!"], 
                         cards: null 
                     }) 
                 }; 
@@ -144,15 +140,17 @@ Keluarkan HANYA format JSON valid tanpa markdown tambahan:
                     textResponse = data1.candidates?.[0]?.content?.parts?.[0]?.text;
 
                 } catch (err1) {
-                    console.warn("Flash HTTP gagal, beralih ke gemini-1.0-pro (Native)...", err1.message);
+                    console.warn("Flash HTTP gagal, beralih ke gemini-1.5-pro (Native)...", err1.message);
                     
-                    // PERCOBAAN 2: Tembakan Langsung HTTP Native ke Gemini 1.0 Pro (Bypass System Prompt JSON)
-                    const urlPro = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${geminiKey}`;
+                    // PERCOBAAN 2: Tembakan Langsung HTTP Native ke Gemini 1.5 Pro
+                    const urlPro = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiKey}`;
                     const res2 = await fetch(urlPro, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            contents: [{ role: 'user', parts: [{ text: systemPrompt + "\n\nStatistik Data Mentah:\n" + data }] }]
+                            systemInstruction: { parts: [{ text: systemPrompt }] },
+                            contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
+                            generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
                         })
                     });
                     
@@ -243,14 +241,14 @@ Konteks: ${userContext} ${internetContext}`;
         // Mengevaluasi hasil KDD dari model.html
         // ==========================================
         if (action === 'run_model') {
-            const geminiKey = (process.env.GEMINI_API_KEY || "").trim();
+            const geminiKey = (process.env.GEMINI_API_KEY || "gen-lang-client-0971690214").trim();
             const wolframId = process.env.WOLFRAM_APP_ID;
 
-            if (!geminiKey || !geminiKey.startsWith("AIza")) { 
+            if (!geminiKey) { 
                 return { 
                     statusCode: 200, 
                     headers: corsHeaders, 
-                    body: JSON.stringify({ error: "API Key Gemini Tidak Valid! Pastikan Key berawalan 'AIza'." }) 
+                    body: JSON.stringify({ error: "API Key Gemini Kosong!" }) 
                 }; 
             }
 
@@ -292,10 +290,10 @@ Berikan output narasi eksekutif tentang pola yang berhasil ditambang, hubunganny
                     modelResult = data1.candidates?.[0]?.content?.parts?.[0]?.text;
 
                 } catch (err1) {
-                    console.warn("Flash (Model) gagal, beralih ke gemini-1.0-pro (Native)...", err1.message);
+                    console.warn("Flash (Model) gagal, beralih ke gemini-1.5-pro (Native)...", err1.message);
                     
-                    // Percobaan 2 HTTP Native (Fallback Klasik)
-                    const urlPro = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${geminiKey}`;
+                    // Percobaan 2 HTTP Native (Fallback 1.5 Pro)
+                    const urlPro = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiKey}`;
                     const res2 = await fetch(urlPro, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
