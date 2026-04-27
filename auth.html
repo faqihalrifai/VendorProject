@@ -23,6 +23,9 @@
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- GOOGLE IDENTITY SERVICES (GSI) ASLI -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <script>
         tailwind.config = {
@@ -63,7 +66,6 @@
             overflow: hidden;
             position: relative;
         }
-        .glass-card:hover { border-color: #cbd5e1; box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.06); transform: translateY(-2px); }
 
         .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
@@ -94,7 +96,7 @@
             border-bottom: 2px solid transparent; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;
         }
         .tab-btn.active { color: #0ea5e9; border-bottom-color: #0ea5e9; background-color: #f0f9ff; }
-
+        
         .loader-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         
@@ -105,6 +107,15 @@
         @keyframes circle-keys { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.5); opacity: 0.5; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes dot-keys { 0% { transform: scale(1); } 50% { transform: scale(0); } 100% { transform: scale(1); } }
         @keyframes outline-keys { 0% { transform: scale(0); outline: solid 14px var(--color); outline-offset: 0; opacity: 1; } 100% { transform: scale(1); outline: solid 0 transparent; outline-offset: 14px; opacity: 0; } }
+
+        /* Google Button Fix Wrapper */
+        #google-button-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            min-height: 44px;
+        }
+        #google-button-container > div { width: 100% !important; }
     </style>
 </head>
 <body class="text-brand-900 antialiased selection:bg-brand-200 selection:text-brand-900 relative">
@@ -145,11 +156,12 @@
 
             <div class="glass-card bg-white">
                 
-                <!-- AUTO LOGIN OVERLAY (Ditampilkan otomatis jika sesi aktif) -->
+                <!-- AUTO LOGIN OVERLAY (Rolling Session 30 Hari) -->
                 <div id="auto-login-overlay" class="hidden flex-col items-center justify-center py-12 px-6 fade-in-up text-center min-h-[350px]">
                     <div class="relative mb-6">
-                        <div class="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center shadow-inner border border-brand-100 relative z-10">
-                            <i data-lucide="user-check" class="w-10 h-10 text-brand-500"></i>
+                        <div class="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center shadow-inner border border-brand-100 relative z-10 overflow-hidden">
+                            <img id="user-profile-pic" src="" alt="Profile" class="w-full h-full object-cover hidden">
+                            <i id="user-profile-icon" data-lucide="user-check" class="w-10 h-10 text-brand-500"></i>
                         </div>
                         <div class="absolute inset-0 bg-brand-400 rounded-full animate-ping opacity-20"></div>
                     </div>
@@ -175,8 +187,8 @@
 
                     <div class="p-5 sm:p-7 relative">
                         
-                        <!-- FORM LOGIN -->
-                        <form id="form-login" class="flex flex-col gap-4 animate-[fadeInUp_0.3s_ease-out]" onsubmit="handleAuth(event, 'login')">
+                        <!-- FORM LOGIN LOKAL (Fallback) -->
+                        <form id="form-login" class="flex flex-col gap-4 animate-[fadeInUp_0.3s_ease-out]" onsubmit="handleLocalAuth(event, 'login')">
                             <div class="relative">
                                 <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 transform -translate-y-1/2"></i>
                                 <input type="email" id="login-email" class="auth-input" placeholder="Alamat Email Pribadi/Kerja" required autocomplete="email">
@@ -202,8 +214,8 @@
                             </button>
                         </form>
 
-                        <!-- FORM REGISTER -->
-                        <form id="form-register" class="flex flex-col gap-4 hidden animate-[fadeInUp_0.3s_ease-out]" onsubmit="handleAuth(event, 'register')">
+                        <!-- FORM REGISTER LOKAL (Fallback) -->
+                        <form id="form-register" class="flex flex-col gap-4 hidden animate-[fadeInUp_0.3s_ease-out]" onsubmit="handleLocalAuth(event, 'register')">
                             <div class="relative">
                                 <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 transform -translate-y-1/2"></i>
                                 <input type="text" id="reg-name" class="auth-input" placeholder="Nama Lengkap" required minlength="3" autocomplete="name">
@@ -240,14 +252,12 @@
                             </div>
                         </div>
 
-                        <!-- Social Login -->
-                        <button type="button" onclick="simulateGoogleLogin()" class="w-full bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 font-bold text-[11px] sm:text-xs py-2.5 sm:py-3 rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 mb-2 min-h-[44px]">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                            Google Account
-                        </button>
+                        <!-- GOOGLE LOGIN BUTTON ASLI -->
+                        <!-- Tombol ini akan otomatis di-render oleh Google Sign-In API -->
+                        <div id="google-button-container" class="mt-2 mb-2 w-full flex justify-center"></div>
                         
                         <p class="text-center text-[8px] sm:text-[9px] text-slate-400 mt-4 sm:mt-5 font-bold flex items-center justify-center gap-1">
-                            <i data-lucide="lock" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i> Dilindungi Sistem Enkripsi AES-256 Lokal
+                            <i data-lucide="shield-check" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i> Otorisasi Terenkripsi Google OAuth 2.0
                         </p>
                     </div>
                 </div>
@@ -265,7 +275,47 @@
     <script>
         lucide.createIcons();
 
-        // STATE MANAGEMENT & AUTO-LOGIN CANGGIH (ROLLING SESSION)
+        // ⚠️ CLIENT ID GOOGLE ANDA SUDAH DIPASANG DI SINI
+        const GOOGLE_CLIENT_ID = "403594078276-ukuks77pis0bclh9i3ab0j5d1m1tsmmv.apps.googleusercontent.com";
+
+        // MENGUBAH JWT GOOGLE MENJADI OBJEK JSON YANG BISA DIBACA
+        function decodeJwtResponse(token) {
+            let base64Url = token.split('.')[1];
+            let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        }
+
+        // FUNGSI INI TERPANGGIL OTOMATIS SAAT USER BERHASIL LOGIN VIA GOOGLE
+        function handleGoogleCredentialResponse(response) {
+            // 1. Ekstrak data asli pengguna dari Google
+            const responsePayload = decodeJwtResponse(response.credential);
+            
+            console.log("Google Login Berhasil untuk:", responsePayload.name);
+            showNotification("Otentikasi Google Berhasil! Memuat sesi...", "success");
+
+            // 2. Format Data sesuai standar Dazer (Untuk Kuota)
+            const userData = {
+                name: responsePayload.name, 
+                email: responsePayload.email, 
+                picture: responsePayload.picture, // Ambil foto profil asli
+                tier: 'registered',
+                analysisQuota: 2, 
+                chatQuota: 5, 
+                modelQuota: 1,
+                issuedAt: Date.now()
+            };
+            
+            // 3. Simpan di Local Browser pengguna
+            localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
+
+            // 4. Arahkan ke Dasbor dengan Mulus
+            setTimeout(() => safeRedirect("index.html?auth=success"), 1200);
+        }
+
+        // STATE MANAGEMENT & AUTO-LOGIN CANGGIH (ROLLING SESSION 30 HARI)
         window.onload = () => {
             const token = localStorage.getItem('Dazer_Secure_JWT');
             let isLoggedIn = false;
@@ -278,11 +328,11 @@
                     if(Date.now() - payload.issuedAt < 2592000000) { 
                         isLoggedIn = true;
                         
-                        // Segarkan token agar mereka tidak pernah log-out (selama aktif per 30 hr)
+                        // Segarkan token agar tidak log-out
                         payload.issuedAt = Date.now();
                         localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(payload));
 
-                        // Tampilkan UI Pemulihan Sesi Otomatis yang Elegan
+                        // Tampilkan UI Pemulihan Sesi Otomatis
                         document.getElementById('auth-header').classList.add('hidden');
                         document.getElementById('auth-form-wrapper').classList.add('hidden');
                         
@@ -290,21 +340,47 @@
                         autoLoginOverlay.classList.remove('hidden');
                         autoLoginOverlay.classList.add('flex');
                         
+                        // Tampilkan Nama & Foto Asli jika ada
                         document.getElementById('welcome-back-name').innerText = payload.name || "Data Scientist";
+                        if (payload.picture) {
+                            const picEl = document.getElementById('user-profile-pic');
+                            picEl.src = payload.picture;
+                            picEl.classList.remove('hidden');
+                            document.getElementById('user-profile-icon').classList.add('hidden');
+                        }
                         
                         // Pengalihan Mulus
                         setTimeout(() => safeRedirect('index.html'), 1800);
                     } else {
-                        localStorage.removeItem('Dazer_Secure_JWT'); // Tendang jika lebih dari 30 hari pasif
+                        localStorage.removeItem('Dazer_Secure_JWT');
                     }
                 } catch(e) { localStorage.removeItem('Dazer_Secure_JWT'); }
             }
 
-            // Jika belum login, tampilkan form
+            // Jika belum login, tampilkan form & Siapkan Tombol Google
             if(!isLoggedIn) {
                  setTimeout(() => {
                      document.getElementById('auth-form-wrapper').classList.remove('opacity-0');
                  }, 100);
+
+                 // Render Tombol Google GSI
+                 if (typeof google !== 'undefined') {
+                     google.accounts.id.initialize({
+                         client_id: GOOGLE_CLIENT_ID,
+                         callback: handleGoogleCredentialResponse,
+                         auto_select: false, // Jangan auto-login tanpa permisi
+                         cancel_on_tap_outside: true
+                     });
+                     
+                     // Memunculkan Tombol Kotak Klasik Google
+                     google.accounts.id.renderButton(
+                         document.getElementById("google-button-container"),
+                         { theme: "outline", size: "large", width: "100%", text: "continue_with", shape: "rectangular", logo_alignment: "center" }
+                     );
+                     
+                     // Opsi tambahan: Menampilkan popup One Tap Google di pojok kanan atas
+                     // google.accounts.id.prompt(); 
+                 }
             }
         };
 
@@ -399,7 +475,8 @@
             return `${header}.${data}.${signature}`;
         }
 
-        function handleAuth(e, type) {
+        // PENANGANAN LOGIN MANUAL (FALLBACK BUKAN GOOGLE)
+        function handleLocalAuth(e, type) {
             e.preventDefault();
             const btnId = type === 'login' ? 'btn-submit-login' : 'btn-submit-register';
             const btn = document.getElementById(btnId);
@@ -419,6 +496,7 @@
                 const uEmail = type === 'login' ? document.getElementById('login-email').value : document.getElementById('reg-email').value;
                 const uName = type === 'login' ? "User Profesional" : document.getElementById('reg-name').value;
 
+                // PAYLOAD KUOTA SESUAI PERMINTAAN LAMA
                 const userData = {
                     name: uName, email: uEmail, tier: 'registered',
                     analysisQuota: 2, chatQuota: 5, modelQuota: 1,
@@ -432,20 +510,6 @@
                 
                 setTimeout(() => safeRedirect("index.html?auth=success"), 1000);
             }, 1800);
-        }
-
-        function simulateGoogleLogin() {
-            showNotification("Menghubungkan ke Google OAuth...", "info");
-            setTimeout(() => {
-                const userData = {
-                    name: "Google User", email: "verified@gmail.com", tier: 'registered',
-                    analysisQuota: 2, chatQuota: 5, modelQuota: 1,
-                    issuedAt: Date.now()
-                };
-                localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
-                showNotification("Akses Google Diizinkan.", "success");
-                setTimeout(() => safeRedirect("index.html?auth=success"), 1000);
-            }, 1200);
         }
     </script>
 </body>
