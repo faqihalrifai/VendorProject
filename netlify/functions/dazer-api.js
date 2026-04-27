@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V9 - Multi-API: DeepSeek, Groq, Gemini, Wolfram, Tavily)
+// dazer-api.js - Backend KDD (V9 - Multi-API: Groq, Gemini, Wolfram, Tavily)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -84,29 +84,42 @@ Waktu Lokal  : ${body.localTime || '-'}`;
         }
 
         // ==========================================
-        // ACTION 2: ANALISA DASHBOARD (DEEPSEEK API)
+        // ACTION 2: ANALISA DASHBOARD (GEMINI 1.5 FLASH)
+        // Mengerjakan Kartu Eksekutif & Ceklis Tindakan
         // ==========================================
         if (action === 'analyze_data') {
-            const dsKey = process.env.DEEPSEEK_API_KEY; 
-            if (!dsKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API DeepSeek belum dikonfigurasi."], cards: null }) };
+            const geminiKey = process.env.GEMINI_API_KEY; 
+            if (!geminiKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API Gemini belum dikonfigurasi di Netlify."], cards: null }) };
 
-            // SYSTEM PROMPT SANGAT RINGKAS (HEMAT TOKEN)
-            const systemPrompt = `Kamu AI Dazer. Konteks: ${userContext}. Jawab HANYA format JSON valid tanpa markdown teks luar:
-{"insights":["3 kalimat tindakan eksekutif.","3 kalimat... (total 7 poin)"],"cards":{"metric":"2 kalimat padat","segment":"2 kalimat padat","correlation":"2 kalimat padat","volatility":"2 kalimat padat"}}`;
+            const systemPrompt = `Kamu adalah AI Dazer Analytics. Konteks: ${userContext}.
+Berdasarkan data statistik lokal, buat laporan untuk Dasbor Eksekutif.
+Keluarkan HANYA format JSON valid tanpa markdown tambahan:
+{
+  "insights": [
+    "Tindakan eksekutif 1 (Maksimal 3 kalimat).",
+    "Tindakan eksekutif 2...",
+    "Tindakan eksekutif 3..."
+  ],
+  "cards": {
+    "metric": "Evaluasi performa metrik (2 kalimat padat)",
+    "segment": "Evaluasi segmen prioritas (2 kalimat padat)",
+    "correlation": "Evaluasi korelasi variabel (2 kalimat padat)",
+    "volatility": "Evaluasi risiko dan anomali (2 kalimat padat)"
+  }
+}`;
 
             try {
-                // Memanggil DeepSeek Chat API
-                const aiResponse = await fetch('https://api.deepseek.com/chat/completions', {
+                // Memanggil Gemini 1.5 Flash dengan JSON mode aktif
+                const aiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${dsKey}` },
-                    body: JSON.stringify({ 
-                        model: 'deepseek-chat', 
-                        messages: [
-                            { role: 'system', content: systemPrompt }, 
-                            { role: 'user', content: `Statistik Data Lokal: ${data}` }
-                        ], 
-                        temperature: 0.2, 
-                        response_format: { type: "json_object" } 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        systemInstruction: { parts: [{ text: systemPrompt }] },
+                        contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
+                        generationConfig: {
+                            temperature: 0.2,
+                            responseMimeType: "application/json" // GARANSI 100% JSON
+                        }
                     })
                 });
 
@@ -116,25 +129,26 @@ Waktu Lokal  : ${body.localTime || '-'}`;
                 }
 
                 const aiData = await aiResponse.json();
-                let textResponse = aiData.choices?.[0]?.message?.content || '{"insights":["-"], "cards":null}';
+                let textResponse = aiData.candidates?.[0]?.content?.parts?.[0]?.text || '{"insights":["-"], "cards":null}';
                 
                 let parsedData = { insights: ["-"], cards: null };
                 try {
-                    const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
-                    parsedData = JSON.parse(jsonMatch ? jsonMatch[0] : textResponse);
+                    parsedData = JSON.parse(textResponse);
                     if (Array.isArray(parsedData.insights)) {
                         parsedData.insights = parsedData.insights.map(item => cleanMarkdown(item)).filter(i => i.trim().length > 5).slice(0, 7);
                     }
-                } catch (err) {}
+                } catch (err) {
+                    console.error("Gagal parse JSON Gemini");
+                }
 
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsedData) };
 
             } catch (apiErr) {
-                console.error("!!! DEEPSEEK ANALYZER ERROR !!!", apiErr.message);
+                console.error("!!! GEMINI ANALYZER ERROR !!!", apiErr.message);
                 return { 
                     statusCode: 200, headers: corsHeaders, 
                     body: JSON.stringify({ 
-                        insights: ["⚠️ SISTEM AI MENGALAMI KENDALA", `Pesan: ${apiErr.message}`], cards: null 
+                        insights: ["⚠️ MESIN ANALISIS MENGALAMI KENDALA", `Pesan: ${apiErr.message}`], cards: null 
                     }) 
                 };
             }
@@ -142,6 +156,7 @@ Waktu Lokal  : ${body.localTime || '-'}`;
 
         // ==========================================
         // ACTION 3: CHATBOT (GROQ + TAVILY)
+        // Otak interaktif yang super cepat
         // ==========================================
         if (action === 'chat') {
             const groqKey = process.env.GROQ_API_KEY;
@@ -192,7 +207,7 @@ Konteks: ${userContext} ${internetContext}`;
 
         // ==========================================
         // ACTION 4: MODELING LAB (GEMINI + WOLFRAM)
-        // Disiapkan untuk halaman model.html
+        // Mengevaluasi hasil KDD dari model.html
         // ==========================================
         if (action === 'run_model') {
             const geminiKey = process.env.GEMINI_API_KEY;
@@ -211,12 +226,13 @@ Konteks: ${userContext} ${internetContext}`;
             }
 
             // Prompt untuk Gemini 1.5 Flash
-            const prompt = `Lakukan simulasi Data Mining.
+            const prompt = `Lakukan evaluasi Data Mining saintifik.
 Teknik: ${modelType}
 Algoritma: ${algorithm}
-Hitungan Wolfram: ${mathValidation}
-Data User: ${data}
-Evaluasi pola ini dan berikan output narasi hasil evaluasi akurasi/pembagian datanya secara saintifik.`;
+Hitungan Tambahan: ${mathValidation}
+Sampel Data User: ${data}
+
+Berikan output narasi eksekutif tentang pola yang berhasil ditambang, hubungannya dengan probabilitas anomali, dan akurasi data. Gunakan bahasa Indonesia baku dan terstruktur.`;
 
             try {
                 const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
@@ -228,9 +244,9 @@ Evaluasi pola ini dan berikan output narasi hasil evaluasi akurasi/pembagian dat
                 });
 
                 const geminiData = await geminiRes.json();
-                const modelResult = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "Model gagal dikalkulasi.";
+                const modelResult = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "Model gagal dikalkulasi karena keterbatasan sampel data.";
 
-                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: modelResult }) };
+                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(modelResult) }) };
             } catch (geminiErr) {
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: geminiErr.message }) };
             }
