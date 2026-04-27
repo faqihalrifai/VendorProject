@@ -16,9 +16,10 @@ function cleanMarkdown(text) {
  */
 function smartDataTruncate(dataStr, limit = 4000) {
     if (!dataStr) return "";
-    if (dataStr.length <= limit) return dataStr;
+    let str = typeof dataStr === 'string' ? dataStr : JSON.stringify(dataStr);
+    if (str.length <= limit) return str;
     const half = Math.floor(limit / 2);
-    return dataStr.slice(0, half) + "\n...[Data dipangkas demi efisiensi token]...\n" + dataStr.slice(-half);
+    return str.slice(0, half) + "\n...[Data dipangkas demi efisiensi token]...\n" + str.slice(-half);
 }
 
 const corsHeaders = {
@@ -128,7 +129,7 @@ FILE    : ${body.fileName || '-'} (${body.size || '-'})
         }
 
         // ============================================================
-        // ACTION 3: ANALISA DASHBOARD
+        // ACTION 3: ANALISA DASHBOARD (DIPERBAIKI)
         // ============================================================
         if (action === 'analyze_data') {
             const systemPrompt = `Role: Senior Data Analyst. Output: JSON.Padat & eksekutif.
@@ -137,27 +138,52 @@ JSON Structure:
   "insights": ["Point 1", "Point 2", "Point 3", "Point 4"],
   "cards": {"metric": "...", "segment": "...", "correlation": "...", "volatility": "..."}
 }`;
+            // FIX 1: Memastikan data dipangkas agar tidak error kehabisan token context AI
+            const safeData = smartDataTruncate(data, 4000);
+            let rawText = "";
 
-            let response;
             try {
                 const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ model: 'llama3.1-70b', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Statistik: ${data}` }], temperature: 0.1 })
+                    body: JSON.stringify({ model: 'llama3.1-70b', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Statistik: ${safeData}` }], temperature: 0.1 })
                 });
-                response = await res.json();
+                
+                // FIX 2: Cek status HTTP dari AI
+                if (!res.ok) throw new Error("Cerebras API fail");
+                const response = await res.json();
+                rawText = response?.choices?.[0]?.message?.content || "";
             } catch (err) {
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Statistik: ${data}` }], temperature: 0.1, response_format: { type: "json_object" } })
-                });
-                response = await res.json();
+                try {
+                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Statistik: ${safeData}` }], temperature: 0.1, response_format: { type: "json_object" } })
+                    });
+                    
+                    if (!res.ok) throw new Error("Groq API fail");
+                    const response = await res.json();
+                    rawText = response?.choices?.[0]?.message?.content || "";
+                } catch (fallbackErr) {
+                    console.error("Semua API AI gagal:", fallbackErr);
+                }
             }
 
-            const rawText = response.choices[0].message.content;
-            let parsed = { insights: ["Data tidak dapat dianalisis."], cards: null };
-            try { parsed = JSON.parse(rawText.match(/\{[\s\S]*\}/)[0]); } catch (e) {}
+            // FIX 3: Parse JSON lebih kebal dari format berantakan
+            let parsed = { insights: ["Data terlalu besar atau sistem sedang sibuk. Mohon kurangi ukuran data yang dianalisis."], cards: null };
+            if (rawText) {
+                try { 
+                    const regexMatch = rawText.match(/\{[\s\S]*\}/);
+                    if(regexMatch) {
+                        parsed = JSON.parse(regexMatch[0]); 
+                    } else {
+                        parsed = JSON.parse(rawText);
+                    }
+                } catch (e) {
+                    // Jika AI merespon dengan aneh tapi tidak crash
+                    parsed.insights = ["Analisa terganggu. Mohon ulangi kembali."];
+                }
+            }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsed) };
         }
 
