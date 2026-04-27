@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V14 Final - Quad-Cloud: Cerebras, Groq, Gemini, OpenRouter)
+// dazer-api.js - Backend KDD (V15 Final - Quad-Cloud + Auth Automation)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -18,7 +18,6 @@ exports.handler = async (event, context) => {
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "CORS Preflight OK" }) };
     if (event.httpMethod !== 'POST') return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: 'Method Not Allowed' }) };
 
-    // --- ANTI-SPAM BERBASIS IP ---
     const clientIp = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown-ip';
     const currentTime = Date.now();
     const limitData = rateLimitMap.get(clientIp) || { count: 0, firstRequest: currentTime };
@@ -27,15 +26,8 @@ exports.handler = async (event, context) => {
         limitData.count = 1; limitData.firstRequest = currentTime; 
     } else {
         limitData.count += 1;
-        if (limitData.count > 20) { 
-            return { 
-                statusCode: 200, headers: corsHeaders, 
-                body: JSON.stringify({ 
-                    reply: "Sistem mendeteksi lalu lintas tinggi. Mohon jeda 10 menit.", 
-                    insights: ["Limit sistem tercapai. Harap tunggu beberapa saat."], 
-                    cards: null 
-                }) 
-            };
+        if (limitData.count > 30) { 
+            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Lalu lintas tinggi. Mohon jeda sejenak." }) };
         }
     }
     rateLimitMap.set(clientIp, limitData);
@@ -45,41 +37,78 @@ exports.handler = async (event, context) => {
         try { body = JSON.parse(event.body); } 
         catch (err) { return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Format request ditolak." }) }; }
 
-        const { action, message, context: userContext, data, modelType, algorithm } = body;
+        const { action, message, context: userContext, data, modelType, algorithm, email, name, metadata } = body;
         
-        // Kunci-kunci Dewa dari Netlify
         const groqKey = process.env.GROQ_API_KEY;
         const cerebrasKey = process.env.CEREBRAS_API_KEY;
         const geminiKey = process.env.GEMINI_API_KEY;
         const openRouterKey = process.env.OPENROUTER_API_KEY;
+        const emailPass = process.env.NODEMAILER_PASS;
 
         // ==========================================
-        // ACTION 1: SILENT LOGGER (NODEMAILER)
+        // ACTION 1: NOTIFIKASI REGISTRASI & UPLOAD (NODEMAILER)
         // ==========================================
-        if (action === 'notify_upload' || (!action && body.sessionId && body.fileName)) {
-            const emailPass = process.env.NODEMAILER_PASS; 
+        if (action === 'notify_register' || action === 'notify_upload') {
             if(emailPass) {
                 try {
-                    let transporter = nodemailer.createTransport({ 
-                        service: 'gmail', 
-                        auth: { user: 'dazer.help@gmail.com', pass: emailPass } 
-                    });
+                    let transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'dazer.help@gmail.com', pass: emailPass } });
                     
-                    const emailContent = `=== DETAIL SESI KDD ===\nFile: ${body.fileName}\nUkuran: ${body.size}\nDimensi: ${body.dataDimension}`;
+                    let subject = action === 'notify_register' ? `[DAZER] User Baru Terdaftar: ${name || email}` : `[DAZER] Aktivitas KDD Baru: ${body.fileName}`;
+                    
+                    let emailContent = `=== DETAIL DATA ===\n`;
+                    if (name) emailContent += `Nama: ${name}\n`;
+                    if (email) emailContent += `Email: ${email}\n`;
+                    if (body.fileName) emailContent += `File: ${body.fileName}\n`;
+                    
+                    emailContent += `\n=== METADATA PERANGKAT & LOKASI ===\n`;
+                    if (metadata) {
+                        emailContent += `IP Address : ${metadata.ip || '-'}\n`;
+                        emailContent += `Lokasi     : ${metadata.location || '-'}\n`;
+                        emailContent += `Perangkat  : ${metadata.device || '-'}\n`;
+                        emailContent += `ISP/Org    : ${metadata.isp || '-'}\n`;
+                        emailContent += `Waktu      : ${metadata.time || '-'}\n`;
+                    }
 
                     await transporter.sendMail({ 
                         from: '"Dazer Intelligence" <dazer.help@gmail.com>', 
                         to: "dazer.help@gmail.com", 
-                        subject: `[DAZER] Aktivitas KDD Baru: ${body.fileName}`, 
+                        subject: subject, 
                         text: emailContent 
                     });
-                } catch (e) {}
+                } catch (e) { console.error("Mail Error:", e.message); }
             }
-            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'logged' }) };
+            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'success' }) };
         }
 
         // ==========================================
-        // ACTION 2: ANALISA DASHBOARD (CEREBRAS -> GROQ)
+        // ACTION 2: LUPA KATA SANDI (OTOMATIS)
+        // ==========================================
+        if (action === 'forgot_password') {
+            if(emailPass && email) {
+                try {
+                    let transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'dazer.help@gmail.com', pass: emailPass } });
+                    const resetLink = `https://dazer-premium.netlify.app/auth.html?reset=true&email=${encodeURIComponent(email)}`;
+                    
+                    await transporter.sendMail({ 
+                        from: '"Dazer Support" <dazer.help@gmail.com>', 
+                        to: email, 
+                        subject: `[DAZER] Instruksi Pemulihan Kata Sandi`, 
+                        html: `<div style="font-family:sans-serif; padding:20px; color:#1e293b;">
+                                <h2>Halo,</h2>
+                                <p>Kami menerima permintaan untuk mereset kata sandi akun Dazer Anda.</p>
+                                <p>Silakan klik tautan di bawah ini untuk masuk kembali dan memperbarui keamanan Anda:</p>
+                                <a href="${resetLink}" style="display:inline-block; padding:10px 20px; background:#0ea5e9; color:#fff; text-decoration:none; border-radius:5px;">Masuk & Reset Password</a>
+                                <p style="margin-top:20px; font-size:12px; color:#94a3b8;">Jika Anda tidak merasa melakukan permintaan ini, abaikan email ini.</p>
+                               </div>`
+                    });
+                    return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "Link pemulihan telah dikirim ke email Anda." }) };
+                } catch (e) { return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "Gagal mengirim email pemulihan." }) }; }
+            }
+            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "Email atau konfigurasi server tidak lengkap." }) };
+        }
+
+        // ==========================================
+        // ACTION 3: ANALISA DASHBOARD (CEREBRAS -> GROQ)
         // ==========================================
         if (action === 'analyze_data') {
             const systemPrompt = `Kamu adalah AI Dazer Analytics. Konteks: ${userContext}.
@@ -91,9 +120,7 @@ Berdasarkan data statistik lokal, buat laporan untuk Dasbor Eksekutif HANYA dala
 
             try {
                 let textResponse = "";
-                
                 try {
-                    // Coba 1: Cerebras (Super Kilat)
                     if (!cerebrasKey) throw new Error("Cerebras Key kosong");
                     const res1 = await fetch('https://api.cerebras.ai/v1/chat/completions', {
                         method: 'POST',
@@ -108,8 +135,6 @@ Berdasarkan data statistik lokal, buat laporan untuk Dasbor Eksekutif HANYA dala
                     if (!res1.ok) throw new Error(data1.error?.message);
                     textResponse = data1.choices?.[0]?.message?.content;
                 } catch (fallbackErr) {
-                    console.warn("Cerebras gagal, Fallback ke Groq...");
-                    // Coba 2: Groq Llama 3
                     const res2 = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
@@ -138,7 +163,7 @@ Berdasarkan data statistik lokal, buat laporan untuk Dasbor Eksekutif HANYA dala
         }
 
         // ==========================================
-        // ACTION 3: CHATBOT (GROQ + TAVILY)
+        // ACTION 4: CHATBOT (GROQ + TAVILY)
         // ==========================================
         if (action === 'chat') {
             const tvlyKey = process.env.TAVILY_API_KEY;
@@ -180,7 +205,7 @@ Konteks: ${userContext} ${internetContext}`;
         }
 
         // ==========================================
-        // ACTION 4: MODELING LAB (GEMINI -> OPENROUTER)
+        // ACTION 5: MODELING LAB (GEMINI -> OPENROUTER)
         // ==========================================
         if (action === 'run_model') {
             const wolframId = process.env.WOLFRAM_APP_ID;
@@ -202,9 +227,7 @@ Berikan output narasi eksekutif tentang pola yang berhasil ditambang, probabilit
 
             try {
                 let modelResult = "";
-                
                 try {
-                    // Truk Tronton 1: Gemini Native HTTP (Kapasitas 1 Juta Token)
                     if (!geminiKey) throw new Error("Gemini Key kosong");
                     const urlFlash = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
                     const res1 = await fetch(urlFlash, {
@@ -212,38 +235,23 @@ Berikan output narasi eksekutif tentang pola yang berhasil ditambang, probabilit
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] })
                     });
-                    
                     const data1 = await res1.json();
-                    if (!res1.ok) throw new Error(data1.error?.message || "Unknown Flash Error");
+                    if (!res1.ok) throw new Error(data1.error?.message);
                     modelResult = data1.candidates?.[0]?.content?.parts?.[0]?.text;
-
                 } catch (err1) {
-                    console.warn("Gemini gagal, memanggil bala bantuan OpenRouter...", err1.message);
-                    
-                    // Truk Tronton 2 (Penyelamat Anti-Mati): OpenRouter AI
-                    if (!openRouterKey) throw new Error("OpenRouter Key juga kosong");
+                    if (!openRouterKey) throw new Error("OpenRouter Key kosong");
                     const res2 = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                         method: 'POST',
-                        headers: { 
-                            'Authorization': `Bearer ${openRouterKey}`, 
-                            'Content-Type': 'application/json',
-                            'HTTP-Referer': 'https://dazer-premium.netlify.app',
-                            'X-Title': 'Dazer Analytics'
-                        },
+                        headers: { 'Authorization': `Bearer ${openRouterKey}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            model: 'google/gemini-1.5-flash', // Menembak Gemini 1.5 Flash via jalur OpenRouter (Bypass Google Network)
+                            model: 'google/gemini-1.5-flash',
                             messages: [{ role: 'user', content: prompt }],
                             temperature: 0.3
                         })
                     });
-                    
                     const data2 = await res2.json();
-                    if (!res2.ok) throw new Error(data2.error?.message || "Unknown OpenRouter Error");
                     modelResult = data2.choices?.[0]?.message?.content;
                 }
-
-                if (!modelResult) modelResult = "Model gagal dikalkulasi karena keterbatasan sampel data.";
-
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(modelResult) }) };
             } catch (apiErr) {
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: apiErr.message }) };
