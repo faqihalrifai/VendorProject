@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V13 - Tri-Cloud: Cerebras, Groq, Gemini)
+// dazer-api.js - Backend KDD (V14 Final - Quad-Cloud: Cerebras, Groq, Gemini, OpenRouter)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -18,6 +18,7 @@ exports.handler = async (event, context) => {
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "CORS Preflight OK" }) };
     if (event.httpMethod !== 'POST') return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: 'Method Not Allowed' }) };
 
+    // --- ANTI-SPAM BERBASIS IP ---
     const clientIp = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown-ip';
     const currentTime = Date.now();
     const limitData = rateLimitMap.get(clientIp) || { count: 0, firstRequest: currentTime };
@@ -45,7 +46,12 @@ exports.handler = async (event, context) => {
         catch (err) { return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Format request ditolak." }) }; }
 
         const { action, message, context: userContext, data, modelType, algorithm } = body;
+        
+        // Kunci-kunci Dewa dari Netlify
         const groqKey = process.env.GROQ_API_KEY;
+        const cerebrasKey = process.env.CEREBRAS_API_KEY;
+        const geminiKey = process.env.GEMINI_API_KEY;
+        const openRouterKey = process.env.OPENROUTER_API_KEY;
 
         // ==========================================
         // ACTION 1: SILENT LOGGER (NODEMAILER)
@@ -64,7 +70,7 @@ exports.handler = async (event, context) => {
                     await transporter.sendMail({ 
                         from: '"Dazer Intelligence" <dazer.help@gmail.com>', 
                         to: "dazer.help@gmail.com", 
-                        subject: `[DAZER] Aktivitas KDD: ${body.fileName}`, 
+                        subject: `[DAZER] Aktivitas KDD Baru: ${body.fileName}`, 
                         text: emailContent 
                     });
                 } catch (e) {}
@@ -76,18 +82,18 @@ exports.handler = async (event, context) => {
         // ACTION 2: ANALISA DASHBOARD (CEREBRAS -> GROQ)
         // ==========================================
         if (action === 'analyze_data') {
-            const cerebrasKey = process.env.CEREBRAS_API_KEY;
-
             const systemPrompt = `Kamu adalah AI Dazer Analytics. Konteks: ${userContext}.
-Berdasarkan data statistik lokal, buat laporan Dasbor Eksekutif HANYA dalam JSON valid:
+Berdasarkan data statistik lokal, buat laporan untuk Dasbor Eksekutif HANYA dalam JSON valid:
 {
-  "insights": ["Tindakan 1.", "Tindakan 2."],
+  "insights": ["Tindakan eksekutif 1.", "Tindakan eksekutif 2."],
   "cards": {"metric": "...", "segment": "...", "correlation": "...", "volatility": "..."}
 }`;
 
             try {
                 let textResponse = "";
+                
                 try {
+                    // Coba 1: Cerebras (Super Kilat)
                     if (!cerebrasKey) throw new Error("Cerebras Key kosong");
                     const res1 = await fetch('https://api.cerebras.ai/v1/chat/completions', {
                         method: 'POST',
@@ -102,6 +108,8 @@ Berdasarkan data statistik lokal, buat laporan Dasbor Eksekutif HANYA dalam JSON
                     if (!res1.ok) throw new Error(data1.error?.message);
                     textResponse = data1.choices?.[0]?.message?.content;
                 } catch (fallbackErr) {
+                    console.warn("Cerebras gagal, Fallback ke Groq...");
+                    // Coba 2: Groq Llama 3
                     const res2 = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
@@ -172,16 +180,12 @@ Konteks: ${userContext} ${internetContext}`;
         }
 
         // ==========================================
-        // ACTION 4: MODELING LAB (GEMINI 1.5 FLASH NATIVE)
+        // ACTION 4: MODELING LAB (GEMINI -> OPENROUTER)
         // ==========================================
         if (action === 'run_model') {
-            // Memprioritaskan Environment Variable, Fallback ke kunci asli Anda.
-            const geminiKey = (process.env.GEMINI_API_KEY || "AIzaSyDqyFVmGXukQmBUemLQ1-BdaCq7eXBak-g").trim();
             const wolframId = process.env.WOLFRAM_APP_ID;
-
-            if (!geminiKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "API Key Gemini Kosong!" }) };
-
             let mathValidation = "";
+            
             if (wolframId && modelType === 'Clustering') {
                 try {
                     const wolframQ = encodeURIComponent(`k-means clustering formula`);
@@ -200,14 +204,13 @@ Berikan output narasi eksekutif tentang pola yang berhasil ditambang, probabilit
                 let modelResult = "";
                 
                 try {
-                    // Percobaan 1: Gemini 1.5 Flash (Sangat Cepat & Mampu membaca banyak token)
+                    // Truk Tronton 1: Gemini Native HTTP (Kapasitas 1 Juta Token)
+                    if (!geminiKey) throw new Error("Gemini Key kosong");
                     const urlFlash = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
                     const res1 = await fetch(urlFlash, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ role: 'user', parts: [{ text: prompt }] }]
-                        })
+                        body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] })
                     });
                     
                     const data1 = await res1.json();
@@ -215,21 +218,28 @@ Berikan output narasi eksekutif tentang pola yang berhasil ditambang, probabilit
                     modelResult = data1.candidates?.[0]?.content?.parts?.[0]?.text;
 
                 } catch (err1) {
-                    console.warn("Gemini Flash gagal, coba 1.5 Pro...", err1.message);
+                    console.warn("Gemini gagal, memanggil bala bantuan OpenRouter...", err1.message);
                     
-                    // Percobaan 2: Gemini 1.5 Pro
-                    const urlPro = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiKey}`;
-                    const res2 = await fetch(urlPro, {
+                    // Truk Tronton 2 (Penyelamat Anti-Mati): OpenRouter AI
+                    if (!openRouterKey) throw new Error("OpenRouter Key juga kosong");
+                    const res2 = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Authorization': `Bearer ${openRouterKey}`, 
+                            'Content-Type': 'application/json',
+                            'HTTP-Referer': 'https://dazer-premium.netlify.app',
+                            'X-Title': 'Dazer Analytics'
+                        },
                         body: JSON.stringify({
-                            contents: [{ role: 'user', parts: [{ text: prompt }] }]
+                            model: 'google/gemini-1.5-flash', // Menembak Gemini 1.5 Flash via jalur OpenRouter (Bypass Google Network)
+                            messages: [{ role: 'user', content: prompt }],
+                            temperature: 0.3
                         })
                     });
                     
                     const data2 = await res2.json();
-                    if (!res2.ok) throw new Error(data2.error?.message || "Unknown Fallback Error");
-                    modelResult = data2.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (!res2.ok) throw new Error(data2.error?.message || "Unknown OpenRouter Error");
+                    modelResult = data2.choices?.[0]?.message?.content;
                 }
 
                 if (!modelResult) modelResult = "Model gagal dikalkulasi karena keterbatasan sampel data.";
