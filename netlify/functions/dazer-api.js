@@ -89,7 +89,7 @@ Waktu Lokal  : ${body.localTime || '-'}`;
         // Mengerjakan Kartu Eksekutif & Ceklis Tindakan
         // ==========================================
         if (action === 'analyze_data') {
-            const geminiKey = process.env.GEMINI_API_KEY; 
+            const geminiKey = process.env.GEMINI_API_KEY || "gen-lang-client-0971690214"; 
             if (!geminiKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API Gemini belum dikonfigurasi di Netlify."], cards: null }) };
 
             const systemPrompt = `Kamu adalah AI Dazer Analytics. Konteks: ${userContext}.
@@ -110,34 +110,30 @@ Keluarkan HANYA format JSON valid tanpa markdown tambahan:
 }`;
 
             try {
-                // Menggunakan Official Google SDK
                 const genAI = new GoogleGenerativeAI(geminiKey);
                 let textResponse = "";
 
                 try {
-                    // Percobaan 1: Gemini 1.5 Flash (Super Cepat & JSON Strict)
-                    const model = genAI.getGenerativeModel({
-                        model: "gemini-1.5-flash",
-                        systemInstruction: systemPrompt
-                    });
-
-                    const result = await model.generateContent({
+                    // PERCOBAAN 1: Gemini 1.5 Flash (Sangat disarankan karena cepat dan gratis)
+                    const model1 = genAI.getGenerativeModel({ model: "gemini-1.5-flash", systemInstruction: systemPrompt });
+                    const res1 = await model1.generateContent({
                         contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
-                        generationConfig: {
-                            temperature: 0.2,
-                            responseMimeType: "application/json" 
-                        }
+                        generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
                     });
-                    textResponse = result.response.text();
-
-                } catch (fallbackErr) {
-                    console.warn("Fallback aktif, beralih ke gemini-pro...", fallbackErr.message);
-                    // Percobaan 2 (Penyelamat 404): Beralih ke model klasik Gemini 1.0 Pro
-                    const fallbackModel = genAI.getGenerativeModel({ model: "gemini-pro" });
-                    const result = await fallbackModel.generateContent(
-                        systemPrompt + "\n\nStatistik Data Mentah:\n" + data
-                    );
-                    textResponse = result.response.text();
+                    textResponse = res1.response.text();
+                } catch (err1) {
+                    console.warn("Model gemini-1.5-flash gagal, beralih ke gemini-1.5-pro...", err1.message);
+                    try {
+                        // PERCOBAAN 2: Gemini 1.5 Pro (Fallback)
+                        const model2 = genAI.getGenerativeModel({ model: "gemini-1.5-pro", systemInstruction: systemPrompt });
+                        const res2 = await model2.generateContent({
+                            contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
+                            generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
+                        });
+                        textResponse = res2.response.text();
+                    } catch (err2) {
+                        throw err2; // Jika dua-duanya mati, lempar pesan error
+                    }
                 }
 
                 if (!textResponse) textResponse = '{"insights":["-"], "cards":null}';
@@ -222,7 +218,7 @@ Konteks: ${userContext} ${internetContext}`;
         // Mengevaluasi hasil KDD dari model.html
         // ==========================================
         if (action === 'run_model') {
-            const geminiKey = process.env.GEMINI_API_KEY;
+            const geminiKey = process.env.GEMINI_API_KEY || "gen-lang-client-0971690214";
             const wolframId = process.env.WOLFRAM_APP_ID;
 
             if (!geminiKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "API Gemini belum dikonfigurasi." }) };
@@ -247,21 +243,20 @@ Sampel Data User: ${data}
 Berikan output narasi eksekutif tentang pola yang berhasil ditambang, hubungannya dengan probabilitas anomali, dan akurasi data. Gunakan bahasa Indonesia baku dan terstruktur.`;
 
             try {
-                // Menggunakan Official Google SDK
                 const genAI = new GoogleGenerativeAI(geminiKey);
                 let modelResult = "";
 
                 try {
-                    // Percobaan 1
-                    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-                    const result = await model.generateContent(prompt);
-                    modelResult = result.response.text();
-                } catch (fallbackErr) {
-                    console.warn("Fallback aktif (Model Lab), beralih ke gemini-pro...", fallbackErr.message);
-                    // Percobaan 2
-                    const fallbackModel = genAI.getGenerativeModel({ model: "gemini-pro" });
-                    const result = await fallbackModel.generateContent(prompt);
-                    modelResult = result.response.text();
+                    // Percobaan 1 (Cepat & Gratis)
+                    const model1 = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                    const res1 = await model1.generateContent(prompt);
+                    modelResult = res1.response.text();
+                } catch (err1) {
+                    console.warn("Model gemini-1.5-flash gagal, beralih ke gemini-1.5-pro...", err1.message);
+                    // Percobaan 2 (Cadangan)
+                    const model2 = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+                    const res2 = await model2.generateContent(prompt);
+                    modelResult = res2.response.text();
                 }
 
                 if (!modelResult) modelResult = "Model gagal dikalkulasi karena keterbatasan sampel data.";
