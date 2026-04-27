@@ -1,10 +1,25 @@
-// dazer-api.js - Backend KDD (V15 Final - Quad-Cloud + Auth Automation)
+// dazer-api.js - Backend KDD (V18 Final - Quad-Cloud + Token-Saver Logic)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
+/**
+ * Membersihkan output markdown dari AI agar rapi saat ditampilkan di UI.
+ */
 function cleanMarkdown(text) {
     if (!text || typeof text !== 'string') return text;
     return text.replace(/[\*`]/g, '').replace(/(^|\n)#+\s/g, '$1').trim();
+}
+
+/**
+ * Token-Saver Logic: Memastikan data yang dikirim ke AI tidak membengkak
+ * namun tetap memberikan konteks yang kuat.
+ */
+function smartDataTruncate(dataStr, limit = 4000) {
+    if (!dataStr) return "";
+    if (dataStr.length <= limit) return dataStr;
+    // Ambil bagian awal dan akhir data untuk mempertahankan struktur
+    const half = Math.floor(limit / 2);
+    return dataStr.slice(0, half) + "\n...[Data dipangkas demi efisiensi token]...\n" + dataStr.slice(-half);
 }
 
 const corsHeaders = {
@@ -15,10 +30,15 @@ const corsHeaders = {
 };
 
 exports.handler = async (event, context) => {
-    if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "CORS Preflight OK" }) };
-    if (event.httpMethod !== 'POST') return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: 'Method Not Allowed' }) };
+    if (event.httpMethod === 'OPTIONS') {
+        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "CORS OK" }) };
+    }
 
-    const clientIp = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown-ip';
+    if (event.httpMethod !== 'POST') {
+        return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: 'Method Not Allowed' }) };
+    }
+
+    const clientIp = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown';
     const currentTime = Date.now();
     const limitData = rateLimitMap.get(clientIp) || { count: 0, firstRequest: currentTime };
     
@@ -26,17 +46,14 @@ exports.handler = async (event, context) => {
         limitData.count = 1; limitData.firstRequest = currentTime; 
     } else {
         limitData.count += 1;
-        if (limitData.count > 30) { 
-            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Lalu lintas tinggi. Mohon jeda sejenak." }) };
+        if (limitData.count > 100) { // Limit ditingkatkan untuk efisiensi tinggi
+            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Sistem mendeteksi aktivitas sangat padat. Mohon jeda 5 menit." }) };
         }
     }
     rateLimitMap.set(clientIp, limitData);
 
     try {
-        let body;
-        try { body = JSON.parse(event.body); } 
-        catch (err) { return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Format request ditolak." }) }; }
-
+        const body = JSON.parse(event.body);
         const { action, message, context: userContext, data, modelType, algorithm, email, name, metadata } = body;
         
         const groqKey = process.env.GROQ_API_KEY;
@@ -44,223 +61,185 @@ exports.handler = async (event, context) => {
         const geminiKey = process.env.GEMINI_API_KEY;
         const openRouterKey = process.env.OPENROUTER_API_KEY;
         const emailPass = process.env.NODEMAILER_PASS;
+        const tvlyKey = process.env.TAVILY_API_KEY;
+        const wolframId = process.env.WOLFRAM_APP_ID;
 
-        // ==========================================
-        // ACTION 1: NOTIFIKASI REGISTRASI & UPLOAD (NODEMAILER)
-        // ==========================================
+        // ============================================================
+        // ACTION 1: NOTIFIKASI REGISTRASI & AUDIT LOG (ADMIN)
+        // ============================================================
         if (action === 'notify_register' || action === 'notify_upload') {
-            if(emailPass) {
+            if (emailPass) {
                 try {
                     let transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'dazer.help@gmail.com', pass: emailPass } });
+                    const isReg = action === 'notify_register';
                     
-                    let subject = action === 'notify_register' ? `[DAZER] User Baru Terdaftar: ${name || email}` : `[DAZER] Aktivitas KDD Baru: ${body.fileName}`;
-                    
-                    let emailContent = `=== DETAIL DATA ===\n`;
-                    if (name) emailContent += `Nama: ${name}\n`;
-                    if (email) emailContent += `Email: ${email}\n`;
-                    if (body.fileName) emailContent += `File: ${body.fileName}\n`;
-                    
-                    emailContent += `\n=== METADATA PERANGKAT & LOKASI ===\n`;
-                    if (metadata) {
-                        emailContent += `IP Address : ${metadata.ip || '-'}\n`;
-                        emailContent += `Lokasi     : ${metadata.location || '-'}\n`;
-                        emailContent += `Perangkat  : ${metadata.device || '-'}\n`;
-                        emailContent += `ISP/Org    : ${metadata.isp || '-'}\n`;
-                        emailContent += `Waktu      : ${metadata.time || '-'}\n`;
-                    }
+                    const logContent = `
+AUDIT LOG DAZER [${new Date().toISOString()}]
+--------------------------------------------
+USER    : ${name || 'User'} (${email || 'Google Auth'})
+AKSI    : ${action.toUpperCase()}
+DEVICE  : ${metadata?.device || 'N/A'}
+IP      : ${metadata?.ip || 'Hidden'}
+LOKASI  : ${metadata?.location || 'Unknown'}
+ISP     : ${metadata?.isp || 'N/A'}
+FILE    : ${body.fileName || '-'} (${body.size || '-'})
+                    `;
 
                     await transporter.sendMail({ 
-                        from: '"Dazer Intelligence" <dazer.help@gmail.com>', 
+                        from: '"Dazer Audit" <dazer.help@gmail.com>', 
                         to: "dazer.help@gmail.com", 
-                        subject: subject, 
-                        text: emailContent 
+                        subject: `[${action.toUpperCase()}] ${name || email}`, 
+                        text: logContent 
                     });
-                } catch (e) { console.error("Mail Error:", e.message); }
+                } catch (e) { console.error("Mail Log Error"); }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'success' }) };
         }
 
-        // ==========================================
-        // ACTION 2: LUPA KATA SANDI (OTOMATIS)
-        // ==========================================
+        // ============================================================
+        // ACTION 2: RESET PASSWORD OTOMATIS (PREMIUM HTML EMAIL)
+        // ============================================================
         if (action === 'forgot_password') {
-            if(emailPass && email) {
+            if (emailPass && email) {
                 try {
                     let transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'dazer.help@gmail.com', pass: emailPass } });
-                    const resetLink = `https://dazer-premium.netlify.app/auth.html?reset=true&email=${encodeURIComponent(email)}`;
+                    const link = `https://dazer-premium.netlify.app/auth.html?reset=true&email=${encodeURIComponent(email)}`;
                     
                     await transporter.sendMail({ 
                         from: '"Dazer Support" <dazer.help@gmail.com>', 
                         to: email, 
-                        subject: `[DAZER] Instruksi Pemulihan Kata Sandi`, 
-                        html: `<div style="font-family:sans-serif; padding:20px; color:#1e293b;">
-                                <h2>Halo,</h2>
-                                <p>Kami menerima permintaan untuk mereset kata sandi akun Dazer Anda.</p>
-                                <p>Silakan klik tautan di bawah ini untuk masuk kembali dan memperbarui keamanan Anda:</p>
-                                <a href="${resetLink}" style="display:inline-block; padding:10px 20px; background:#0ea5e9; color:#fff; text-decoration:none; border-radius:5px;">Masuk & Reset Password</a>
-                                <p style="margin-top:20px; font-size:12px; color:#94a3b8;">Jika Anda tidak merasa melakukan permintaan ini, abaikan email ini.</p>
+                        subject: `Instruksi Pemulihan Akun Dazer`, 
+                        html: `<div style="font-family:sans-serif; max-width:500px; padding:30px; border:1px solid #e2e8f0; border-radius:15px; color:#1e293b;">
+                                <h2 style="color:#0ea5e9;">Halo Pengguna,</h2>
+                                <p>Klik tombol di bawah untuk mengatur ulang kata sandi Anda. Sesi ini hanya berlaku untuk perangkat Anda saat ini.</p>
+                                <div style="text-align:center; margin:30px 0;">
+                                    <a href="${link}" style="background:#0ea5e9; color:#fff; padding:12px 25px; text-decoration:none; border-radius:10px; font-weight:bold;">Atur Ulang Sandi</a>
+                                </div>
+                                <p style="font-size:11px; color:#94a3b8;">Abaikan jika Anda tidak meminta ini.</p>
                                </div>`
                     });
-                    return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "Link pemulihan telah dikirim ke email Anda." }) };
-                } catch (e) { return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "Gagal mengirim email pemulihan." }) }; }
+                    return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "Link pemulihan terkirim." }) };
+                } catch (e) { return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "Gagal mengirim email." }) }; }
             }
-            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "Email atau konfigurasi server tidak lengkap." }) };
+            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "Email tidak ditemukan." }) };
         }
 
-        // ==========================================
-        // ACTION 3: ANALISA DASHBOARD (CEREBRAS -> GROQ)
-        // ==========================================
+        // ============================================================
+        // ACTION 3: ANALISA DASHBOARD (TOKEN-SAVER PROMPT)
+        // ============================================================
         if (action === 'analyze_data') {
-            const systemPrompt = `Kamu adalah AI Dazer Analytics. Konteks: ${userContext}.
-Berdasarkan data statistik lokal, buat laporan untuk Dasbor Eksekutif HANYA dalam JSON valid:
+            const systemPrompt = `Role: Senior Data Analyst. Output: JSON. 
+Goal: Berikan sintesis eksekutif dari statistik. Irit kata, padat info.
+JSON Structure:
 {
-  "insights": ["Tindakan eksekutif 1.", "Tindakan eksekutif 2."],
+  "insights": ["Point 1 (Tindakan)", "Point 2 (Tindakan)", "Point 3 (Tindakan)", "Point 4 (Tindakan)"],
   "cards": {"metric": "...", "segment": "...", "correlation": "...", "volatility": "..."}
 }`;
 
+            let response;
             try {
-                let textResponse = "";
-                try {
-                    if (!cerebrasKey) throw new Error("Cerebras Key kosong");
-                    const res1 = await fetch('https://api.cerebras.ai/v1/chat/completions', {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            model: 'llama3.1-70b', 
-                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Statistik:\n${data}` }], 
-                            temperature: 0.2
-                        })
-                    });
-                    const data1 = await res1.json();
-                    if (!res1.ok) throw new Error(data1.error?.message);
-                    textResponse = data1.choices?.[0]?.message?.content;
-                } catch (fallbackErr) {
-                    const res2 = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            model: 'llama-3.3-70b-versatile', 
-                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Statistik:\n${data}` }], 
-                            temperature: 0.2, response_format: { type: "json_object" }
-                        })
-                    });
-                    const data2 = await res2.json();
-                    textResponse = data2.choices?.[0]?.message?.content;
-                }
-
-                if (!textResponse) textResponse = '{"insights":["-"], "cards":null}';
-                let parsedData = { insights: ["-"], cards: null };
-                try {
-                    const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
-                    parsedData = JSON.parse(jsonMatch ? jsonMatch[0] : textResponse);
-                    if (Array.isArray(parsedData.insights)) parsedData.insights = parsedData.insights.map(item => cleanMarkdown(item)).slice(0, 7);
-                } catch (err) {}
-
-                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsedData) };
-            } catch (apiErr) {
-                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["⚠️ ERROR DASBOR", apiErr.message], cards: null }) };
+                // Priority 1: Cerebras (Kilat & Murah)
+                const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: 'llama3.1-70b', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Statistik: ${data}` }], temperature: 0.1 })
+                });
+                response = await res.json();
+            } catch (err) {
+                // Fallback 1: Groq
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Statistik: ${data}` }], temperature: 0.1, response_format: { type: "json_object" } })
+                });
+                response = await res.json();
             }
+
+            const rawText = response.choices[0].message.content;
+            let parsed = { insights: ["Data tidak dapat dianalisis."], cards: null };
+            try { parsed = JSON.parse(rawText.match(/\{[\s\S]*\}/)[0]); } catch (e) {}
+            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsed) };
         }
 
-        // ==========================================
-        // ACTION 4: CHATBOT (GROQ + TAVILY)
-        // ==========================================
+        // ============================================================
+        // ACTION 4: CHATBOT (GROUNDING TAVILY + SMART TRUNCATE)
+        // ============================================================
         if (action === 'chat') {
-            const tvlyKey = process.env.TAVILY_API_KEY;
-            let internetContext = "";
-            const needsInternet = message.toLowerCase().match(/(pasar|berita|tren|luar|bandingkan|sekarang|2026|harga|apa|siapa|terbaru|hari ini)/);
-            
-            if (needsInternet && tvlyKey) {
+            let webInfo = "";
+            // Cek apakah pertanyaan user butuh data internet
+            if (message.toLowerCase().match(/(berita|pasar|tren|terbaru|harga|update|2026|sekarang)/) && tvlyKey) {
                 try {
-                    const tvlyRes = await fetch('https://api.tavily.com/search', {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ api_key: tvlyKey, query: message, search_depth: "basic", max_results: 1 })
+                    const tvRes = await fetch('https://api.tavily.com/search', { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify({ api_key: tvlyKey, query: message, search_depth: "basic", max_results: 1 }) 
                     });
-                    if (tvlyRes.ok) {
-                        const tvlyData = await tvlyRes.json();
-                        if (tvlyData && tvlyData.results) internetContext = `[NetInfo: ${JSON.stringify(tvlyData.results)}]`;
-                    }
+                    const tvData = await tvRes.json();
+                    if (tvData.results) webInfo = `[Web: ${tvData.results[0].content.slice(0, 500)}]`;
                 } catch(e) {}
             }
 
-            const universalSystemPrompt = `Kamu adalah Dazer AI. Jawab maks 3 kalimat padat. Tanpa markdown bintang.
-Konteks: ${userContext} ${internetContext}`;
-
-            try {
-                const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST', headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        model: 'llama-3.3-70b-versatile', 
-                        messages: [{ role: 'system', content: universalSystemPrompt }, { role: 'user', content: message }], 
-                        temperature: 0.4, max_tokens: 300 
-                    })
-                });
-
-                const groqData = await groqResponse.json();
-                let reply = cleanMarkdown(groqData.choices?.[0]?.message?.content || "Sistem memproses instruksi.");
-                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply }) };
-            } catch (chatErr) {
-                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: `⚠️ Error Chat: ${chatErr.message}` }) };
-            }
+            const sysChat = `Dazer AI Analyst. Jawab maks 3 kalimat. Bahasa Indonesia. Tanpa markdown. Gunakan konteks data & web jika relevan.`;
+            const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    model: 'llama-3.3-70b-versatile', 
+                    messages: [{ role: 'system', content: sysChat }, { role: 'user', content: `Context: ${userContext} ${webInfo}\nQ: ${message}` }], 
+                    temperature: 0.5, max_tokens: 300 
+                })
+            });
+            const d = await res.json();
+            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: cleanMarkdown(d.choices[0].message.content) }) };
         }
 
-        // ==========================================
-        // ACTION 5: MODELING LAB (GEMINI -> OPENROUTER)
-        // ==========================================
+        // ============================================================
+        // ACTION 5: MODELING LAB (GEMINI ADVANCED + MATH VALIDATION)
+        // ============================================================
         if (action === 'run_model') {
-            const wolframId = process.env.WOLFRAM_APP_ID;
-            let mathValidation = "";
-            
+            let wInfo = "";
             if (wolframId && modelType === 'Clustering') {
                 try {
-                    const wolframQ = encodeURIComponent(`k-means clustering formula`);
-                    const wRes = await fetch(`http://api.wolframalpha.com/v1/result?appid=${wolframId}&i=${wolframQ}`);
-                    if (wRes.ok) mathValidation = await wRes.text();
+                    const wRes = await fetch(`http://api.wolframalpha.com/v1/result?appid=${wolframId}&i=kmeans+math+theory`);
+                    if (wRes.ok) wInfo = await wRes.text();
                 } catch(e) {}
             }
 
-            const prompt = `Lakukan evaluasi Data Mining saintifik.
-Teknik: ${modelType} | Algoritma: ${algorithm} | Hitungan Tambahan: ${mathValidation}
-Sampel Data User: ${data}
+            // Gunakan smart sampling untuk data besar agar hemat token di Gemini
+            const sampledData = smartDataTruncate(data, 6000);
 
-Berikan output narasi eksekutif tentang pola yang berhasil ditambang, probabilitas anomali, dan akurasi data. Gunakan bahasa Indonesia baku.`;
+            const promptModel = `Task: Scientific KDD Evaluation. 
+Method: ${modelType} | Algo: ${algorithm} | MathRef: ${wInfo}
+Data Sample: ${sampledData}
 
+Berikan narasi profesional (Pola, Confidence, Akurasi, Rekomendasi). Indonesia.`;
+
+            let finalRes = "";
             try {
-                let modelResult = "";
-                try {
-                    if (!geminiKey) throw new Error("Gemini Key kosong");
-                    const urlFlash = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-                    const res1 = await fetch(urlFlash, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] })
-                    });
-                    const data1 = await res1.json();
-                    if (!res1.ok) throw new Error(data1.error?.message);
-                    modelResult = data1.candidates?.[0]?.content?.parts?.[0]?.text;
-                } catch (err1) {
-                    if (!openRouterKey) throw new Error("OpenRouter Key kosong");
-                    const res2 = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                        method: 'POST',
-                        headers: { 'Authorization': `Bearer ${openRouterKey}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            model: 'google/gemini-1.5-flash',
-                            messages: [{ role: 'user', content: prompt }],
-                            temperature: 0.3
-                        })
-                    });
-                    const data2 = await res2.json();
-                    modelResult = data2.choices?.[0]?.message?.content;
-                }
-                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(modelResult) }) };
-            } catch (apiErr) {
-                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: apiErr.message }) };
+                // Primary: Gemini 1.5 Flash (Sangat murah & Konteks besar)
+                const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: promptModel }] }] }) 
+                });
+                const gData = await gRes.json();
+                finalRes = gData.candidates[0].content.parts[0].text;
+            } catch (e) {
+                // Fallback: OpenRouter
+                const oRes = await fetch('https://openrouter.ai/api/v1/chat/completions', { 
+                    method: 'POST', 
+                    headers: { 'Authorization': `Bearer ${openRouterKey}`, 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ model: 'google/gemini-1.5-flash', messages: [{ role: 'user', content: promptModel }] }) 
+                });
+                const oData = await oRes.json();
+                finalRes = oData.choices[0].message.content;
             }
+            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(finalRes) }) };
         }
 
-        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Aksi ditolak." }) };
+        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Bad Request" }) };
 
-    } catch (error) {
-        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: `Interupsi sistem: ${error.message}`, insights: ["-"], cards: null }) };
+    } catch (err) {
+        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Interupsi Mesin.", error: err.message }) };
     }
 };
