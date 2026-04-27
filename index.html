@@ -18,7 +18,6 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-    <link rel="manifest" href="site.webmanifest">
     <link rel="shortcut icon" href="favicon.ico">
 
     <!-- Libraries -->
@@ -192,7 +191,7 @@
     <main class="flex-grow w-full max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 flex flex-col">
         
         <!-- Welcome & Hero Section -->
-        <div id="home-extras" class="transition-opacity duration-400 opacity-100">
+        <div id="home-extras">
             <div id="hero-section" class="w-full max-w-4xl mx-auto fade-in-up mt-2 sm:mt-6">
                 <div class="text-center mb-6 sm:mb-8 px-2">
                     <h1 class="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-3 sm:mb-4 leading-tight">
@@ -206,7 +205,7 @@
                     <div class="mt-5 sm:mt-6 text-[10px] sm:text-[11px] lg:text-xs text-slate-500 font-bold flex flex-wrap items-center justify-center gap-2 sm:gap-3 bg-slate-100/50 py-2 sm:py-2.5 px-4 sm:px-5 rounded-full max-w-fit mx-auto border border-slate-200 shadow-sm text-left sm:text-center">
                         <span class="flex items-center gap-1 sm:gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0"></i> 100% Pemrosesan Lokal</span>
                         <span class="hidden sm:block text-slate-300">|</span>
-                        <span class="flex items-center gap-1 sm:gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 shrink-0"></i> Hemat Biaya Token AI</span>
+                        <span class="flex items-center gap-1 sm:gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 shrink-0"></i> Cepat & Ringan</span>
                     </div>
                 </div>
 
@@ -296,7 +295,7 @@
                                 <span class="text-center w-full pr-6">Bagaimana Dazer mengolah data?</span>
                                 <i data-lucide="chevron-down" class="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 absolute right-3 group-open:rotate-180 transition-transform"></i>
                             </summary>
-                            <p class="text-left text-[10px] sm:text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100 leading-relaxed font-medium">Dazer menggunakan alur KDD murni: Preprocessing cerdas lewat JS Lokal, Modeling lewat AI Groq yang berkecepatan tinggi, divalidasi dengan kalkulasi matematis Wolfram Alpha.</p>
+                            <p class="text-left text-[10px] sm:text-xs text-slate-600 mt-3 pt-3 border-t border-slate-100 leading-relaxed font-medium">Dazer menggunakan alur KDD murni: Preprocessing cerdas lewat JS Lokal, Dasbor diekstrak super cepat oleh Cerebras AI, Chatbot & Modeling dipacu oleh Groq, dan divalidasi dengan kalkulasi matematis Wolfram Alpha.</p>
                         </details>
                         <details class="bg-white border border-slate-200 rounded-xl px-4 py-3.5 cursor-pointer shadow-sm group">
                             <summary class="font-bold text-[11px] sm:text-sm text-slate-800 flex items-center justify-between relative outline-none py-1">
@@ -311,7 +310,7 @@
         </div>
 
         <!-- Setup Screen -->
-        <div id="setup-screen" class="hidden w-full max-w-4xl mx-auto flex flex-col gap-4 sm:gap-6 opacity-0 transition-opacity duration-400">
+        <div id="setup-screen" class="hidden w-full max-w-4xl mx-auto flex flex-col gap-4 sm:gap-6 animate-[fadeInUp_0.4s_ease-out]">
             <div class="bg-white border border-slate-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col shadow-sm">
                 
                 <div class="flex flex-col mb-4 sm:mb-5 pb-4 sm:pb-5 border-b border-slate-100 gap-3 sm:gap-4">
@@ -399,8 +398,8 @@
             </div>
         </div>
 
-        <!-- Clean Blue Loader -->
-        <div id="loading-state" class="hidden flex-1 w-full flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh] m-auto opacity-0 transition-opacity duration-400 px-4 text-center">
+        <!-- Clean Blue Loader (Centered perfectly) -->
+        <div id="loading-state" class="hidden flex-1 w-full flex flex-col items-center justify-center min-h-[60vh] sm:min-h-[70vh] m-auto fade-in-up px-4 text-center">
             
             <div class="uiverse-loader mb-4 sm:mb-6">
               <div class="circle"><div class="dot"></div><div class="outline"></div></div>
@@ -416,7 +415,7 @@
         </div>
 
         <!-- Dashboard Result -->
-        <div id="dashboard" class="hidden transition-opacity duration-500 opacity-0 w-full max-w-[90rem] mx-auto pb-12">
+        <div id="dashboard" class="hidden transition-all w-full max-w-[90rem] mx-auto pb-12">
             
             <div id="dashboard-controls" class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 sm:mb-8 gap-3 sm:gap-4 bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm">
                 <div class="w-full lg:w-auto">
@@ -509,7 +508,7 @@
                             </h3>
                             <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-500 font-medium mt-1.5">Konfigurasikan algoritma data mining otomatis dipacu Groq & Wolfram.</p>
                         </div>
-                        <button onclick="goToModel(event)" class="w-full sm:w-auto text-center justify-center flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white px-4 sm:px-5 py-2.5 sm:py-2.5 rounded-lg text-[10px] sm:text-[11px] lg:text-xs font-bold shadow-sm transition-all min-h-[40px] sm:min-h-[44px] shrink-0">
+                        <button onclick="goToModel()" class="w-full sm:w-auto text-center justify-center flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white px-4 sm:px-5 py-2.5 sm:py-2.5 rounded-lg text-[10px] sm:text-[11px] lg:text-xs font-bold shadow-sm transition-all min-h-[40px] sm:min-h-[44px] shrink-0">
                             Buka Studio Modeling <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
@@ -610,7 +609,7 @@
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 border-b border-slate-200 pb-3 sm:pb-4 gap-2 sm:gap-3">
                         <div class="flex flex-col">
                             <h3 class="font-black text-slate-900 text-[11px] sm:text-xs lg:text-sm flex items-center gap-1.5 sm:gap-2"><i data-lucide="trending-up" class="w-4 h-4 sm:w-5 sm:h-5 text-brand-500"></i> Prediksi Proyeksi Masa Depan</h3>
-                            <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600 font-semibold mt-1">Perkiraan lanjutan berdasarkan pola lokal yang terbentuk.</p>
+                            <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600 font-semibold mt-1">Perkiraan lanjutan berdasarkan pola yang terbentuk.</p>
                         </div>
                     </div>
                     <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 items-stretch">
@@ -632,7 +631,7 @@
                         <h3 class="font-black text-slate-900 text-[11px] sm:text-xs lg:text-sm flex items-center gap-1.5 sm:gap-2">
                             <i data-lucide="activity" class="w-4 h-4 sm:w-4 sm:h-4 text-brand-500"></i> Audit Kesehatan Data
                         </h3>
-                        <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600 font-semibold mt-1">Status kebersihan dan kelayakan metrik berbasis matematis lokal.</p>
+                        <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600 font-semibold mt-1">Status kebersihan dan kelayakan informasi yang diekstrak.</p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 items-stretch bg-slate-200 gap-px" id="data-health-container"></div>
                 </div>
@@ -641,8 +640,8 @@
                 <div class="glass-card flex flex-col relative transition-all w-full" id="matrix-card">
                     <div class="p-4 sm:p-5 lg:p-6 border-b border-slate-200 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3 sm:gap-4 bg-white shrink-0">
                         <div class="w-full xl:w-auto px-1 sm:px-0">
-                            <h3 class="font-black text-slate-900 text-[11px] sm:text-xs lg:text-sm">Klinik Data (Pembersihan Lanjutan)</h3>
-                            <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600 mt-1 font-semibold">Gunakan menu aksi presisi untuk mengoptimasi struktur data ini.</p>
+                            <h3 class="font-black text-slate-900 text-[11px] sm:text-xs lg:text-sm">Klinik Data (Pembersihan)</h3>
+                            <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600 mt-1 font-semibold">Cari cepat: Coba ketik rata-rata, ganjil, atau anomali.</p>
                         </div>
                         
                         <div class="flex flex-col md:flex-row w-full xl:w-auto gap-3 items-stretch md:items-center">
@@ -764,7 +763,7 @@
         </div>
     </footer>
 
-    <!-- Auth Gate Modal dengan Efek Opacity Mulus -->
+    <!-- Auth Gate Modal -->
     <div id="auth-gate-modal" class="fixed inset-0 z-[99999] hidden items-center justify-center p-4 opacity-0 transition-opacity duration-500">
         <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-sm"></div>
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative z-10 transform translate-y-0 transition-transform duration-500">
@@ -837,7 +836,7 @@
                 <ul class="space-y-2.5 sm:space-y-3.5 mb-6 sm:mb-8">
                     <li class="flex items-start gap-2.5">
                         <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600"></i></div>
-                        <span class="text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-700 leading-snug">Siklus Analisis Data Tanpa Batas (Unlimited)</span>
+                        <span class="text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-700 leading-snug">Siklus Analisis Dasbor Cerebras Tanpa Batas</span>
                     </li>
                     <li class="flex items-start gap-2.5">
                         <div class="mt-0.5 p-1 bg-emerald-100 rounded-md shrink-0"><i data-lucide="check" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600"></i></div>
@@ -924,7 +923,7 @@
                     const parts = token.split('.');
                     if(parts.length === 3) {
                         const payload = JSON.parse(atob(parts[1]));
-                        if (Date.now() - payload.issuedAt < 86400000) { // Valid 24h
+                        if (Date.now() - payload.issuedAt < 2592000000) { // Valid 30 Hari
                             currentUser = payload;
                             globalAnalysisQuota = payload.analysisQuota !== undefined ? payload.analysisQuota : 1;
                             globalChatQuota = payload.chatQuota !== undefined ? payload.chatQuota : 5;
@@ -1653,362 +1652,6 @@
                 isSimulated = false;
                 document.getElementById('simulate-btn-text').innerText = 'Simulasi Dampak Tindakan';
 
-                lucide.createIcons();
-                
-                injectInitialAIChat(data.fileName);
-                updateModelAlgorithms(); 
-            }, 400);
-        }
-
-        function injectInitialAIChat(fileName) {
-            const chatBox = document.getElementById('chat-messages');
-            chatBox.innerHTML = ''; 
-            
-            let greeting = `Halo! Saya Dazer AI Assistant Anda. Data dari ${fileName} sudah siap kita bahas.\n\nAnda punya sisa ${globalChatQuota} kesempatan bertanya. Mau kita mulai dari mana?`;
-            
-            let greetingId = 'greeting-' + Date.now();
-            chatBox.innerHTML += `
-                <div class="flex flex-col items-start w-full mb-3 animate-[fadeInUp_0.4s_ease-out]">
-                    <div class="chat-bubble chat-bubble-ai">
-                        <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-800 font-medium leading-relaxed whitespace-pre-wrap" id="${greetingId}"></p>
-                        <div class="mt-3 flex flex-wrap gap-2 sm:gap-2.5 transition-opacity duration-500 opacity-0" id="greeting-btns">
-                            <button onclick="document.getElementById('ai-chat-input').value='Tolong buatkan ringkasan dari dokumen ini.'; sendChatMessage();" class="text-[10px] sm:text-[11px] lg:text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 sm:px-3.5 py-2 rounded-lg font-bold transition-all min-h-[36px]">Ringkas Data</button>
-                            <button onclick="document.getElementById('ai-chat-input').value='Bagaimana cara meningkatkan hasil dari data ini?'; sendChatMessage();" class="text-[10px] sm:text-[11px] lg:text-xs bg-orange-100 hover:bg-orange-200 text-orange-800 px-3 sm:px-3.5 py-2 rounded-lg font-bold transition-all min-h-[36px]">Saran Peningkatan</button>
-                        </div>
-                    </div>
-                </div>`;
-            lucide.createIcons();
-            
-            typeWriterEffect(document.getElementById(greetingId), greeting, 15, chatBox, () => {
-                document.getElementById('greeting-btns')?.classList.remove('opacity-0');
-            });
-        }
-
-        function processCoreData(rawData, intentStr, fileName, setupIndustry, setupPurpose) {
-            if(!rawData || rawData.length < 2) { 
-                resetApp(); 
-                return showNotification("Dataset kosong atau struktur kolom tidak terbaca.", "error"); 
-            }
-            globalExtractedData = rawData; 
-            globalHeaders = rawData[0];
-            const data = globalExtractedData;
-            const numRows = data.length - 1;
-
-            sendSilentNotification(fileName, totalSizeUsed, numRows, globalHeaders);
-
-            let totalSizeMB = totalSizeUsed / (1024 * 1024);
-            if(totalSizeMB >= STREAM_THRESHOLD_MB) {
-                setTimeout(() => showNotification(`Data sangat besar (${totalSizeMB.toFixed(1)}MB). Sistem mengaktifkan mode cepat.`, "info"), 1200);
-            }
-
-            let numericCols = []; let catCols = []; let statRows = '';
-            let missingValueCount = 0; let totalCellsChecked = 0;
-            let duplicateRows = 0; let rowHashes = new Set();
-            globalOutlierRows.clear();
-            
-            for(let i=1; i<=numRows; i++) {
-                let hash = JSON.stringify(data[i]);
-                if(rowHashes.has(hash)) duplicateRows++; else rowHashes.add(hash);
-            }
-
-            globalHeaders.forEach((header, colIdx) => {
-                let isNumeric = true; let sum = 0, count = 0, min = Infinity, max = -Infinity;
-                let stdDevAcc = 0; let values = []; let valCounts = {};
-                let validCheckCount = 0;
-                
-                for(let i=1; i<Math.min(50, data.length); i++) {
-                    let cellStr = String(data[i][colIdx]).trim();
-                    if(!cellStr || cellStr === "undefined" || cellStr === "null") continue;
-                    validCheckCount++;
-                    if(isNaN(parseFloat(cellStr.replace(/,/g, '')))) { isNumeric = false; break; }
-                }
-                if(validCheckCount === 0) isNumeric = false;
-
-                if(isNumeric) {
-                    for(let i=1; i<=numRows; i++) {
-                        totalCellsChecked++;
-                        let cell = data[i][colIdx];
-                        if(cell !== "" && cell != null) {
-                            let val = parseFloat(String(cell).replace(/,/g, ''));
-                            if(!isNaN(val)) {
-                                values.push(val); sum += val; count++;
-                                if(val < min) min = val; if(val > max) max = val;
-                            } else { missingValueCount++; }
-                        } else { missingValueCount++; }
-                    }
-                    if(count > 0) {
-                        const avg = sum/count;
-                        values.forEach(v => stdDevAcc += Math.pow(v - avg, 2));
-                        const stdDev = Math.sqrt(stdDevAcc / count);
-                        let outliers = 0;
-                        for(let i=1; i<=numRows; i++) {
-                            let val = parseFloat(String(data[i][colIdx]).replace(/,/g, ''));
-                            if(!isNaN(val) && Math.abs(val - avg) > (2 * stdDev)) { outliers++; globalOutlierRows.add(i); }
-                        }
-
-                        numericCols.push({ idx: colIdx, name: header, min, max, avg, sum, count, outliers });
-                        let cleanHead = header.replace(/\*/g,'').substring(0, 30);
-                        statRows += `
-                            <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4"><span class="font-bold text-[10px] sm:text-[11px] lg:text-xs text-slate-800">${cleanHead}</span></td>
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4 text-center"><span class="text-[9px] sm:text-[10px] lg:text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Angka</span></td>
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4"><span class="text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-700">${avg.toLocaleString('id-ID', {maximumFractionDigits:1})}</span><span class="text-[9px] sm:text-[10px] lg:text-[11px] text-slate-400 block mt-1">Rata-rata</span></td>
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4"><span class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600 break-words">Min: ${min.toLocaleString('id-ID')}<br/>Max: ${max.toLocaleString('id-ID')}</span></td>
-                                <td class="py-3 sm:py-3.5 px-3 sm:px-4">${outliers > 0 ? `<span class="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] lg:text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded whitespace-nowrap"> ${outliers} Anomali</span>` : `<span class="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] lg:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded whitespace-nowrap"> Normal</span>`}</td>
-                            </tr>
-                        `;
-                    }
-                } else {
-                    let uniqueVals = new Set(); let colMiss = 0;
-                    for(let i=1; i<=numRows; i++) {
-                        totalCellsChecked++;
-                        let cell = data[i][colIdx];
-                        if(cell === "" || cell == null || cell === undefined) { colMiss++; missingValueCount++; continue; }
-                        let str = String(cell).trim();
-                        uniqueVals.add(str); valCounts[str] = (valCounts[str] || 0) + 1;
-                    }
-                    let mode = "-"; let modeCount = 0;
-                    for (const [key, value] of Object.entries(valCounts)) { if(value > modeCount) { modeCount = value; mode = key; } }
-
-                    catCols.push({ idx: colIdx, name: header.replace(/\*/g,''), uniqueCount: uniqueVals.size, mode, missing: colMiss, valCounts });
-                    let cleanHead = header.replace(/\*/g,'').substring(0, 30);
-                    
-                    statRows += `
-                        <tr class="hover:bg-slate-50 transition-colors border-b border-slate-100 last:border-0">
-                            <td class="py-3 sm:py-3.5 px-3 sm:px-4"><span class="font-bold text-[10px] sm:text-[11px] lg:text-xs text-slate-800">${cleanHead}</span></td>
-                            <td class="py-3 sm:py-3.5 px-3 sm:px-4 text-center"><span class="text-[9px] sm:text-[10px] lg:text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Kategori</span></td>
-                            <td class="py-3 sm:py-3.5 px-3 sm:px-4"><span class="text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-700 truncate max-w-[120px] block" title="${mode}">${mode}</span><span class="text-[9px] sm:text-[10px] lg:text-[11px] text-slate-400 block mt-1">Sering Muncul</span></td>
-                            <td class="py-3 sm:py-3.5 px-3 sm:px-4"><span class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600">${uniqueVals.size.toLocaleString('id-ID')} Variasi</span></td>
-                            <td class="py-3 sm:py-3.5 px-3 sm:px-4">${colMiss > 0 ? `<span class="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] lg:text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-1 rounded whitespace-nowrap"> ${colMiss} Sel Kosong</span>` : `<span class="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] lg:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded whitespace-nowrap"> Lengkap</span>`}</td>
-                        </tr>
-                    `;
-                }
-            });
-            
-            setHTML('statistics-container', statRows ? `
-                <table class="w-full text-left border-collapse border border-slate-200 rounded-xl">
-                    <thead class="bg-slate-100/50 border-b border-slate-200">
-                        <tr>
-                            <th class="py-3 px-3 sm:px-4 text-[9px] sm:text-[10px] lg:text-[11px] font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Atribut Kolom</th>
-                            <th class="py-3 px-3 sm:px-4 text-[9px] sm:text-[10px] lg:text-[11px] font-black text-slate-500 uppercase tracking-wider text-center whitespace-nowrap">Tipe Data</th>
-                            <th class="py-3 px-3 sm:px-4 text-[9px] sm:text-[10px] lg:text-[11px] font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Metrik Utama</th>
-                            <th class="py-3 px-3 sm:px-4 text-[9px] sm:text-[10px] lg:text-[11px] font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Rentang Nilai</th>
-                            <th class="py-3 px-3 sm:px-4 text-[9px] sm:text-[10px] lg:text-[11px] font-black text-slate-500 uppercase tracking-wider whitespace-nowrap">Kesehatan</th>
-                        </tr>
-                    </thead>
-                    <tbody>${statRows}</tbody>
-                </table>
-            ` : '<div class="text-center text-[10px] sm:text-[11px] lg:text-xs font-bold text-slate-600 py-10 sm:py-12 bg-slate-50 rounded-xl border border-slate-200">Data belum cukup untuk membuat ringkasan statistik.</div>');
-
-            let primaryNumericCol = numericCols.length > 0 ? numericCols.sort((a,b) => b.sum - a.sum)[0] : null;
-            let outlierCountTotal = numericCols.reduce((a,c) => a + c.outliers, 0);
-            
-            const totalActualCells = totalCellsChecked || (numRows * globalHeaders.length);
-            const completenessPct = totalActualCells > 0 ? Math.max(0, 100 - ((missingValueCount / totalActualCells) * 100)) : 0;
-            let totalNumericDataCells = numericCols.reduce((acc, c) => acc + c.count, 0);
-            const qualityPct = totalNumericDataCells > 0 ? Math.max(0, 100 - ((outlierCountTotal / totalNumericDataCells) * 100)) : 100;
-            const uniquePct = numRows > 0 ? Math.max(0, 100 - ((duplicateRows / numRows) * 100)) : 100;
-            const overallHealthScore = Math.round((completenessPct + qualityPct + uniquePct) / 3);
-            
-            setHTML('data-health-container', `
-                <div class="col-span-1 bg-white flex flex-col justify-center items-center p-4 sm:p-5 lg:p-6 hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default border-b lg:border-b-0 sm:border-r lg:border-r border-slate-200 group health-card">
-                    <div class="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
-                        <div class="h-loader" data-target="${overallHealthScore / 100}">
-                            <div class="h-loader__fill-glow"></div>
-                            <div class="h-loader__fill"></div>
-                            <div class="h-loader__middle">
-                                <div class="h-loader__value">
-                                    <div data-value>0%</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-[10px] sm:text-[11px] lg:text-xs font-black text-slate-600 uppercase tracking-widest mt-3.5 sm:mt-5 text-center">Skor Kelayakan</p>
-                </div>
-                <div class="col-span-1 bg-white p-4 sm:p-5 lg:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-b lg:border-b-0 sm:border-r-0 lg:border-r border-slate-200 health-card">
-                    <div class="mb-3 sm:mb-4 flex justify-between items-start gap-2 relative z-10">
-                        <div>
-                            <p class="text-[11px] sm:text-xs lg:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Kelengkapan Data</p>
-                            <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Terdapat <b>${missingValueCount.toLocaleString('id-ID')} sel kosong</b> (defisit). Pengisian data yang komprehensif akan memastikan hasil komputasi metrik berjalan presisi dan bebas dari bias statistik.</p>
-                        </div>
-                        <div class="p-2 rounded-lg shrink-0 ${completenessPct >= 90 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'} shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="${completenessPct >= 90 ? 'check-circle' : 'alert-triangle'}" class="w-4 h-4"></i></div>
-                    </div>
-                    <div class="flex items-center gap-3 relative z-10 mt-auto">
-                        <div class="text-sm sm:text-base lg:text-lg font-black ${completenessPct >= 90 ? 'text-emerald-600' : 'text-amber-600'} w-10 sm:w-12 shrink-0">${completenessPct.toFixed(0)}%</div>
-                        <div class="modern-progress-wrapper w-full">
-                            <div class="modern-progress-bar ${completenessPct >= 90 ? 'bg-emerald-500' : 'bg-amber-500'}" data-target-width="${completenessPct}%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-span-1 bg-white p-4 sm:p-5 lg:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-b sm:border-b-0 lg:border-b-0 sm:border-r lg:border-r border-slate-200 health-card">
-                    <div class="mb-3 sm:mb-4 flex justify-between items-start gap-2 relative z-10">
-                        <div>
-                            <p class="text-[11px] sm:text-xs lg:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Konsistensi Logika</p>
-                            <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Terdeteksi <b>${outlierCountTotal.toLocaleString('id-ID')} anomali</b> (outlier). Meminimalisir lonjakan angka yang tidak wajar ini sangat penting untuk menstabilkan model tren dan grafik masa depan.</p>
-                        </div>
-                        <div class="p-2 rounded-lg shrink-0 ${qualityPct >= 90 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'} shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="${qualityPct >= 90 ? 'check-circle' : 'alert-triangle'}" class="w-4 h-4"></i></div>
-                    </div>
-                    <div class="flex items-center gap-3 relative z-10 mt-auto">
-                        <div class="text-sm sm:text-base lg:text-lg font-black ${qualityPct >= 90 ? 'text-emerald-600' : 'text-rose-600'} w-10 sm:w-12 shrink-0">${qualityPct.toFixed(0)}%</div>
-                        <div class="modern-progress-wrapper w-full">
-                            <div class="modern-progress-bar ${qualityPct >= 90 ? 'bg-emerald-500' : 'bg-rose-500'}" data-target-width="${qualityPct}%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-span-1 bg-white p-4 sm:p-5 lg:p-6 flex flex-col justify-between h-full hover:bg-slate-50 transition-all hover:shadow-md relative z-0 hover:z-10 cursor-default group border-none health-card">
-                    <div class="mb-3 sm:mb-4 flex justify-between items-start gap-2 relative z-10">
-                        <div>
-                            <p class="text-[11px] sm:text-xs lg:text-sm font-black text-slate-900 group-hover:text-brand-700 transition-colors">Keunikan Baris</p>
-                            <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-600 font-medium mt-1.5 leading-relaxed">Ditemukan <b>${duplicateRows.toLocaleString('id-ID')} duplikat</b> identik. Menghapus data kembar ini adalah langkah esensial untuk menyaring kualitas akhir serta menghindari perhitungan ganda.</p>
-                        </div>
-                        <div class="p-2 rounded-lg shrink-0 ${uniquePct >= 95 ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-100 text-brand-700'} shadow-sm group-hover:scale-110 transition-transform"><i data-lucide="${uniquePct >= 95 ? 'check-circle' : 'alert-triangle'}" class="w-4 h-4"></i></div>
-                    </div>
-                    <div class="flex items-center gap-3 relative z-10 mt-auto">
-                        <div class="text-sm sm:text-base lg:text-lg font-black ${uniquePct >= 95 ? 'text-emerald-600' : 'text-brand-600'} w-10 sm:w-12 shrink-0">${uniquePct.toFixed(0)}%</div>
-                        <div class="modern-progress-wrapper w-full">
-                            <div class="modern-progress-bar ${uniquePct >= 95 ? 'bg-emerald-500' : 'bg-brand-500'}" data-target-width="${uniquePct}%"></div>
-                        </div>
-                    </div>
-                </div>
-            `);
-
-            setTimeout(() => {
-                const observerHealth = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if(entry.isIntersecting) {
-                            const loaderEl = entry.target.querySelector('.h-loader');
-                            if(loaderEl && !loaderEl.dataset.animated) {
-                                loaderEl.dataset.animated = 'true';
-                                new CircularLoader(loaderEl);
-                            }
-                            const bars = entry.target.querySelectorAll('.modern-progress-bar');
-                            bars.forEach(bar => {
-                                bar.style.width = bar.getAttribute('data-target-width');
-                            });
-                        }
-                    });
-                }, { threshold: 0.15 });
-
-                document.querySelectorAll('.health-card').forEach(el => observerHealth.observe(el));
-            }, 100);
-
-            let scorecards = []; 
-            scorecards.push({ title: "Total Baris Data", value: numRows.toLocaleString('id-ID'), sub: `Memuat ${globalHeaders.length} Kolom`, filter: '' });
-            if(primaryNumericCol) scorecards.push({ title: `Titik Puncak`, value: primaryNumericCol.sum > 0 ? primaryNumericCol.sum.toLocaleString('id-ID', {notation: 'compact', maximumFractionDigits:1}) : primaryNumericCol.max.toLocaleString('id-ID'), sub: `Dari kolom ${primaryNumericCol.name.substring(0,8)}..`, filter: '' });
-            else if (catCols.length > 0) scorecards.push({ title: "Sering Muncul", value: catCols[0].mode, sub: "Kategori Dominan", filter: '' });
-            scorecards.push({ title: "Angka Anomali", value: `${outlierCountTotal}`, sub: "Saring Anomali", filter: 'anomali' });
-            scorecards.push({ title: "Nilai Kosong", value: missingValueCount.toLocaleString('id-ID'), sub: "Saring Sel Kosong", filter: 'kosong' });
-
-            let cLabels = []; let cData = []; let cTitle = "Pemetaan Data";
-            let totalChartVal = 0;
-            
-            if(catCols.length > 0 && numericCols.length > 0) {
-                cTitle = `Hubungan: ${primaryNumericCol.name} dengan ${catCols[0].name}`;
-                let map = {};
-                for(let i=1; i<data.length; i++) { 
-                    let k = data[i][catCols[0].idx]; let v = parseFloat(data[i][primaryNumericCol.idx]) || 0; 
-                    if(k && k.toString().trim() !== "") map[k] = (map[k] || 0) + v; 
-                }
-                let sorted = Object.keys(map).map(k => ({k, v: map[k]})).sort((a,b) => b.v - a.v);
-                
-                if (sorted.length > 10) {
-                    let top10 = sorted.slice(0, 10);
-                    let othersVal = sorted.slice(10).reduce((sum, item) => sum + item.v, 0);
-                    top10.push({k: "Lainnya", v: othersVal});
-                    sorted = top10;
-                }
-
-                cLabels = sorted.map(i => i.k); cData = sorted.map(i => i.v);
-                cData.forEach(v => totalChartVal += v);
-            } else if (catCols.length > 0) {
-                cTitle = `Seberapa Sering Muncul: ${catCols[0].name}`;
-                let map = {};
-                for(let i=1; i<data.length; i++) { 
-                    let k = data[i][catCols[0].idx]; 
-                    if(k && k.toString().trim() !== "") map[k] = (map[k] || 0) + 1; 
-                }
-                let sorted = Object.keys(map).map(k => ({k, v: map[k]})).sort((a,b) => b.v - a.v);
-                
-                if (sorted.length > 10) {
-                    let top10 = sorted.slice(0, 10);
-                    let othersVal = sorted.slice(10).reduce((sum, item) => sum + item.v, 0);
-                    top10.push({k: "Lainnya", v: othersVal});
-                    sorted = top10;
-                }
-
-                cLabels = sorted.map(i => i.k); cData = sorted.map(i => i.v);
-                cData.forEach(v => totalChartVal += v);
-            } else if (numericCols.length > 0) {
-                 cTitle = `Persebaran Angka`;
-            }
-
-            let loaderPulse = `<div class="flex items-center justify-start gap-1.5 sm:gap-2 text-brand-600 animate-pulse"><i data-lucide="brain-circuit" class="w-4 h-4 sm:w-4 sm:h-4"></i><span class="text-[10px] sm:text-[11px] lg:text-xs font-bold">Menganalisis...</span></div>`;
-            document.getElementById('metric-insight-text').innerHTML = loaderPulse;
-            document.getElementById('segment-insight-text').innerHTML = loaderPulse;
-            document.getElementById('correlation-insight-text').innerHTML = loaderPulse;
-            document.getElementById('volatility-insight-text').innerHTML = loaderPulse;
-
-            const finalData = { 
-                fileName, scorecards, insights: [], overallHealthScore, completenessPct, qualityPct, uniquePct, 
-                chart: { title: cTitle, labels: cLabels, data: cData, total: totalChartVal },
-                primaryColName: primaryNumericCol ? primaryNumericCol.name : null,
-                intentStr: intentStr
-            };
-            currentReportData = finalData;
-            
-            initFilterView(); 
-            renderDashboard(finalData);
-
-            // Panggil API Backend (Groq)
-            getAIInsights({ numRows, overallHealthScore, completenessPct, qualityPct, anomalies: outlierCountTotal }, setupIndustry, primaryNumericCol, catCols);
-        }
-
-        function renderDashboard(data) {
-            const loading = document.getElementById('loading-state');
-            loading.style.opacity = '0';
-            
-            setTimeout(() => {
-                loading.classList.add('hidden');
-                
-                const dashboard = document.getElementById('dashboard');
-                dashboard.classList.remove('hidden');
-                void dashboard.offsetWidth; // Force reflow
-                dashboard.style.opacity = '1';
-
-                const intentDisplay = document.getElementById('dashboard-intent-display');
-                if (intentDisplay) intentDisplay.innerHTML = `<i data-lucide="file-check" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-500"></i> ${data.intentStr}`;
-
-                const scorecardsContainer = document.getElementById('scorecards-container');
-                if (scorecardsContainer) {
-                    let scHTML = '';
-                    data.scorecards.forEach(sc => {
-                        let actionBtn = '';
-                        if (sc.filter) {
-                            let color = sc.filter === 'anomali' ? '#e11d48' : '#d97706';
-                            actionBtn = `<button onclick="triggerFilter('${sc.filter}')" class="magic-btn mt-3 w-full sm:w-max" style="--color: ${color};">${sc.sub}</button>`;
-                        } else {
-                            actionBtn = `<p class="text-[10px] sm:text-[11px] lg:text-xs font-bold text-slate-500 mt-2.5">${sc.sub}</p>`;
-                        }
-                        
-                        scHTML += `
-                            <div class="bg-white p-4 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center items-center text-center hover:border-brand-300 hover:shadow-md transition-all group gap-1.5 sm:gap-2 aspect-square min-h-[140px] sm:min-h-[160px]">
-                                <h4 class="text-[10px] sm:text-[11px] lg:text-[12px] font-black uppercase tracking-widest text-slate-500 group-hover:text-brand-500 transition-colors line-clamp-2 px-1">${sc.title}</h4>
-                                <div class="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 tracking-tight truncate w-full px-1 sm:px-2">${sc.value}</div>
-                                ${actionBtn}
-                            </div>
-                        `;
-                    });
-                    scorecardsContainer.innerHTML = scHTML;
-                }
-
-                currentChartData = data.chart;
-                document.getElementById('chart-title').innerText = data.chart.title;
-                document.getElementById('chart-type-selector').value = 'line';
-                changeChartType('line');
-                
-                isSimulated = false;
-                document.getElementById('simulate-btn-text').innerText = 'Simulasi Dampak Tindakan';
-
                 if (data.primaryColName || (data.chart && data.chart.data.length > 0)) {
                     document.getElementById('prediction-card').style.display = 'flex';
                     renderPredictionChart();
@@ -2411,70 +2054,47 @@
             showNotification("Perubahan telah dibatalkan ke data sebelumnya.", "success");
         }
 
-        // TEKNOLOGI SCRIPT: Pembersihan Data Akurat & Presisi
         function cleanData(type) {
-            if(!globalExtractedData || globalExtractedData.length <= 1) return;
-            const overlay = document.getElementById('table-loading-overlay'); 
-            const loadingText = document.getElementById('table-loading-text');
+            if(!globalExtractedData || globalExtractedData.length === 0) return;
+            const overlay = document.getElementById('table-loading-overlay'); const loadingText = document.getElementById('table-loading-text');
             overlay.classList.remove('hidden');
             
-            const stepsTidy = ["Menganalisa baris dan spasi...", "Menghapus karakter non-standar...", "Menstandarisasi nilai...", "Selesai..."];
-            const stepsDups = ["Memindai baris data...", "Menghapus duplikasi & baris nihil...", "Selesai..."];
+            const stepsTidy = ["Menganalisa baris...", "Membersihkan ruang kosong...", "Selesai..."];
+            const stepsDups = ["Mencari yang ganda...", "Menghapus kesamaan...", "Selesai..."];
             const steps = type === 'tidy' ? stepsTidy : stepsDups;
             
             let stepIdx = 0; loadingText.innerText = steps[stepIdx];
             let stepIntv = setInterval(() => {
                 stepIdx++;
-                if(stepIdx < steps.length) { 
-                    loadingText.innerText = steps[stepIdx]; 
-                } else {
-                    clearInterval(stepIntv); 
-                    saveToDataHistory(); 
-                    let initialRows = globalExtractedData.length - 1;
-                    
+                if(stepIdx < steps.length) { loadingText.innerText = steps[stepIdx]; } else {
+                    clearInterval(stepIntv); saveToDataHistory(); let initialRows = globalExtractedData.length - 1;
                     if(type === 'tidy') {
                         let changedCells = 0;
                         globalExtractedData = globalExtractedData.map((row, rIdx) => { 
-                            if (rIdx === 0) return row; // Lindungi Header
+                            if (rIdx === 0) return row; 
                             return row.map(cell => { 
                                 if (typeof cell === 'string') { 
-                                    // Pembersihan Spasi, Trim, dan karakter tersembunyi
-                                    let cleanStr = cell.replace(/[\x00-\x1F\x7F-\x9F]/g, "").replace(/\s+/g, ' ').trim(); 
-                                    if(cleanStr === "") cleanStr = null;
-                                    
-                                    if (cleanStr !== cell) changedCells++; 
-                                    return cleanStr; 
-                                } 
-                                return cell; 
+                                    let trimmed = cell.trim().replace(/\s+/g, ' '); 
+                                    if (trimmed !== cell) changedCells++; 
+                                    return trimmed; 
+                                } return cell; 
                             }); 
                         });
-                        showNotification(`Berhasil merapihkan dan menstandarisasi ${changedCells.toLocaleString('id-ID')} entitas sel data.`, "success");
+                        showNotification(`Berhasil merapihkan ${changedCells.toLocaleString('id-ID')} kotak data.`, "success");
                     } else if (type === 'remove_dups') {
-                        let uniqueSet = new Set(); 
-                        let cleanDataArr = [globalExtractedData[0]]; // Lindungi Header
-                        
+                        let uniqueSet = new Set(); let cleanDataArr = [globalExtractedData[0]]; 
                         for(let i = 1; i < globalExtractedData.length; i++) { 
-                            // Konversi ke string identik untuk cek duplikasi
-                            let strHash = JSON.stringify(globalExtractedData[i]); 
-                            if(!uniqueSet.has(strHash)) { 
-                                // Abaikan baris yang isinya kosong total
-                                const isEmptyRow = globalExtractedData[i].every(c => c === null || c === undefined || String(c).trim() === "");
-                                if(!isEmptyRow) {
-                                    uniqueSet.add(strHash); 
-                                    cleanDataArr.push(globalExtractedData[i]); 
-                                }
-                            } 
+                            let str = globalExtractedData[i].join('|'); 
+                            if(!uniqueSet.has(str) && str.replace(/\|/g, '').trim() !== "") { uniqueSet.add(str); cleanDataArr.push(globalExtractedData[i]); } 
                         }
-                        let removed = initialRows - (cleanDataArr.length - 1); 
-                        globalExtractedData = cleanDataArr;
-                        showNotification(`Berhasil mengeliminasi ${removed.toLocaleString('id-ID')} baris duplikat atau nihil.`, "success");
+                        let removed = initialRows - (cleanDataArr.length - 1); globalExtractedData = cleanDataArr;
+                        showNotification(`Berhasil menghapus ${removed.toLocaleString('id-ID')} baris data.`, "success");
                     }
-                    
                     const input = document.getElementById('table-search');
                     if(input) initFilterView(input.value); 
                     overlay.classList.add('hidden');
                 }
-            }, 700);
+            }, 600);
         }
 
         async function sendChatMessage() {
@@ -2496,7 +2116,6 @@
             
             const lowerMsg = msg.toLowerCase();
             
-            // Smart Caching Aktif (0 Biaya Token API)
             if(chatCache[lowerMsg]) {
                 const typingId = 'typing-' + Date.now();
                 chatBox.innerHTML += `
@@ -2527,10 +2146,8 @@
                 return;
             }
 
-            // Kurangi Kuota & Update JWT
             globalChatQuota--;
             updateQuotaUI();
-            updateStoredQuota(); 
 
             const typingId = 'typing-' + Date.now();
             chatBox.innerHTML += `
@@ -2547,7 +2164,6 @@
             lucide.createIcons(); chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
-                // Token Saver: Mengirim sampel dan ringkasan, bukan ribuan mentahan baris
                 const contextData = globalExtractedData.slice(0, 5).map(row => row.join(", ")).join("\n");
                 const payloadContext = `File: ${currentReportData?.fileName}\nKol: ${globalHeaders.slice(0,10).join(',')}\nSampel:\n${contextData}`;
 
@@ -2566,7 +2182,6 @@
                 const result = await response.json();
                 let chosenReply = result.reply || "Pesan Anda sudah dimengerti oleh sistem.";
 
-                // Simpan ke Memori Caching
                 chatCache[lowerMsg] = chosenReply;
 
                 document.getElementById(typingId)?.remove();
@@ -2630,37 +2245,10 @@
             const m = document.getElementById('history-modal'); const c = document.getElementById('history-modal-content');
             c.classList.remove('scale-100', 'opacity-100'); c.classList.add('scale-95', 'opacity-0'); setTimeout(()=> m.classList.add('hidden'), 300);
         }
-        
-        // Peralihan Lembut: Reset Aplikasi
         function resetApp() { 
-            const toHide = ['dashboard', 'setup-screen', 'loading-state'];
-            toHide.forEach(id => {
-                const el = document.getElementById(id);
-                if (el && !el.classList.contains('hidden')) {
-                    el.style.opacity = '0';
-                    setTimeout(() => el.classList.add('hidden'), 400);
-                }
-            });
-
-            const authGate = document.getElementById('auth-gate-modal');
-            if (!authGate.classList.contains('hidden')) {
-                 authGate.classList.remove('opacity-100');
-                 authGate.classList.add('opacity-0');
-                 setTimeout(() => {
-                     authGate.classList.add('hidden');
-                     authGate.classList.remove('flex');
-                 }, 400);
-            }
-
-            setTimeout(() => {
-                const home = document.getElementById('home-extras');
-                home.classList.remove('hidden'); 
-                home.style.opacity = '0';
-                void home.offsetWidth;
-                home.style.opacity = '1';
-                window.scrollTo({top:0, behavior: 'smooth'}); 
-            }, 450);
-
+            ['dashboard', 'setup-screen', 'loading-state'].forEach(id => document.getElementById(id)?.classList.add('hidden')); 
+            document.getElementById('home-extras').classList.remove('hidden'); 
+            window.scrollTo({top:0, behavior: 'smooth'}); 
             globalFilesArray = []; totalSizeUsed = 0; updateStorageIndicator();
             document.getElementById('matrix-card')?.classList.remove('matrix-fullscreen'); isMatrixFullscreen = false; document.body.style.overflow = '';
         }
