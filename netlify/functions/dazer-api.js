@@ -1,5 +1,6 @@
 // dazer-api.js - Backend KDD (V9 - Multi-API: Groq, Gemini, Wolfram, Tavily)
 const nodemailer = require('nodemailer');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const rateLimitMap = new Map();
 
 function cleanMarkdown(text) {
@@ -109,27 +110,22 @@ Keluarkan HANYA format JSON valid tanpa markdown tambahan:
 }`;
 
             try {
-                // Memanggil Gemini 1.5 Flash dengan JSON mode aktif (Menggunakan alias -latest agar tidak 404)
-                const aiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        systemInstruction: { parts: [{ text: systemPrompt }] },
-                        contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
-                        generationConfig: {
-                            temperature: 0.2,
-                            responseMimeType: "application/json" // GARANSI 100% JSON
-                        }
-                    })
+                // Menggunakan Official Google SDK
+                const genAI = new GoogleGenerativeAI(geminiKey);
+                const model = genAI.getGenerativeModel({
+                    model: "gemini-1.5-flash",
+                    systemInstruction: systemPrompt
                 });
 
-                if (!aiResponse.ok) {
-                    const errBody = await aiResponse.text();
-                    throw new Error(`[HTTP ${aiResponse.status}] ${errBody}`);
-                }
+                const result = await model.generateContent({
+                    contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
+                    generationConfig: {
+                        temperature: 0.2,
+                        responseMimeType: "application/json" // GARANSI 100% JSON
+                    }
+                });
 
-                const aiData = await aiResponse.json();
-                let textResponse = aiData.candidates?.[0]?.content?.parts?.[0]?.text || '{"insights":["-"], "cards":null}';
+                const textResponse = result.response.text() || '{"insights":["-"], "cards":null}';
                 
                 let parsedData = { insights: ["-"], cards: null };
                 try {
@@ -235,16 +231,12 @@ Sampel Data User: ${data}
 Berikan output narasi eksekutif tentang pola yang berhasil ditambang, hubungannya dengan probabilitas anomali, dan akurasi data. Gunakan bahasa Indonesia baku dan terstruktur.`;
 
             try {
-                const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
-                    })
-                });
+                // Menggunakan Official Google SDK
+                const genAI = new GoogleGenerativeAI(geminiKey);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-                const geminiData = await geminiRes.json();
-                const modelResult = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "Model gagal dikalkulasi karena keterbatasan sampel data.";
+                const result = await model.generateContent(prompt);
+                const modelResult = result.response.text() || "Model gagal dikalkulasi karena keterbatasan sampel data.";
 
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(modelResult) }) };
             } catch (geminiErr) {
