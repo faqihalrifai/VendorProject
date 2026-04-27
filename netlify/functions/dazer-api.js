@@ -1,6 +1,5 @@
-// dazer-api.js - Backend KDD (V9 - Multi-API: Groq, Gemini, Wolfram, Tavily)
+// dazer-api.js - Backend KDD (V10 - Native Fetch API, Anti-Cache Netlify)
 const nodemailer = require('nodemailer');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
 const rateLimitMap = new Map();
 
 function cleanMarkdown(text) {
@@ -85,12 +84,27 @@ Waktu Lokal  : ${body.localTime || '-'}`;
         }
 
         // ==========================================
-        // ACTION 2: ANALISA DASHBOARD (GEMINI)
+        // ACTION 2: ANALISA DASHBOARD (GEMINI NATIVE HTTP)
         // Mengerjakan Kartu Eksekutif & Ceklis Tindakan
         // ==========================================
         if (action === 'analyze_data') {
-            const geminiKey = process.env.GEMINI_API_KEY || "gen-lang-client-0971690214"; 
-            if (!geminiKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ insights: ["Error: API Gemini belum dikonfigurasi di Netlify."], cards: null }) };
+            const geminiKey = (process.env.GEMINI_API_KEY || "").trim();
+            
+            // Validasi Kunci API Super Ketat
+            if (!geminiKey || !geminiKey.startsWith("AIza")) { 
+                return { 
+                    statusCode: 200, 
+                    headers: corsHeaders, 
+                    body: JSON.stringify({ 
+                        insights: [
+                            "⚠️ API Key Gemini Tidak Valid atau Kosong!", 
+                            "Key yang Anda masukkan salah.",
+                            "Silakan buat API Key yang asli (berawalan 'AIzaSy...') di Google AI Studio lalu simpan di Netlify."
+                        ], 
+                        cards: null 
+                    }) 
+                }; 
+            }
 
             const systemPrompt = `Kamu adalah AI Dazer Analytics. Konteks: ${userContext}.
 Berdasarkan data statistik lokal, buat laporan untuk Dasbor Eksekutif.
@@ -110,30 +124,41 @@ Keluarkan HANYA format JSON valid tanpa markdown tambahan:
 }`;
 
             try {
-                const genAI = new GoogleGenerativeAI(geminiKey);
                 let textResponse = "";
 
                 try {
-                    // PERCOBAAN 1: Gemini 1.5 Flash (Sangat disarankan karena cepat dan gratis)
-                    const model1 = genAI.getGenerativeModel({ model: "gemini-1.5-flash", systemInstruction: systemPrompt });
-                    const res1 = await model1.generateContent({
-                        contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
-                        generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
-                    });
-                    textResponse = res1.response.text();
-                } catch (err1) {
-                    console.warn("Model gemini-1.5-flash gagal, beralih ke gemini-1.5-pro...", err1.message);
-                    try {
-                        // PERCOBAAN 2: Gemini 1.5 Pro (Fallback)
-                        const model2 = genAI.getGenerativeModel({ model: "gemini-1.5-pro", systemInstruction: systemPrompt });
-                        const res2 = await model2.generateContent({
+                    // PERCOBAAN 1: Tembakan Langsung HTTP Native ke Gemini 1.5 Flash
+                    const urlFlash = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+                    const res1 = await fetch(urlFlash, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            systemInstruction: { parts: [{ text: systemPrompt }] },
                             contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
                             generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
-                        });
-                        textResponse = res2.response.text();
-                    } catch (err2) {
-                        throw err2; // Jika dua-duanya mati, lempar pesan error
-                    }
+                        })
+                    });
+                    
+                    const data1 = await res1.json();
+                    if (!res1.ok) throw new Error(data1.error?.message || "Unknown Flash Error");
+                    textResponse = data1.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                } catch (err1) {
+                    console.warn("Flash HTTP gagal, beralih ke gemini-1.0-pro (Native)...", err1.message);
+                    
+                    // PERCOBAAN 2: Tembakan Langsung HTTP Native ke Gemini 1.0 Pro (Bypass System Prompt JSON)
+                    const urlPro = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${geminiKey}`;
+                    const res2 = await fetch(urlPro, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ role: 'user', parts: [{ text: systemPrompt + "\n\nStatistik Data Mentah:\n" + data }] }]
+                        })
+                    });
+                    
+                    const data2 = await res2.json();
+                    if (!res2.ok) throw new Error(data2.error?.message || "Unknown Fallback Error");
+                    textResponse = data2.candidates?.[0]?.content?.parts?.[0]?.text;
                 }
 
                 if (!textResponse) textResponse = '{"insights":["-"], "cards":null}';
@@ -218,10 +243,16 @@ Konteks: ${userContext} ${internetContext}`;
         // Mengevaluasi hasil KDD dari model.html
         // ==========================================
         if (action === 'run_model') {
-            const geminiKey = process.env.GEMINI_API_KEY || "gen-lang-client-0971690214";
+            const geminiKey = (process.env.GEMINI_API_KEY || "").trim();
             const wolframId = process.env.WOLFRAM_APP_ID;
 
-            if (!geminiKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "API Gemini belum dikonfigurasi." }) };
+            if (!geminiKey || !geminiKey.startsWith("AIza")) { 
+                return { 
+                    statusCode: 200, 
+                    headers: corsHeaders, 
+                    body: JSON.stringify({ error: "API Key Gemini Tidak Valid! Pastikan Key berawalan 'AIza'." }) 
+                }; 
+            }
 
             let mathValidation = "";
             // Simulasi Perhitungan Matematis Presisi via Wolfram Alpha jika APP ID tersedia
@@ -243,20 +274,39 @@ Sampel Data User: ${data}
 Berikan output narasi eksekutif tentang pola yang berhasil ditambang, hubungannya dengan probabilitas anomali, dan akurasi data. Gunakan bahasa Indonesia baku dan terstruktur.`;
 
             try {
-                const genAI = new GoogleGenerativeAI(geminiKey);
                 let modelResult = "";
 
                 try {
-                    // Percobaan 1 (Cepat & Gratis)
-                    const model1 = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-                    const res1 = await model1.generateContent(prompt);
-                    modelResult = res1.response.text();
+                    // Percobaan 1 HTTP Native (Flash)
+                    const urlFlash = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+                    const res1 = await fetch(urlFlash, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ role: 'user', parts: [{ text: prompt }] }]
+                        })
+                    });
+                    
+                    const data1 = await res1.json();
+                    if (!res1.ok) throw new Error(data1.error?.message || "Unknown Flash Error");
+                    modelResult = data1.candidates?.[0]?.content?.parts?.[0]?.text;
+
                 } catch (err1) {
-                    console.warn("Model gemini-1.5-flash gagal, beralih ke gemini-1.5-pro...", err1.message);
-                    // Percobaan 2 (Cadangan)
-                    const model2 = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-                    const res2 = await model2.generateContent(prompt);
-                    modelResult = res2.response.text();
+                    console.warn("Flash (Model) gagal, beralih ke gemini-1.0-pro (Native)...", err1.message);
+                    
+                    // Percobaan 2 HTTP Native (Fallback Klasik)
+                    const urlPro = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${geminiKey}`;
+                    const res2 = await fetch(urlPro, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ role: 'user', parts: [{ text: prompt }] }]
+                        })
+                    });
+                    
+                    const data2 = await res2.json();
+                    if (!res2.ok) throw new Error(data2.error?.message || "Unknown Fallback Error");
+                    modelResult = data2.candidates?.[0]?.content?.parts?.[0]?.text;
                 }
 
                 if (!modelResult) modelResult = "Model gagal dikalkulasi karena keterbatasan sampel data.";
