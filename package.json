@@ -23,6 +23,7 @@
   "author": "Faqih Al Rifai",
   "license": "ISC",
   "dependencies": {
+    "@google/generative-ai": "latest",
     "nodemailer": "^6.9.13"
   }
 }
