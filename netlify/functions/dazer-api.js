@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V11 - Native Fetch API, Final Fix 1.5 Series)
+// dazer-api.js - Backend KDD (V12 - 100% Pure Groq AI Architecture)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -46,6 +46,9 @@ exports.handler = async (event, context) => {
         catch (err) { return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Format request ditolak." }) }; }
 
         const { action, message, context: userContext, data, modelType, algorithm } = body;
+        
+        // Kunci Groq Utama yang digunakan di seluruh aksi
+        const groqKey = process.env.GROQ_API_KEY;
 
         // ==========================================
         // ACTION 1: SILENT LOGGER (NODEMAILER)
@@ -84,32 +87,27 @@ Waktu Lokal  : ${body.localTime || '-'}`;
         }
 
         // ==========================================
-        // ACTION 2: ANALISA DASHBOARD (GEMINI NATIVE HTTP)
+        // ACTION 2: ANALISA DASHBOARD (PURE GROQ)
         // Mengerjakan Kartu Eksekutif & Ceklis Tindakan
         // ==========================================
         if (action === 'analyze_data') {
-            // Menggunakan Fallback Default Key sesuai instruksi
-            const geminiKey = (process.env.GEMINI_API_KEY || "gen-lang-client-0971690214").trim();
-            
-            if (!geminiKey) { 
+            if (!groqKey) { 
                 return { 
                     statusCode: 200, 
                     headers: corsHeaders, 
-                    body: JSON.stringify({ 
-                        insights: ["⚠️ API Key Gemini Kosong!"], 
-                        cards: null 
-                    }) 
+                    body: JSON.stringify({ insights: ["⚠️ API Key Groq Kosong! Harap isi di Netlify."], cards: null }) 
                 }; 
             }
 
+            // System prompt dioptimalkan dengan kata "JSON" agar Groq mengerti format strict
             const systemPrompt = `Kamu adalah AI Dazer Analytics. Konteks: ${userContext}.
 Berdasarkan data statistik lokal, buat laporan untuk Dasbor Eksekutif.
-Keluarkan HANYA format JSON valid tanpa markdown tambahan:
+Keluarkan HANYA format JSON valid. Wajib kembalikan format JSON persis seperti ini:
 {
   "insights": [
-    "Tindakan eksekutif 1 (Maksimal 3 kalimat).",
-    "Tindakan eksekutif 2...",
-    "Tindakan eksekutif 3..."
+    "Tindakan eksekutif 1 (Maksimal 3 kalimat padat).",
+    "Tindakan eksekutif 2 (Maksimal 3 kalimat padat).",
+    "Tindakan eksekutif 3 (Maksimal 3 kalimat padat)."
   ],
   "cards": {
     "metric": "Evaluasi performa metrik (2 kalimat padat)",
@@ -120,62 +118,40 @@ Keluarkan HANYA format JSON valid tanpa markdown tambahan:
 }`;
 
             try {
-                let textResponse = "";
+                const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        model: 'llama-3.3-70b-versatile', 
+                        messages: [
+                            { role: 'system', content: systemPrompt }, 
+                            { role: 'user', content: `Statistik Data Mentah:\n${data}` }
+                        ], 
+                        temperature: 0.2,
+                        response_format: { type: "json_object" } // GARANSI 100% JSON GROQ
+                    })
+                });
 
-                try {
-                    // PERCOBAAN 1: Tembakan Langsung HTTP Native ke Gemini 1.5 Flash
-                    const urlFlash = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-                    const res1 = await fetch(urlFlash, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            systemInstruction: { parts: [{ text: systemPrompt }] },
-                            contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
-                            generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
-                        })
-                    });
-                    
-                    const data1 = await res1.json();
-                    if (!res1.ok) throw new Error(data1.error?.message || "Unknown Flash Error");
-                    textResponse = data1.candidates?.[0]?.content?.parts?.[0]?.text;
+                const aiData = await groqResponse.json();
+                
+                if (!groqResponse.ok) throw new Error(aiData.error?.message || "Unknown Groq Error");
 
-                } catch (err1) {
-                    console.warn("Flash HTTP gagal, beralih ke gemini-1.5-pro (Native)...", err1.message);
-                    
-                    // PERCOBAAN 2: Tembakan Langsung HTTP Native ke Gemini 1.5 Pro
-                    const urlPro = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiKey}`;
-                    const res2 = await fetch(urlPro, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            systemInstruction: { parts: [{ text: systemPrompt }] },
-                            contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
-                            generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
-                        })
-                    });
-                    
-                    const data2 = await res2.json();
-                    if (!res2.ok) throw new Error(data2.error?.message || "Unknown Fallback Error");
-                    textResponse = data2.candidates?.[0]?.content?.parts?.[0]?.text;
-                }
-
-                if (!textResponse) textResponse = '{"insights":["-"], "cards":null}';
+                let textResponse = aiData.choices?.[0]?.message?.content || '{"insights":["-"], "cards":null}';
                 
                 let parsedData = { insights: ["-"], cards: null };
                 try {
-                    const jsonMatch = textResponse.match(/\{[\s\S]*\}/);
-                    parsedData = JSON.parse(jsonMatch ? jsonMatch[0] : textResponse);
+                    parsedData = JSON.parse(textResponse);
                     if (Array.isArray(parsedData.insights)) {
                         parsedData.insights = parsedData.insights.map(item => cleanMarkdown(item)).filter(i => i.trim().length > 5).slice(0, 7);
                     }
                 } catch (err) {
-                    console.error("Gagal parse JSON Gemini");
+                    console.error("Gagal parse JSON Groq");
                 }
 
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsedData) };
 
             } catch (apiErr) {
-                console.error("!!! GEMINI ANALYZER ERROR !!!", apiErr.message);
+                console.error("!!! GROQ ANALYZER ERROR !!!", apiErr.message);
                 return { 
                     statusCode: 200, headers: corsHeaders, 
                     body: JSON.stringify({ 
@@ -190,7 +166,6 @@ Keluarkan HANYA format JSON valid tanpa markdown tambahan:
         // Otak interaktif yang super cepat
         // ==========================================
         if (action === 'chat') {
-            const groqKey = process.env.GROQ_API_KEY;
             const tvlyKey = process.env.TAVILY_API_KEY;
 
             if (!groqKey) return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Error: API Groq belum dikonfigurasi." }) };
@@ -213,8 +188,9 @@ Keluarkan HANYA format JSON valid tanpa markdown tambahan:
             }
 
             // PROMPT RINGKAS
-            const universalSystemPrompt = `Dazer AI. Jawab maks 3 kalimat padat. Tanpa markdown bintang.
-Konteks: ${userContext} ${internetContext}`;
+            const universalSystemPrompt = `Kamu adalah Dazer AI. Jawab maks 3 kalimat padat. Jangan gunakan markdown bintang.
+Konteks Data: ${userContext} 
+Info Internet Tambahan: ${internetContext}`;
 
             try {
                 const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -224,7 +200,7 @@ Konteks: ${userContext} ${internetContext}`;
                         model: 'llama-3.3-70b-versatile', 
                         messages: [{ role: 'system', content: universalSystemPrompt }, { role: 'user', content: message }], 
                         temperature: 0.4,
-                        max_tokens: 200 // Hemat Token Chat
+                        max_tokens: 300 
                     })
                 });
 
@@ -237,18 +213,17 @@ Konteks: ${userContext} ${internetContext}`;
         }
 
         // ==========================================
-        // ACTION 4: MODELING LAB (GEMINI + WOLFRAM)
+        // ACTION 4: MODELING LAB (PURE GROQ + WOLFRAM)
         // Mengevaluasi hasil KDD dari model.html
         // ==========================================
         if (action === 'run_model') {
-            const geminiKey = (process.env.GEMINI_API_KEY || "gen-lang-client-0971690214").trim();
             const wolframId = process.env.WOLFRAM_APP_ID;
 
-            if (!geminiKey) { 
+            if (!groqKey) { 
                 return { 
                     statusCode: 200, 
                     headers: corsHeaders, 
-                    body: JSON.stringify({ error: "API Key Gemini Kosong!" }) 
+                    body: JSON.stringify({ error: "API Key Groq Kosong!" }) 
                 }; 
             }
 
@@ -262,56 +237,39 @@ Konteks: ${userContext} ${internetContext}`;
                 } catch(e) {}
             }
 
-            // Prompt untuk Gemini
+            // Prompt untuk Groq
             const prompt = `Lakukan evaluasi Data Mining saintifik.
 Teknik: ${modelType}
 Algoritma: ${algorithm}
 Hitungan Tambahan: ${mathValidation}
 Sampel Data User: ${data}
 
-Berikan output narasi eksekutif tentang pola yang berhasil ditambang, hubungannya dengan probabilitas anomali, dan akurasi data. Gunakan bahasa Indonesia baku dan terstruktur.`;
+Berikan output narasi eksekutif tentang pola yang berhasil ditambang, hubungannya dengan probabilitas anomali, dan akurasi data. Gunakan bahasa Indonesia baku dan terstruktur. Hindari penggunaan karakter bintang (*).`;
 
             try {
-                let modelResult = "";
+                const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        model: 'llama-3.3-70b-versatile', 
+                        messages: [
+                            { role: 'system', content: "Kamu adalah Data Scientist ahili di Dazer." }, 
+                            { role: 'user', content: prompt }
+                        ], 
+                        temperature: 0.3
+                    })
+                });
 
-                try {
-                    // Percobaan 1 HTTP Native (Flash)
-                    const urlFlash = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
-                    const res1 = await fetch(urlFlash, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ role: 'user', parts: [{ text: prompt }] }]
-                        })
-                    });
-                    
-                    const data1 = await res1.json();
-                    if (!res1.ok) throw new Error(data1.error?.message || "Unknown Flash Error");
-                    modelResult = data1.candidates?.[0]?.content?.parts?.[0]?.text;
+                const groqData = await groqResponse.json();
+                if (!groqResponse.ok) throw new Error(groqData.error?.message || "Unknown Groq Model Error");
 
-                } catch (err1) {
-                    console.warn("Flash (Model) gagal, beralih ke gemini-1.5-pro (Native)...", err1.message);
-                    
-                    // Percobaan 2 HTTP Native (Fallback 1.5 Pro)
-                    const urlPro = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiKey}`;
-                    const res2 = await fetch(urlPro, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ role: 'user', parts: [{ text: prompt }] }]
-                        })
-                    });
-                    
-                    const data2 = await res2.json();
-                    if (!res2.ok) throw new Error(data2.error?.message || "Unknown Fallback Error");
-                    modelResult = data2.candidates?.[0]?.content?.parts?.[0]?.text;
-                }
+                let modelResult = groqData.choices?.[0]?.message?.content;
 
                 if (!modelResult) modelResult = "Model gagal dikalkulasi karena keterbatasan sampel data.";
 
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(modelResult) }) };
-            } catch (geminiErr) {
-                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: geminiErr.message }) };
+            } catch (apiErr) {
+                return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: apiErr.message }) };
             }
         }
 
