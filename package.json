@@ -1,7 +1,7 @@
 {
   "name": "dazer-analytics",
-  "version": "2.0.0",
-  "description": "Backend dependencies untuk Netlify Functions Dazer Analytics (Multi-API V9: DeepSeek, Groq, Gemini, WolframAlpha, Tavily)",
+  "version": "4.0.0",
+  "description": "Backend dependencies untuk Netlify Functions Dazer Analytics (100% Pure Groq Llama 3 Architecture)",
   "main": "index.html",
   "engines": {
     "node": ">=18.0.0"
@@ -16,14 +16,12 @@
     "riset data",
     "olah data",
     "kdd",
-    "deepseek",
     "groq",
-    "gemini"
+    "llama3"
   ],
   "author": "Faqih Al Rifai",
   "license": "ISC",
   "dependencies": {
-    "@google/generative-ai": "latest",
     "nodemailer": "^6.9.13"
   }
 }
