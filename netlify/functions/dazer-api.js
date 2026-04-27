@@ -85,7 +85,7 @@ Waktu Lokal  : ${body.localTime || '-'}`;
         }
 
         // ==========================================
-        // ACTION 2: ANALISA DASHBOARD (GEMINI 1.5 FLASH)
+        // ACTION 2: ANALISA DASHBOARD (GEMINI)
         // Mengerjakan Kartu Eksekutif & Ceklis Tindakan
         // ==========================================
         if (action === 'analyze_data') {
@@ -112,20 +112,35 @@ Keluarkan HANYA format JSON valid tanpa markdown tambahan:
             try {
                 // Menggunakan Official Google SDK
                 const genAI = new GoogleGenerativeAI(geminiKey);
-                const model = genAI.getGenerativeModel({
-                    model: "gemini-1.5-flash-latest", // Update spesifik agar tidak 404
-                    systemInstruction: systemPrompt
-                });
+                let textResponse = "";
 
-                const result = await model.generateContent({
-                    contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
-                    generationConfig: {
-                        temperature: 0.2,
-                        responseMimeType: "application/json" // GARANSI 100% JSON
-                    }
-                });
+                try {
+                    // Percobaan 1: Gemini 1.5 Flash (Super Cepat & JSON Strict)
+                    const model = genAI.getGenerativeModel({
+                        model: "gemini-1.5-flash",
+                        systemInstruction: systemPrompt
+                    });
 
-                const textResponse = result.response.text() || '{"insights":["-"], "cards":null}';
+                    const result = await model.generateContent({
+                        contents: [{ role: 'user', parts: [{ text: `Statistik Data Mentah:\n${data}` }] }],
+                        generationConfig: {
+                            temperature: 0.2,
+                            responseMimeType: "application/json" 
+                        }
+                    });
+                    textResponse = result.response.text();
+
+                } catch (fallbackErr) {
+                    console.warn("Fallback aktif, beralih ke gemini-pro...", fallbackErr.message);
+                    // Percobaan 2 (Penyelamat 404): Beralih ke model klasik Gemini 1.0 Pro
+                    const fallbackModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+                    const result = await fallbackModel.generateContent(
+                        systemPrompt + "\n\nStatistik Data Mentah:\n" + data
+                    );
+                    textResponse = result.response.text();
+                }
+
+                if (!textResponse) textResponse = '{"insights":["-"], "cards":null}';
                 
                 let parsedData = { insights: ["-"], cards: null };
                 try {
@@ -222,7 +237,7 @@ Konteks: ${userContext} ${internetContext}`;
                 } catch(e) {}
             }
 
-            // Prompt untuk Gemini 1.5 Flash
+            // Prompt untuk Gemini
             const prompt = `Lakukan evaluasi Data Mining saintifik.
 Teknik: ${modelType}
 Algoritma: ${algorithm}
@@ -234,10 +249,22 @@ Berikan output narasi eksekutif tentang pola yang berhasil ditambang, hubunganny
             try {
                 // Menggunakan Official Google SDK
                 const genAI = new GoogleGenerativeAI(geminiKey);
-                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" }); // Update spesifik agar tidak 404
+                let modelResult = "";
 
-                const result = await model.generateContent(prompt);
-                const modelResult = result.response.text() || "Model gagal dikalkulasi karena keterbatasan sampel data.";
+                try {
+                    // Percobaan 1
+                    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                    const result = await model.generateContent(prompt);
+                    modelResult = result.response.text();
+                } catch (fallbackErr) {
+                    console.warn("Fallback aktif (Model Lab), beralih ke gemini-pro...", fallbackErr.message);
+                    // Percobaan 2
+                    const fallbackModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+                    const result = await fallbackModel.generateContent(prompt);
+                    modelResult = result.response.text();
+                }
+
+                if (!modelResult) modelResult = "Model gagal dikalkulasi karena keterbatasan sampel data.";
 
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(modelResult) }) };
             } catch (geminiErr) {
