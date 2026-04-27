@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="theme-color" content="#ffffff">
     
     <title>Masuk / Daftar | Dazer Analytics</title>
@@ -112,7 +113,7 @@
 
             <!-- Main Auth Card -->
             <div id="auth-card" class="glass-card fade-in">
-                <div class="flex border-b border-slate-100">
+                <div class="flex border-b border-slate-100" id="auth-tabs">
                     <button id="tab-login" onclick="switchTab('login')" class="tab-btn active">Masuk</button>
                     <button id="tab-register" onclick="switchTab('register')" class="tab-btn">Daftar</button>
                 </div>
@@ -123,7 +124,7 @@
                         <p id="auth-subtitle" class="text-xs font-medium text-slate-400 mt-2">Masuk untuk akses penuh ke Studio Modeling.</p>
                     </div>
 
-                    <!-- Login -->
+                    <!-- Login Form -->
                     <form id="form-login" onsubmit="handleAuth(event, 'login')" class="space-y-4">
                         <div class="relative">
                             <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
@@ -141,7 +142,7 @@
                         </button>
                     </form>
 
-                    <!-- Register -->
+                    <!-- Register Form -->
                     <form id="form-register" onsubmit="handleAuth(event, 'register')" class="space-y-4 hidden">
                         <div class="relative">
                             <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
@@ -158,8 +159,26 @@
                         <button type="submit" id="btn-register" class="btn-primary">Buat Akun Gratis</button>
                     </form>
 
+                    <!-- Reset Password Form (Hidden by default) -->
+                    <form id="form-reset" onsubmit="handleResetPassword(event)" class="space-y-4 hidden">
+                        <div class="bg-blue-50 p-4 rounded-xl mb-4 border border-blue-100">
+                            <p class="text-[11px] text-blue-700 font-semibold leading-relaxed">
+                                Mode Pemulihan: Silakan buat kata sandi baru untuk akun <span id="reset-email-display" class="font-black underline"></span>
+                            </p>
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                            <input type="password" id="reset-password" class="auth-input" placeholder="Kata Sandi Baru" required minlength="6">
+                        </div>
+                        <div class="relative">
+                            <i data-lucide="shield-check" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                            <input type="password" id="reset-password-confirm" class="auth-input" placeholder="Ulangi Kata Sandi" required minlength="6">
+                        </div>
+                        <button type="submit" id="btn-reset" class="btn-primary">Perbarui & Masuk</button>
+                    </form>
+
                     <!-- Divider -->
-                    <div class="relative my-8">
+                    <div id="auth-divider" class="relative my-8">
                         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
                         <div class="relative flex justify-center text-[10px] uppercase font-black tracking-widest text-slate-300"><span class="bg-white px-4">Atau</span></div>
                     </div>
@@ -187,6 +206,16 @@
         const API_URL = "/.netlify/functions/dazer-api";
 
         window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const isResetMode = urlParams.get('reset') === 'true';
+            const emailToReset = urlParams.get('email');
+
+            // DETEKSI MODE RESET DARI EMAIL
+            if (isResetMode && emailToReset) {
+                activateResetMode(emailToReset);
+                return;
+            }
+
             const token = localStorage.getItem('Dazer_Secure_JWT');
             if(token) {
                 try {
@@ -207,6 +236,46 @@
                 });
             }
         };
+
+        function activateResetMode(email) {
+            document.getElementById('auth-tabs').classList.add('hidden');
+            document.getElementById('form-login').classList.add('hidden');
+            document.getElementById('form-register').classList.add('hidden');
+            document.getElementById('google-btn-container').classList.add('hidden');
+            document.getElementById('auth-divider').classList.add('hidden');
+            
+            document.getElementById('form-reset').classList.remove('hidden');
+            document.getElementById('auth-title').innerText = "Pemulihan Akun";
+            document.getElementById('auth-subtitle').innerText = "Buat keamanan baru untuk akun Anda.";
+            document.getElementById('reset-email-display').innerText = email;
+            
+            showNotification("Mode pemulihan aktif.", "success");
+        }
+
+        async function handleResetPassword(e) {
+            e.preventDefault();
+            const pass = document.getElementById('reset-password').value;
+            const confirm = document.getElementById('reset-password-confirm').value;
+            const email = new URLSearchParams(window.location.search).get('email');
+
+            if (pass !== confirm) return showNotification("Konfirmasi sandi tidak cocok.", "error");
+            
+            const btn = document.getElementById('btn-reset');
+            btn.disabled = true;
+            btn.innerText = "Memperbarui...";
+
+            // Simulasikan Update Password (karena kita pakai JWT lokal)
+            const userData = {
+                name: "User Dazer", email, tier: 'registered',
+                analysisQuota: 2, chatQuota: 5, modelQuota: 1,
+                issuedAt: Date.now()
+            };
+
+            localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
+            showNotification("Sandi diperbarui! Masuk otomatis...", "success");
+            
+            setTimeout(() => window.location.href = "index.html?auth=success", 1500);
+        }
 
         async function handleGoogleResponse(response) {
             const base64Url = response.credential.split('.')[1];
@@ -282,7 +351,7 @@
 
         async function forgotPassword() {
             const email = document.getElementById('login-email').value;
-            if(!email) return showNotification("Tolong masukkan email Anda dulu.", "error");
+            if(!email) return showNotification("Masukkan email Anda di kotak Login dulu.", "error");
             
             showNotification("Memproses permintaan pemulihan...", "info");
             try {
@@ -292,7 +361,7 @@
                     body: JSON.stringify({ action: 'forgot_password', email }) 
                 });
                 const data = await res.json();
-                if(data.message) showNotification(data.message, "success");
+                if(data.message) showNotification("Cek email Anda untuk link pemulihan!", "success");
                 else showNotification("Gagal memproses email.", "error");
             } catch(e) { showNotification("Terjadi kendala server.", "error"); }
         }
@@ -308,7 +377,12 @@
             i.setAttribute('data-lucide', type === 'error' ? 'alert-circle' : 'info');
             n.classList.remove('hidden', 'opacity-0'); n.classList.add('flex', 'opacity-100');
             lucide.createIcons();
-            setTimeout(() => { n.classList.replace('opacity-100', 'opacity-0'); setTimeout(() => n.classList.add('hidden'), 300); }, 3500);
+            setTimeout(() => {
+                if (n) {
+                    n.classList.replace('opacity-100', 'opacity-0');
+                    setTimeout(() => n.classList.add('hidden'), 300);
+                }
+            }, 3500);
         }
     </script>
 </body>
