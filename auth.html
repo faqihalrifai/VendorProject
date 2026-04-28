@@ -48,36 +48,41 @@
             background: #ffffff; 
             border: 1px solid #e2e8f0;
             box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
-            border-radius: 1.5rem; 
-            transition: all 0.4s ease;
+            border-radius: 1.25rem; /* Sedikit lebih kotak agar terlihat modern-compact */
+            transition: all 0.3s ease;
             overflow: hidden;
         }
 
+        /* Memadatkan Input Fields */
         .auth-input {
-            width: 100%; font-size: 14px; font-weight: 600; color: #1e293b; background-color: #f8fafc;
-            border: 1.5px solid #e2e8f0; border-radius: 1rem; padding: 0.85rem 1rem 0.85rem 2.75rem;
+            width: 100%; font-size: 13px; font-weight: 600; color: #1e293b; background-color: #f8fafc;
+            border: 1.5px solid #e2e8f0; border-radius: 0.75rem; 
+            padding: 0.65rem 1rem 0.65rem 2.5rem; /* Padding atas-bawah dikurangi */
             outline: none; transition: all 0.2s ease;
         }
-        .auth-input:focus { border-color: #0ea5e9; background-color: #ffffff; box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1); }
+        .auth-input:focus { border-color: #0ea5e9; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
 
+        /* Memadatkan Tombol Primary */
         .btn-primary {
-            width: 100%; padding: 0.85rem; border-radius: 1rem; font-weight: 800; font-size: 13px;
+            width: 100%; padding: 0.7rem; border-radius: 0.75rem; font-weight: 800; font-size: 13px;
             text-transform: uppercase; letter-spacing: 0.5px; background: #0ea5e9; color: white;
-            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.35);
+            transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
         }
-        .btn-primary:hover:not(:disabled) { background: #0284c7; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45); }
-        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:hover:not(:disabled) { background: #0284c7; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(14, 165, 233, 0.35); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
 
+        /* Memadatkan Tab Buttons */
         .tab-btn {
-            flex: 1; padding: 1rem; font-size: 12px; font-weight: 800; color: #94a3b8;
-            border-bottom: 3px solid transparent; transition: all 0.3s ease; text-transform: uppercase;
+            flex: 1; padding: 0.75rem; font-size: 11px; font-weight: 800; color: #94a3b8;
+            border-bottom: 2px solid transparent; transition: all 0.2s ease; text-transform: uppercase;
         }
         .tab-btn.active { color: #0ea5e9; border-bottom-color: #0ea5e9; background-color: #f0f9ff; }
         
-        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        #google-btn-container { min-height: 44px; display: flex; justify-content: center; width: 100%; }
+        #google-btn-container { min-height: 40px; display: flex; justify-content: center; width: 100%; }
         
         .loader-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -87,31 +92,31 @@
 
     <!-- Header -->
     <nav class="w-full bg-white/80 backdrop-blur-md border-b border-slate-100 fixed top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-4 h-14 flex justify-between items-center"> <!-- Dikurangi jadi h-14 -->
             <button onclick="window.location.href='index.html'" class="flex items-center gap-2 group">
-                <div class="bg-slate-50 p-2 rounded-full border border-slate-200 group-hover:bg-brand-50 transition-colors">
+                <div class="bg-slate-50 p-1.5 rounded-full border border-slate-200 group-hover:bg-brand-50 transition-colors">
                     <i data-lucide="arrow-left" class="w-4 h-4 text-slate-500 group-hover:text-brand-600"></i>
                 </div>
-                <span class="font-bold text-sm text-slate-600">Beranda</span>
+                <span class="font-bold text-xs text-slate-600">Beranda</span>
             </button>
             <div class="flex items-center gap-2">
-                <i data-lucide="bar-chart-2" class="text-brand-500 w-6 h-6"></i>
-                <span class="font-black text-xl tracking-tighter">Dazer</span>
+                <i data-lucide="bar-chart-2" class="text-brand-500 w-5 h-5"></i>
+                <span class="font-black text-lg tracking-tighter">Dazer</span>
             </div>
         </div>
     </nav>
 
     <!-- Main -->
-    <main class="flex-grow flex items-center justify-center p-4 pt-24 pb-12">
-        <div class="w-full max-w-[420px]">
+    <main class="flex-grow flex items-center justify-center p-4 pt-20 pb-8"> <!-- Padding dikurangi -->
+        <div class="w-full max-w-[380px]"> <!-- Lebar card dikurangi sedikit agar proporsional -->
             
             <!-- Auto-Login State -->
-            <div id="auto-login-overlay" class="hidden glass-card p-12 text-center flex flex-col items-center justify-center animate-pulse">
-                <div class="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mb-6 border border-brand-100">
-                    <i data-lucide="user-check" class="w-10 h-10 text-brand-500"></i>
+            <div id="auto-login-overlay" class="hidden glass-card p-8 text-center flex flex-col items-center justify-center animate-pulse">
+                <div class="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mb-4 border border-brand-100">
+                    <i data-lucide="user-check" class="w-8 h-8 text-brand-500"></i>
                 </div>
-                <h2 class="text-xl font-black text-slate-900">Sesi Aktif</h2>
-                <p class="text-xs text-slate-500 mt-2 font-medium">Menyinkronkan data profil Anda...</p>
+                <h2 class="text-lg font-black text-slate-900">Sesi Aktif</h2>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Menyinkronkan data profil Anda...</p>
             </div>
 
             <!-- Main Auth Card -->
@@ -121,91 +126,91 @@
                     <button id="tab-register" onclick="switchTab('register')" class="tab-btn">Daftar</button>
                 </div>
 
-                <div class="p-6 sm:p-10">
-                    <div class="text-center mb-10">
-                        <h1 id="auth-title" class="text-2xl font-black text-slate-900 tracking-tight">Selamat Datang</h1>
-                        <p id="auth-subtitle" class="text-xs font-medium text-slate-400 mt-2">Masuk untuk akses penuh ke Studio Modeling.</p>
+                <div class="p-5 sm:p-6"> <!-- Padding dalam card dikurangi secara drastis -->
+                    <div class="text-center mb-6"> <!-- Margin bawah dikurangi -->
+                        <h1 id="auth-title" class="text-xl font-black text-slate-900 tracking-tight">Selamat Datang</h1>
+                        <p id="auth-subtitle" class="text-xs font-medium text-slate-400 mt-1">Akses penuh ke Studio Modeling.</p>
                     </div>
 
                     <!-- Login Form -->
-                    <form id="form-login" onsubmit="handleAuth(event, 'login')" class="space-y-4">
-                        <div class="relative">
-                            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                    <form id="form-login" onsubmit="handleAuth(event, 'login')" class="space-y-3"> <!-- space dikurangi -->
+                        <div class="relative group">
+                            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-brand-500 transition-colors"></i>
                             <input type="email" id="login-email" class="auth-input" placeholder="Email" required>
                         </div>
-                        <div class="relative">
-                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <div class="relative group">
+                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-brand-500 transition-colors"></i>
                             <input type="password" id="login-password" class="auth-input" placeholder="Password" required>
                         </div>
-                        <div class="flex justify-end">
+                        <div class="flex justify-end pt-1">
                             <button type="button" onclick="forgotPassword()" class="text-[11px] font-extrabold text-brand-600 hover:text-brand-700 transition-colors">Lupa Password?</button>
                         </div>
-                        <button type="submit" id="btn-login" class="btn-primary flex items-center justify-center gap-2">
-                            <span>Masuk ke Dasbor</span> <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        <button type="submit" id="btn-login" class="btn-primary flex items-center justify-center gap-2 mt-2">
+                            <span>Masuk ke Dasbor</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                         </button>
                     </form>
 
                     <!-- Register Form -->
-                    <form id="form-register" onsubmit="handleAuth(event, 'register')" class="space-y-4 hidden">
-                        <div class="relative">
-                            <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                    <form id="form-register" onsubmit="handleAuth(event, 'register')" class="space-y-3 hidden">
+                        <div class="relative group">
+                            <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-brand-500 transition-colors"></i>
                             <input type="text" id="reg-name" class="auth-input" placeholder="Nama Lengkap" required>
                         </div>
-                        <div class="relative">
-                            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <div class="relative group">
+                            <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-brand-500 transition-colors"></i>
                             <input type="email" id="reg-email" class="auth-input" placeholder="Alamat Email" required>
                         </div>
-                        <div class="relative">
-                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
-                            <input type="password" id="reg-password" class="auth-input" placeholder="Password (Min. 6 Karakter)" required minlength="6">
+                        <div class="relative group">
+                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-brand-500 transition-colors"></i>
+                            <input type="password" id="reg-password" class="auth-input" placeholder="Password (Min. 6 Kar.)" required minlength="6">
                         </div>
-                        <button type="submit" id="btn-register" class="btn-primary">Buat Akun Gratis</button>
+                        <button type="submit" id="btn-register" class="btn-primary mt-2">Buat Akun Gratis</button>
                     </form>
 
-                    <!-- Reset Password Form (Magic Link Mode) -->
-                    <form id="form-reset" onsubmit="handleResetPassword(event)" class="space-y-4 hidden">
-                        <div class="bg-brand-50 p-4 rounded-xl border border-brand-100 mb-4">
+                    <!-- Reset Password Form -->
+                    <form id="form-reset" onsubmit="handleResetPassword(event)" class="space-y-3 hidden">
+                        <div class="bg-brand-50 p-3 rounded-lg border border-brand-100 mb-3">
                             <p class="text-[11px] text-brand-700 font-bold leading-relaxed text-center">
                                 <i data-lucide="shield-check" class="w-3.5 h-3.5 inline-block mr-1"></i>
-                                Pemulihan: <span id="reset-email-display" class="underline"></span>
+                                Memulihkan: <span id="reset-email-display" class="underline"></span>
                             </p>
                         </div>
-                        <div class="relative">
-                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <div class="relative group">
+                            <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-brand-500 transition-colors"></i>
                             <input type="password" id="reset-new-password" class="auth-input pr-10" placeholder="Sandi Baru" required minlength="6">
                             <button type="button" onclick="togglePasswordVisibility('reset-new-password', 'eye-new')" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 outline-none">
                                 <i data-lucide="eye" id="eye-new" class="w-4 h-4"></i>
                             </button>
                         </div>
-                        <div class="relative">
-                            <i data-lucide="lock-keyhole" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <div class="relative group">
+                            <i data-lucide="lock-keyhole" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-brand-500 transition-colors"></i>
                             <input type="password" id="reset-confirm-password" class="auth-input pr-10" placeholder="Konfirmasi Sandi" required minlength="6">
                             <button type="button" onclick="togglePasswordVisibility('reset-confirm-password', 'eye-confirm')" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 outline-none">
                                 <i data-lucide="eye" id="eye-confirm" class="w-4 h-4"></i>
                             </button>
                         </div>
-                        <button type="submit" id="btn-reset" class="btn-primary">Simpan & Masuk</button>
+                        <button type="submit" id="btn-reset" class="btn-primary mt-2">Simpan & Masuk</button>
                     </form>
 
                     <!-- Divider -->
-                    <div id="auth-divider" class="relative my-8">
+                    <div id="auth-divider" class="relative my-5"> <!-- my-8 diubah jadi my-5 -->
                         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
-                        <div class="relative flex justify-center text-[10px] uppercase font-black tracking-widest text-slate-300"><span class="bg-white px-4">Atau</span></div>
+                        <div class="relative flex justify-center text-[9px] uppercase font-black tracking-widest text-slate-300"><span class="bg-white px-3">Atau</span></div>
                     </div>
 
                     <!-- Google GSI -->
                     <div id="google-btn-container" class="w-full flex justify-center"></div>
 
-                    <p class="text-center text-[10px] text-slate-400 font-medium mt-10 leading-relaxed">
-                        Data Anda aman bersama Dazer.<br/>Otentikasi dilindungi enkripsi Google OAuth 2.0.
+                    <p class="text-center text-[9px] text-slate-400 font-medium mt-6 leading-relaxed">
+                        Data aman bersama Dazer.<br/>Dilindungi enkripsi Google OAuth 2.0.
                     </p>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Notifications (ATAS TENGAH) -->
-    <div id="notification" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-[9999] bg-slate-900 text-white px-6 py-3 rounded-full flex items-center gap-3 shadow-2xl transition-all duration-300 text-xs font-bold border border-slate-700">
+    <!-- Notifications -->
+    <div id="notification" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-[9999] bg-slate-900 text-white px-5 py-2.5 rounded-full flex items-center gap-2.5 shadow-2xl transition-all duration-300 text-xs font-bold border border-slate-700">
         <i data-lucide="info" class="w-4 h-4 text-brand-400" id="notification-icon"></i>
         <p id="notification-text"></p>
     </div>
@@ -255,7 +260,7 @@
             
             document.getElementById('form-reset').classList.remove('hidden');
             document.getElementById('auth-title').innerText = "Atur Ulang Sandi";
-            document.getElementById('auth-subtitle').innerText = "Keamanan akun Anda adalah prioritas kami.";
+            document.getElementById('auth-subtitle').innerText = "Keamanan akun adalah prioritas.";
             document.getElementById('reset-email-display').innerText = email;
             showNotification("Link pemulihan diverifikasi.", "success");
         }
@@ -311,12 +316,12 @@
                 loginF.classList.remove('hidden'); regF.classList.add('hidden');
                 loginT.classList.add('active'); regT.classList.remove('active');
                 title.innerText = "Selamat Datang";
-                sub.innerText = "Masuk untuk akses penuh ke Studio Modeling.";
+                sub.innerText = "Akses penuh ke Studio Modeling.";
             } else {
                 regF.classList.remove('hidden'); loginF.classList.add('hidden');
                 regT.classList.add('active'); loginT.classList.remove('active');
                 title.innerText = "Buat Akun Baru";
-                sub.innerText = "Dapatkan kuota profesional gratis sekarang.";
+                sub.innerText = "Dapatkan kuota profesional gratis.";
             }
             lucide.createIcons();
         }
@@ -368,12 +373,14 @@
             i.setAttribute('data-lucide', type === 'error' ? 'alert-circle' : 'info');
             n.classList.remove('hidden', 'opacity-0'); n.classList.add('flex', 'opacity-100');
             lucide.createIcons();
+            
+            // TIMEOUT DIUBAH MENJADI 7000ms (7 Detik) AGAR TIDAK CEPAT HILANG
             setTimeout(() => {
                 if (n) {
                     n.classList.replace('opacity-100', 'opacity-0');
                     setTimeout(() => n.classList.add('hidden'), 300);
                 }
-            }, 3500);
+            }, 7000);
         }
     </script>
 </body>
