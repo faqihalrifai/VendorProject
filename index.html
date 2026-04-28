@@ -797,7 +797,7 @@
                 </button>
             </div>
             <div class="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar" id="history-list">
-                <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-500 text-center py-8 font-medium">Belum ada riwayat sesi yang tersimpan.</p>
+                <!-- Injected via JS -->
             </div>
         </div>
     </div>
@@ -1880,6 +1880,9 @@
             };
             currentReportData = finalData;
             
+            // Simpan riwayat laporan ke LocalStorage agar muncul di modal Arsip
+            saveToArchive(finalData);
+            
             initFilterView(); 
             renderDashboard(finalData);
 
@@ -2528,29 +2531,87 @@
         }
 
         function handleChatEnter(e) { if(e.key === 'Enter') sendChatMessage(); }
+        
         function toggleMatrixFullscreen() {
             const card = document.getElementById('matrix-card'); const icon = document.getElementById('matrix-icon');
             if(isMatrixFullscreen) { card.classList.remove('matrix-fullscreen'); icon.setAttribute('data-lucide', 'maximize'); document.body.style.overflow = ''; isMatrixFullscreen = false; } 
             else { card.classList.add('matrix-fullscreen'); icon.setAttribute('data-lucide', 'minimize'); document.body.style.overflow = 'hidden'; isMatrixFullscreen = true; }
             lucide.createIcons(); 
         }
+        
         function showNotification(msg, type='error') {
             const n = document.getElementById('notification'); const i = document.getElementById('notification-icon');
             let iconColor = type === 'error' ? 'text-rose-400' : (type === 'warning' ? 'text-amber-400' : (type === 'info' ? 'text-blue-400' : 'text-emerald-400'));
             let iconName = type === 'error' ? 'alert-circle' : (type === 'warning' ? 'alert-triangle' : (type === 'info' ? 'info' : 'check-circle'));
             i.className = `w-4 h-4 sm:w-4.5 sm:h-4.5 shrink-0 ${iconColor}`; i.setAttribute('data-lucide', iconName); document.getElementById('notification-text').innerText = msg; 
             n.classList.remove('hidden', 'opacity-0', '-translate-y-4'); n.classList.add('opacity-100', 'translate-y-0'); lucide.createIcons();
-            setTimeout(() => { n.classList.remove('opacity-100', 'translate-y-0'); n.classList.add('opacity-0', '-translate-y-4'); setTimeout(() => n.classList.add('hidden'), 400); }, 4500);
+            
+            // Mengubah durasi menjadi 7000ms (7 Detik)
+            setTimeout(() => { n.classList.remove('opacity-100', 'translate-y-0'); n.classList.add('opacity-0', '-translate-y-4'); setTimeout(() => n.classList.add('hidden'), 400); }, 7000);
         }
+
+        // FUNGSI ARSIP DATA 
+        function saveToArchive(reportData) {
+            try {
+                let archive = JSON.parse(localStorage.getItem('Dazer_Report_Archive') || '[]');
+                const newEntry = {
+                    id: Date.now(),
+                    date: new Date().toLocaleString('id-ID'),
+                    fileName: reportData.fileName,
+                    intent: reportData.intentStr.replace('Industri: ', '').replace(' | Fokus: ', ' - '),
+                    health: reportData.overallHealthScore
+                };
+                archive.unshift(newEntry);
+                if(archive.length > 10) archive.pop(); // Max 10 history items
+                localStorage.setItem('Dazer_Report_Archive', JSON.stringify(archive));
+            } catch(e) {}
+        }
+
+        function renderArchiveList() {
+            const listEl = document.getElementById('history-list');
+            try {
+                const archive = JSON.parse(localStorage.getItem('Dazer_Report_Archive') || '[]');
+                if(archive.length === 0) {
+                    listEl.innerHTML = '<p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-500 text-center py-8 font-medium">Belum ada riwayat sesi yang tersimpan.</p>';
+                    return;
+                }
+                let html = '<div class="space-y-3">';
+                archive.forEach(item => {
+                    let healthColor = item.health >= 90 ? 'emerald' : (item.health >= 70 ? 'brand' : 'amber');
+                    html += `
+                        <div class="bg-white p-3 border border-slate-200 rounded-xl shadow-sm flex justify-between items-center hover:border-brand-300 transition-colors">
+                            <div class="min-w-0 pr-2">
+                                <h4 class="text-[11px] lg:text-xs font-bold text-slate-800 truncate">${item.fileName}</h4>
+                                <p class="text-[9px] lg:text-[10px] text-slate-500 mt-1 truncate">${item.date} • ${item.intent}</p>
+                            </div>
+                            <div class="bg-${healthColor}-50 text-${healthColor}-700 px-2 py-1 rounded text-[9px] lg:text-[10px] font-black shrink-0 border border-${healthColor}-200">
+                                Skor ${item.health}%
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                listEl.innerHTML = html;
+            } catch(e) {
+                listEl.innerHTML = '<p class="text-xs text-center py-8 text-rose-500">Gagal memuat arsip.</p>';
+            }
+        }
+
         function toggleHistoryModal() {
             const m = document.getElementById('history-modal'); const c = document.getElementById('history-modal-content');
-            if(m.classList.contains('hidden')) { m.classList.remove('hidden'); setTimeout(()=> { c.classList.remove('scale-95', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 10); }
+            if(m.classList.contains('hidden')) { 
+                renderArchiveList(); // Muat data arsip
+                m.classList.remove('hidden'); 
+                setTimeout(()=> { c.classList.remove('scale-95', 'opacity-0'); c.classList.add('scale-100', 'opacity-100'); }, 10); 
+            }
             else { closeHistoryModal(); }
         }
+        
         function closeHistoryModal() {
             const m = document.getElementById('history-modal'); const c = document.getElementById('history-modal-content');
             c.classList.remove('scale-100', 'opacity-100'); c.classList.add('scale-95', 'opacity-0'); setTimeout(()=> m.classList.add('hidden'), 300);
         }
+        
         function resetApp() { 
             ['dashboard', 'setup-screen', 'loading-state'].forEach(id => document.getElementById(id)?.classList.add('hidden')); 
             document.getElementById('home-extras').classList.remove('hidden'); 
@@ -2558,7 +2619,12 @@
             globalFilesArray = []; totalSizeUsed = 0; updateStorageIndicator();
             document.getElementById('matrix-card')?.classList.remove('matrix-fullscreen'); isMatrixFullscreen = false; document.body.style.overflow = '';
         }
-        function selfDestruct() { if(!confirm("Sistem akan dihapus. Anda yakin ingin mereset semuanya?")) return; localStorage.clear(); location.reload(); }
+        
+        function selfDestruct() { 
+            if(!confirm("Sistem akan dihapus secara permanen. Anda yakin ingin mereset semuanya (termasuk Login dan Arsip)?")) return; 
+            localStorage.clear(); 
+            location.reload(); 
+        }
     </script>
 </body>
 </html>
