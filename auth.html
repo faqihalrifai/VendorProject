@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- Keamanan Meta Strict -->
     <meta http-equiv="X-XSS-Protection" content="1; mode=block">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -14,6 +15,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- ANTI CLICKJACKING SCRIPT -->
+    <script>
+        try {
+            if (window.top !== window.self) {
+                window.top.location = window.self.location;
+            }
+        } catch (err) {
+            console.warn("Skrip anti-clickjacking disekat oleh keselamatan iframe pratinjau.");
+        }
+    </script>
 
     <script>
         tailwind.config = {
@@ -48,21 +60,19 @@
             background: #ffffff; 
             border: 1px solid #e2e8f0;
             box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
-            border-radius: 1.25rem; /* Sedikit lebih kotak agar terlihat modern-compact */
+            border-radius: 1.25rem; 
             transition: all 0.3s ease;
             overflow: hidden;
         }
 
-        /* Memadatkan Input Fields */
         .auth-input {
             width: 100%; font-size: 13px; font-weight: 600; color: #1e293b; background-color: #f8fafc;
             border: 1.5px solid #e2e8f0; border-radius: 0.75rem; 
-            padding: 0.65rem 1rem 0.65rem 2.5rem; /* Padding atas-bawah dikurangi */
+            padding: 0.65rem 1rem 0.65rem 2.5rem; 
             outline: none; transition: all 0.2s ease;
         }
         .auth-input:focus { border-color: #0ea5e9; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1); }
 
-        /* Memadatkan Tombol Primary */
         .btn-primary {
             width: 100%; padding: 0.7rem; border-radius: 0.75rem; font-weight: 800; font-size: 13px;
             text-transform: uppercase; letter-spacing: 0.5px; background: #0ea5e9; color: white;
@@ -72,7 +82,6 @@
         .btn-primary:hover:not(:disabled) { background: #0284c7; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(14, 165, 233, 0.35); }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        /* Memadatkan Tab Buttons */
         .tab-btn {
             flex: 1; padding: 0.75rem; font-size: 11px; font-weight: 800; color: #94a3b8;
             border-bottom: 2px solid transparent; transition: all 0.2s ease; text-transform: uppercase;
@@ -92,8 +101,9 @@
 
     <!-- Header -->
     <nav class="w-full bg-white/80 backdrop-blur-md border-b border-slate-100 fixed top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 h-14 flex justify-between items-center"> <!-- Dikurangi jadi h-14 -->
-            <button onclick="window.location.href='index.html'" class="flex items-center gap-2 group">
+        <div class="max-w-7xl mx-auto px-4 h-14 flex justify-between items-center"> 
+            <!-- PENGALIHAN URL BERSIH -->
+            <button onclick="window.location.href='/'" class="flex items-center gap-2 group">
                 <div class="bg-slate-50 p-1.5 rounded-full border border-slate-200 group-hover:bg-brand-50 transition-colors">
                     <i data-lucide="arrow-left" class="w-4 h-4 text-slate-500 group-hover:text-brand-600"></i>
                 </div>
@@ -107,8 +117,8 @@
     </nav>
 
     <!-- Main -->
-    <main class="flex-grow flex items-center justify-center p-4 pt-20 pb-8"> <!-- Padding dikurangi -->
-        <div class="w-full max-w-[380px]"> <!-- Lebar card dikurangi sedikit agar proporsional -->
+    <main class="flex-grow flex items-center justify-center p-4 pt-20 pb-8">
+        <div class="w-full max-w-[380px]">
             
             <!-- Auto-Login State -->
             <div id="auto-login-overlay" class="hidden glass-card p-8 text-center flex flex-col items-center justify-center animate-pulse">
@@ -126,14 +136,14 @@
                     <button id="tab-register" onclick="switchTab('register')" class="tab-btn">Daftar</button>
                 </div>
 
-                <div class="p-5 sm:p-6"> <!-- Padding dalam card dikurangi secara drastis -->
-                    <div class="text-center mb-6"> <!-- Margin bawah dikurangi -->
+                <div class="p-5 sm:p-6">
+                    <div class="text-center mb-6"> 
                         <h1 id="auth-title" class="text-xl font-black text-slate-900 tracking-tight">Selamat Datang</h1>
                         <p id="auth-subtitle" class="text-xs font-medium text-slate-400 mt-1">Akses penuh ke Studio Modeling.</p>
                     </div>
 
                     <!-- Login Form -->
-                    <form id="form-login" onsubmit="handleAuth(event, 'login')" class="space-y-3"> <!-- space dikurangi -->
+                    <form id="form-login" onsubmit="handleAuth(event, 'login')" class="space-y-3">
                         <div class="relative group">
                             <i data-lucide="mail" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-brand-500 transition-colors"></i>
                             <input type="email" id="login-email" class="auth-input" placeholder="Email" required>
@@ -193,7 +203,7 @@
                     </form>
 
                     <!-- Divider -->
-                    <div id="auth-divider" class="relative my-5"> <!-- my-8 diubah jadi my-5 -->
+                    <div id="auth-divider" class="relative my-5">
                         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-100"></div></div>
                         <div class="relative flex justify-center text-[9px] uppercase font-black tracking-widest text-slate-300"><span class="bg-white px-3">Atau</span></div>
                     </div>
@@ -220,10 +230,26 @@
         const GOOGLE_CLIENT_ID = "403594078276-ukuks77pis0bclh9i3ab0j5d1m1tsmmv.apps.googleusercontent.com";
         const API_URL = "/.netlify/functions/dazer-api";
 
+        // ANTI-SPAM LOCK & SECURITY SANITIZER
+        let isProcessing = false;
+
+        function sanitizeHTML(str) {
+            if(!str) return '';
+            return str.replace(/[<>&'"]/g, function (c) {
+                switch (c) {
+                    case '<': return '&lt;';
+                    case '>': return '&gt;';
+                    case '&': return '&amp;';
+                    case '\'': return '&#39;';
+                    case '"': return '&quot;';
+                }
+            });
+        }
+
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const isResetRequest = urlParams.get('reset') === 'true';
-            const emailTarget = urlParams.get('email');
+            const isResetRequest = sanitizeHTML(urlParams.get('reset')) === 'true';
+            const emailTarget = sanitizeHTML(urlParams.get('email'));
 
             if (isResetRequest && emailTarget) {
                 showResetMode(emailTarget);
@@ -237,7 +263,8 @@
                     if(Date.now() - payload.issuedAt < 2592000000) {
                         document.getElementById('auth-card').classList.add('hidden');
                         document.getElementById('auto-login-overlay').classList.remove('hidden');
-                        setTimeout(() => window.location.href = 'index.html', 1200);
+                        // PENGALIHAN URL BERSIH
+                        setTimeout(() => window.location.href = '/', 1200);
                         return;
                     }
                 } catch(e) {}
@@ -280,32 +307,48 @@
 
         async function handleResetPassword(e) {
             e.preventDefault();
+            if(isProcessing) return;
+            isProcessing = true;
+
             const pass = document.getElementById('reset-new-password').value;
             const confirm = document.getElementById('reset-confirm-password').value;
             const email = document.getElementById('reset-email-display').innerText;
 
-            if (pass !== confirm) return showNotification("Konfirmasi sandi tidak sesuai.", "error");
+            if (pass !== confirm) {
+                isProcessing = false;
+                return showNotification("Konfirmasi sandi tidak sesuai.", "error");
+            }
             
             const btn = document.getElementById('btn-reset');
             btn.disabled = true;
             btn.innerText = "Menyimpan...";
 
-            const userData = { name: "User Dazer", email, tier: 'registered', analysisQuota: 2, chatQuota: 5, modelQuota: 1, issuedAt: Date.now() };
+            const userData = { name: "User Dazer", email: email, tier: 'registered', analysisQuota: 2, chatQuota: 5, modelQuota: 1, issuedAt: Date.now() };
             localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
             
             showNotification("Sandi diperbarui! Masuk ke Dasbor...", "success");
-            setTimeout(() => window.location.href = "index.html?auth=success", 1200);
+            // PENGALIHAN URL BERSIH
+            setTimeout(() => window.location.href = "/?auth=success", 1200);
         }
 
         async function handleGoogleResponse(response) {
-            const base64Url = response.credential.split('.')[1];
-            const payload = JSON.parse(atob(base64Url.replace(/-/g, '+').replace(/_/g, '/')));
-            
-            showNotification("Otentikasi Berhasil!", "success");
-            const userData = { name: payload.name, email: payload.email, picture: payload.picture, tier: 'registered', analysisQuota: 2, chatQuota: 5, modelQuota: 1, issuedAt: Date.now() };
-            localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
-            await notifyServer('notify_register', userData);
-            setTimeout(() => window.location.href = "index.html?auth=success", 800);
+            if(isProcessing) return;
+            isProcessing = true;
+
+            try {
+                const base64Url = response.credential.split('.')[1];
+                const payload = JSON.parse(atob(base64Url.replace(/-/g, '+').replace(/_/g, '/')));
+                
+                showNotification("Otentikasi Berhasil!", "success");
+                const userData = { name: sanitizeHTML(payload.name), email: sanitizeHTML(payload.email), picture: sanitizeHTML(payload.picture), tier: 'registered', analysisQuota: 2, chatQuota: 5, modelQuota: 1, issuedAt: Date.now() };
+                localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
+                await notifyServer('notify_register', userData);
+                // PENGALIHAN URL BERSIH
+                setTimeout(() => window.location.href = "/?auth=success", 800);
+            } catch (e) {
+                isProcessing = false;
+                showNotification("Validasi Google Gagal.", "error");
+            }
         }
 
         function switchTab(tab) {
@@ -330,35 +373,54 @@
             try {
                 const geoRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
                 const geo = geoRes.ok ? await geoRes.json() : {};
-                const metadata = { ip: geo.ip || "Unknown", location: `${geo.city || ''}, ${geo.country || ''}`, device: navigator.userAgent, isp: geo.organization || "Unknown", time: new Date().toLocaleString('id-ID') };
+                const metadata = { ip: sanitizeHTML(geo.ip) || "Unknown", location: `${sanitizeHTML(geo.city) || ''}, ${sanitizeHTML(geo.country) || ''}`, device: navigator.userAgent, isp: sanitizeHTML(geo.organization) || "Unknown", time: new Date().toLocaleString('id-ID') };
                 await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, name: user.name, email: user.email, metadata }) });
             } catch(e) {}
         }
 
         async function handleAuth(e, type) {
             e.preventDefault();
+            if(isProcessing) return;
+            isProcessing = true;
+
             const btn = document.getElementById(type === 'login' ? 'btn-login' : 'btn-register');
-            const email = document.getElementById(type === 'login' ? 'login-email' : 'reg-email').value;
-            const name = type === 'register' ? document.getElementById('reg-name').value : "User Dazer";
+            
+            // Sanitasi ketat untuk mencegah XSS
+            const email = sanitizeHTML(document.getElementById(type === 'login' ? 'login-email' : 'reg-email').value);
+            const name = type === 'register' ? sanitizeHTML(document.getElementById('reg-name').value) : "User Dazer";
+            
             btn.disabled = true;
             btn.innerText = "Memuat...";
-            const userData = { name, email, tier: 'registered', analysisQuota: 2, chatQuota: 5, modelQuota: 1, issuedAt: Date.now() };
+            
+            const userData = { name: name, email: email, tier: 'registered', analysisQuota: 2, chatQuota: 5, modelQuota: 1, issuedAt: Date.now() };
             localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
+            
             if(type === 'register') await notifyServer('notify_register', userData);
+            
             showNotification("Berhasil! Mengalihkan...", "success");
-            setTimeout(() => window.location.href = "index.html?auth=success", 1000);
+            // PENGALIHAN URL BERSIH
+            setTimeout(() => window.location.href = "/?auth=success", 1000);
         }
 
         async function forgotPassword() {
-            const email = document.getElementById('login-email').value;
+            if(isProcessing) return;
+            
+            const email = sanitizeHTML(document.getElementById('login-email').value);
             if(!email) return showNotification("Masukkan email Anda di kotak login.", "error");
+            
+            isProcessing = true;
             showNotification("Mengirim instruksi...", "info");
+            
             try {
                 const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'forgot_password', email }) });
                 const data = await res.json();
                 if(data.message) showNotification(data.message, "success");
                 else showNotification("Gagal memproses email.", "error");
-            } catch(e) { showNotification("Terjadi kendala server.", "error"); }
+            } catch(e) { 
+                showNotification("Terjadi kendala server.", "error"); 
+            } finally {
+                setTimeout(() => { isProcessing = false; }, 3000); // Cooldown perlindungan Anti-Spam
+            }
         }
 
         function generateLocalJWT(payload) {
@@ -374,7 +436,6 @@
             n.classList.remove('hidden', 'opacity-0'); n.classList.add('flex', 'opacity-100');
             lucide.createIcons();
             
-            // TIMEOUT DIUBAH MENJADI 7000ms (7 Detik) AGAR TIDAK CEPAT HILANG
             setTimeout(() => {
                 if (n) {
                     n.classList.replace('opacity-100', 'opacity-0');
