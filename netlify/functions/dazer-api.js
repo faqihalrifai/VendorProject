@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V20 Final - Quad-Cloud + Ultra-Clean Auth)
+// dazer-api.js - Backend KDD (V21 Final - Executive AI + HTML Audit Mailer)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -12,14 +12,14 @@ function cleanMarkdown(text) {
 
 /**
  * Token-Saver Logic: Memastikan data yang dikirim ke AI tidak membengkak
- * namun tetap memberikan konteks yang kuat.
+ * secara otomatis memotong data jika melebihi batas (Mencegah Error 413/400).
  */
 function smartDataTruncate(dataStr, limit = 4000) {
     if (!dataStr) return "";
     let str = typeof dataStr === 'string' ? dataStr : JSON.stringify(dataStr);
     if (str.length <= limit) return str;
     const half = Math.floor(limit / 2);
-    return str.slice(0, half) + "\n...[Data dipangkas demi efisiensi token]...\n" + str.slice(-half);
+    return str.slice(0, half) + "\n\n...[DATA DIPANGKAS DEMI EFISIENSI TOKEN]...\n\n" + str.slice(-half);
 }
 
 const corsHeaders = {
@@ -30,6 +30,7 @@ const corsHeaders = {
 };
 
 exports.handler = async (event, context) => {
+    // 1. Handle CORS Preflight
     if (event.httpMethod === 'OPTIONS') {
         return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "CORS OK" }) };
     }
@@ -38,16 +39,17 @@ exports.handler = async (event, context) => {
         return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: 'Method Not Allowed' }) };
     }
 
+    // 2. Rate Limiting (Mencegah Spam Request)
     const clientIp = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown';
     const currentTime = Date.now();
     const limitData = rateLimitMap.get(clientIp) || { count: 0, firstRequest: currentTime };
     
-    if (currentTime - limitData.firstRequest > 600000) { 
+    if (currentTime - limitData.firstRequest > 600000) { // Reset tiap 10 menit
         limitData.count = 1; limitData.firstRequest = currentTime; 
     } else {
         limitData.count += 1;
         if (limitData.count > 100) {
-            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Sistem sibuk. Mohon tunggu 5 menit." }) };
+            return { statusCode: 429, headers: corsHeaders, body: JSON.stringify({ reply: "Sistem sibuk. Mohon tunggu beberapa saat." }) };
         }
     }
     rateLimitMap.set(clientIp, limitData);
@@ -56,6 +58,7 @@ exports.handler = async (event, context) => {
         const body = JSON.parse(event.body);
         const { action, message, context: userContext, data, modelType, algorithm, email, name, metadata } = body;
         
+        // Environment Variables
         const groqKey = process.env.GROQ_API_KEY;
         const cerebrasKey = process.env.CEREBRAS_API_KEY;
         const geminiKey = process.env.GEMINI_API_KEY;
@@ -65,37 +68,54 @@ exports.handler = async (event, context) => {
         const wolframId = process.env.WOLFRAM_APP_ID;
 
         // ============================================================
-        // ACTION 1: LOG AKTIVITAS (ADMIN)
+        // ACTION 1: LOG AKTIVITAS (ADMIN NOTIFIER - HTML VER.)
+        // Otomatis menembak email ke admin saat user daftar atau upload
         // ============================================================
         if (action === 'notify_register' || action === 'notify_upload') {
             if (emailPass) {
                 try {
-                    let transporter = nodemailer.createTransport({ service: 'gmail', auth: { user: 'dazer.help@gmail.com', pass: emailPass } });
-                    const logContent = `
-AUDIT LOG DAZER [${new Date().toISOString()}]
---------------------------------------------
-USER    : ${name || 'User'} (${email || 'Google Auth'})
-AKSI    : ${action.toUpperCase()}
-DEVICE  : ${metadata?.device || 'N/A'}
-IP      : ${metadata?.ip || 'Hidden'}
-LOKASI  : ${metadata?.location || 'Unknown'}
-ISP     : ${metadata?.isp || 'N/A'}
-FILE    : ${body.fileName || '-'} (${body.size || '-'})
+                    let transporter = nodemailer.createTransport({ 
+                        service: 'gmail', 
+                        auth: { user: 'dazer.help@gmail.com', pass: emailPass } 
+                    });
+                    
+                    const actionLabel = action === 'notify_register' ? 'Pendaftaran Pengguna Baru' : 'File Baru Diunggah';
+                    const colorLabel = action === 'notify_register' ? '#10b981' : '#3b82f6'; // Hijau untuk daftar, Biru untuk upload
+                    
+                    const htmlLog = `
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                            <div style="background-color: ${colorLabel}; padding: 20px; color: white;">
+                                <h2 style="margin: 0;">Audit Log Dazer: ${actionLabel}</h2>
+                                <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 14px;">${new Date().toLocaleString('id-ID')}</p>
+                            </div>
+                            <div style="padding: 20px; background-color: #f8fafc;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><b>Pengguna</b></td><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${name || 'User'} (${email || 'Auth'})</td></tr>
+                                    <tr><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><b>Tindakan</b></td><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${action.toUpperCase()}</td></tr>
+                                    <tr><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><b>Perangkat</b></td><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${metadata?.device || 'N/A'}</td></tr>
+                                    <tr><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><b>Lokasi / ISP</b></td><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${metadata?.location || 'Unknown'} / ${metadata?.isp || 'N/A'}</td></tr>
+                                    <tr><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><b>Alamat IP</b></td><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${metadata?.ip || clientIp}</td></tr>
+                                    ${action === 'notify_upload' ? `<tr><td style="padding: 8px 0;"><b>File Detail</b></td><td style="padding: 8px 0; text-align: right;">${body.fileName || '-'} (${body.size || '-'})</td></tr>` : ''}
+                                </table>
+                            </div>
+                        </div>
                     `;
 
                     await transporter.sendMail({ 
                         from: '"Dazer Audit" <dazer.help@gmail.com>', 
                         to: "dazer.help@gmail.com", 
-                        subject: `[${action.toUpperCase()}] ${name || email}`, 
-                        text: logContent 
+                        subject: `[${action.toUpperCase()}] Notifikasi: ${name || email}`, 
+                        html: htmlLog 
                     });
-                } catch (e) {}
+                } catch (e) {
+                    console.error("Gagal mengirim email notifikasi:", e);
+                }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'success' }) };
         }
 
         // ============================================================
-        // ACTION 2: RESET PASSWORD (SIMPLE & CLEAN EMAIL)
+        // ACTION 2: RESET PASSWORD
         // ============================================================
         if (action === 'forgot_password') {
             if (emailPass && email) {
@@ -123,65 +143,76 @@ FILE    : ${body.fileName || '-'} (${body.size || '-'})
                         `
                     });
                     return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "Tautan pemulihan telah dikirim ke email." }) };
-                } catch (e) { return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "Gagal mengirim email." }) }; }
+                } catch (e) { 
+                    return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ error: "Gagal mengirim email pemulihan." }) }; 
+                }
             }
-            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ error: "Email tidak valid." }) };
+            return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ error: "Email tidak valid atau SMTP belum dikonfigurasi." }) };
         }
 
         // ============================================================
-        // ACTION 3: ANALISA DASHBOARD (DIPERBAIKI)
+        // ACTION 3: ANALISA DASHBOARD (EXECUTIVE INTELLIGENCE)
         // ============================================================
         if (action === 'analyze_data') {
-            const systemPrompt = `Role: Senior Data Analyst. Output: JSON.Padat & eksekutif.
+            const systemPrompt = `Role: Senior Data Analyst. Output wajib berformat JSON.
+Gaya Bahasa: Eksekutif, lugas, profesional, dan padat.
+ATURAN PANJANG TEKS (WAJIB DIIKUTI):
+1. Setiap poin di dalam array "insights" HARUS terdiri dari TEPAT 2 kalimat.
+2. Setiap value di dalam object "cards" HARUS terdiri dari 1 hingga 2 kalimat maksimal.
+
 JSON Structure:
 {
-  "insights": ["Point 1", "Point 2", "Point 3", "Point 4"],
-  "cards": {"metric": "...", "segment": "...", "correlation": "...", "volatility": "..."}
+  "insights": ["Point 1 (tepat 2 kalimat).", "Point 2 (tepat 2 kalimat).", "Point 3 (tepat 2 kalimat).", "Point 4 (tepat 2 kalimat)."],
+  "cards": {
+    "metric": "1-2 kalimat deskripsi metrik.", 
+    "segment": "1-2 kalimat deskripsi segmen.", 
+    "correlation": "1-2 kalimat deskripsi korelasi.", 
+    "volatility": "1-2 kalimat deskripsi volatilitas."
+  }
 }`;
-            // FIX 1: Memastikan data dipangkas agar tidak error kehabisan token context AI
             const safeData = smartDataTruncate(data, 4000);
             let rawText = "";
 
             try {
+                // Prioritas 1: Cerebras (Sangat Cepat)
                 const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ model: 'llama3.1-70b', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Statistik: ${safeData}` }], temperature: 0.1 })
+                    body: JSON.stringify({ model: 'llama3.1-70b', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Data Statistik:\n${safeData}` }], temperature: 0.2, max_tokens: 1024 })
                 });
                 
-                // FIX 2: Cek status HTTP dari AI
-                if (!res.ok) throw new Error("Cerebras API fail");
+                if (!res.ok) throw new Error(`Cerebras Fail: ${res.status}`);
                 const response = await res.json();
                 rawText = response?.choices?.[0]?.message?.content || "";
             } catch (err) {
+                // Prioritas 2: Groq (Fallback jika Cerebras limit/down)
                 try {
                     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Statistik: ${safeData}` }], temperature: 0.1, response_format: { type: "json_object" } })
+                        body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Data Statistik:\n${safeData}` }], temperature: 0.2, response_format: { type: "json_object" }, max_tokens: 1024 })
                     });
                     
-                    if (!res.ok) throw new Error("Groq API fail");
+                    if (!res.ok) throw new Error(`Groq Fail: ${res.status}`);
                     const response = await res.json();
                     rawText = response?.choices?.[0]?.message?.content || "";
                 } catch (fallbackErr) {
-                    console.error("Semua API AI gagal:", fallbackErr);
+                    console.error("AI Analysis Fallback Failed:", fallbackErr);
                 }
             }
 
-            // FIX 3: Parse JSON lebih kebal dari format berantakan
-            let parsed = { insights: ["Data terlalu besar atau sistem sedang sibuk. Mohon kurangi ukuran data yang dianalisis."], cards: null };
+            // Ekstraksi & Validasi JSON yang sangat aman
+            let parsed = { 
+                insights: ["Sistem sedang memproses beban data yang tinggi.", "Mohon kurangi ukuran sampel data atau coba kembali dalam beberapa menit."], 
+                cards: { metric: "-", segment: "-", correlation: "-", volatility: "-" } 
+            };
+
             if (rawText) {
                 try { 
                     const regexMatch = rawText.match(/\{[\s\S]*\}/);
-                    if(regexMatch) {
-                        parsed = JSON.parse(regexMatch[0]); 
-                    } else {
-                        parsed = JSON.parse(rawText);
-                    }
-                } catch (e) {
-                    // Jika AI merespon dengan aneh tapi tidak crash
-                    parsed.insights = ["Analisa terganggu. Mohon ulangi kembali."];
+                    parsed = regexMatch ? JSON.parse(regexMatch[0]) : JSON.parse(rawText);
+                } catch (parseError) {
+                    parsed.insights = ["Analisis AI berhasil dijalankan namun format data tidak sesuai.", "Silakan coba ulangi proses analisa."];
                 }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsed) };
@@ -199,9 +230,11 @@ JSON Structure:
                         headers: { 'Content-Type': 'application/json' }, 
                         body: JSON.stringify({ api_key: tvlyKey, query: message, max_results: 1 }) 
                     });
-                    const tvData = await tvRes.json();
-                    if (tvData.results) webInfo = `[Web Ref: ${tvData.results[0].content.slice(0, 500)}]`;
-                } catch(e) {}
+                    if (tvRes.ok) {
+                        const tvData = await tvRes.json();
+                        if (tvData.results && tvData.results.length > 0) webInfo = `[Referensi Web Realtime: ${tvData.results[0].content.slice(0, 500)}]`;
+                    }
+                } catch(e) { console.warn("Tavily search skipped."); }
             }
 
             const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -209,12 +242,17 @@ JSON Structure:
                 headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     model: 'llama-3.3-70b-versatile', 
-                    messages: [{ role: 'system', content: "Dazer AI Analyst. Jawab maks 3 kalimat Indonesia." }, { role: 'user', content: `Context: ${userContext} ${webInfo}\nQ: ${message}` }], 
-                    temperature: 0.5, max_tokens: 350 
+                    messages: [
+                        { role: 'system', content: "Kamu adalah Dazer AI Analyst. Berikan jawaban yang komprehensif, logis, dan rapi dalam Bahasa Indonesia." }, 
+                        { role: 'user', content: `Context User: ${userContext}\n${webInfo}\nPertanyaan: ${message}` }
+                    ], 
+                    temperature: 0.6, 
+                    max_tokens: 800 
                 })
             });
             const d = await res.json();
-            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: cleanMarkdown(d.choices[0].message.content) }) };
+            const replyText = d?.choices?.[0]?.message?.content || "Sistem chat tidak merespons.";
+            return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: cleanMarkdown(replyText) }) };
         }
 
         // ============================================================
@@ -229,34 +267,42 @@ JSON Structure:
                 } catch(e) {}
             }
 
-            const promptModel = `Task: KDD Evaluation. Method: ${modelType} | Algo: ${algorithm} | MathRef: ${wInfo}
+            const promptModel = `Task: Data Mining & KDD Evaluation. Method: ${modelType} | Algo: ${algorithm} | MathRef: ${wInfo}
 Data Sample: ${smartDataTruncate(data, 5000)}
-Berikan narasi profesional (Pola, Confidence, Akurasi, Rekomendasi). Indonesia.`;
+Berikan narasi evaluasi model yang profesional (Sebutkan Pola yang ditemukan, Confidence Level, Akurasi/Silhoutte Score bayangan, dan Rekomendasi). Format dalam Bahasa Indonesia yang rapi.`;
 
             let finalRes = "";
             try {
+                // Prioritas 1: Native Gemini
                 const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: promptModel }] }] }) 
                 });
+                if (!gRes.ok) throw new Error("Gemini Native fail");
                 const gData = await gRes.json();
                 finalRes = gData.candidates[0].content.parts[0].text;
             } catch (e) {
-                const oRes = await fetch('https://openrouter.ai/api/v1/chat/completions', { 
-                    method: 'POST', 
-                    headers: { 'Authorization': `Bearer ${openRouterKey}`, 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ model: 'google/gemini-1.5-flash', messages: [{ role: 'user', content: promptModel }] }) 
-                });
-                const oData = await oRes.json();
-                finalRes = oData.choices[0].message.content;
+                // Prioritas 2: OpenRouter (Fallback Gemini)
+                try {
+                    const oRes = await fetch('https://openrouter.ai/api/v1/chat/completions', { 
+                        method: 'POST', 
+                        headers: { 'Authorization': `Bearer ${openRouterKey}`, 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify({ model: 'google/gemini-1.5-flash', messages: [{ role: 'user', content: promptModel }] }) 
+                    });
+                    const oData = await oRes.json();
+                    finalRes = oData.choices[0].message.content;
+                } catch(fallbackE) {
+                    finalRes = "Evaluasi model terhenti karena gangguan koneksi API. Mohon coba jalankan model kembali.";
+                }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(finalRes) }) };
         }
 
-        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Aksi tidak dikenal." }) };
+        return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ reply: "Aksi tidak dikenali oleh sistem." }) };
 
     } catch (err) {
-        return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: "Interupsi sistem.", error: err.message }) };
+        console.error("Critical System Error:", err);
+        return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Interupsi sistem server.", error: err.message }) };
     }
 };
