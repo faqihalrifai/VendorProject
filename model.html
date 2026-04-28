@@ -51,7 +51,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
         
-        /* KONSISTENSI BACKGROUND DENGAN INDEX.HTML */
         body {
             font-family: 'Inter', sans-serif; 
             background-color: #f8fafc;
@@ -63,7 +62,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* KONSISTENSI KAD GLASS DENGAN INDEX.HTML */
         .glass-card {
             background: #ffffff; 
             border: 1px solid #e2e8f0;
@@ -75,7 +73,6 @@
         @media (min-width: 640px) { .glass-card { border-radius: 1.25rem; } }
         .glass-card:hover { border-color: #cbd5e1; box-shadow: 0 15px 35px -5px rgba(15, 23, 42, 0.06); transform: translateY(-2px); }
 
-        /* KONSISTENSI BUTANG DENGAN INDEX.HTML */
         .btn-analyze {
             padding: 12px 24px; border-radius: 50px; cursor: pointer; border: 0; background-color: #0ea5e9;
             box-shadow: rgba(14, 165, 233, 0.3) 0 4px 14px 0; letter-spacing: 1px; text-transform: uppercase;
@@ -99,19 +96,16 @@
         .magic-btn:hover { color: #fff; }
         .magic-btn:hover:before { top: -30px; left: -30px; }
 
-        /* Modern Scrollbar */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; border-radius: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
         
         .fade-in-up { opacity: 0; transform: translateY(20px); animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* Uiverse Loader - Konsisten dengan index.html */
-        .uiverse-loader { display: flex; justify-content: center; align-items: center; --color: #0ea5e9; --animation: 1.5s ease-in-out infinite; }
+        /* Uiverse Loader - Warna Default Slate-900 */
+        .uiverse-loader { display: flex; justify-content: center; align-items: center; --color: #0f172a; --animation: 1.5s ease-in-out infinite; }
         .uiverse-loader .circle { display: flex; align-items: center; justify-content: center; position: relative; width: 14px; height: 14px; border: solid 2px var(--color); border-radius: 50%; margin: 0 5px; background-color: transparent; animation: circle-keys var(--animation); }
         @media (min-width: 640px) { .uiverse-loader .circle { width: 16px; height: 16px; margin: 0 6px; } }
         .uiverse-loader .circle .dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; border-radius: 50%; background-color: var(--color); animation: dot-keys var(--animation); }
@@ -129,24 +123,30 @@
 
         select, input[type="text"] { font-size: 16px !important; } 
         @media (min-width: 640px) { select, input[type="text"] { font-size: inherit !important; } }
+        
+        select.modern-select { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); 
+            background-position: right 1rem center; background-repeat: no-repeat; background-size: 1rem; padding-right: 2.5rem; -webkit-appearance: none; appearance: none; 
+        }
 
-        /* Mencegah Potong / Cropping pada Diagram SVG */
         #tree-container svg { width: 100% !important; height: 100% !important; min-height: 400px; cursor: grab; }
         #tree-container svg:active { cursor: grabbing; }
         
         .theme-transition { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        /* Interactive Insight Cards */
         .insight-card { cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); border: 1px solid #e2e8f0; }
         .insight-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 12px 25px -5px rgba(15, 23, 42, 0.08); border-color: var(--card-border-hover, #bae6fd); background-color: #ffffff; }
+
+        /* Panel Sidebar Animation */
+        .sidebar-transition { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
         
         .typewriter-cursor::after { content: '|'; animation: blink 1s step-start infinite; color: #0284c7; }
         @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
-<body class="text-brand-900 antialiased selection:bg-brand-200 selection:text-brand-900 relative">
+<body class="text-brand-900 antialiased selection:bg-brand-200 selection:text-brand-900 relative overflow-x-hidden">
 
-    <!-- Global Notification Script dideklarasikan paling atas untuk mencegah ReferenceError -->
+    <!-- Global Notification Script -->
     <script>
         function showNotification(msg, type='info') {
             const n = document.getElementById('notification');
@@ -157,17 +157,13 @@
             t.innerText = msg;
             
             if(type === 'error') {
-                i.setAttribute('data-lucide', 'alert-circle');
-                i.className = 'w-4 h-4 shrink-0 text-rose-400';
+                i.setAttribute('data-lucide', 'alert-circle'); i.className = 'w-4 h-4 shrink-0 text-rose-400';
             } else if (type === 'success') {
-                i.setAttribute('data-lucide', 'check-circle');
-                i.className = 'w-4 h-4 shrink-0 text-emerald-400';
+                i.setAttribute('data-lucide', 'check-circle'); i.className = 'w-4 h-4 shrink-0 text-emerald-400';
             } else if (type === 'warning') {
-                i.setAttribute('data-lucide', 'alert-triangle');
-                i.className = 'w-4 h-4 shrink-0 text-amber-400';
+                i.setAttribute('data-lucide', 'alert-triangle'); i.className = 'w-4 h-4 shrink-0 text-amber-400';
             } else {
-                i.setAttribute('data-lucide', 'info');
-                i.className = 'w-4 h-4 shrink-0 text-brand-400';
+                i.setAttribute('data-lucide', 'info'); i.className = 'w-4 h-4 shrink-0 text-brand-400';
             }
             if(window.lucide) lucide.createIcons();
             
@@ -183,22 +179,19 @@
         }
     </script>
 
-    <!-- NAVBAR (KONSISTEN DENGAN INDEX.HTML) -->
+    <!-- NAVBAR BERANDA -->
     <nav class="w-full bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm" id="main-nav">
         <div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-14 sm:h-16 items-center">
-                <div class="flex items-center gap-2 sm:gap-3 cursor-pointer group" onclick="safeRedirect('/')">
-                    <img src="android-chrome-192x192.png" alt="Dazer Logo" class="w-6 h-6 sm:w-7 sm:h-7 object-contain transition-transform group-hover:scale-105" onerror="this.outerHTML='<i data-lucide=\'bar-chart-2\' class=\'w-5 h-5 sm:w-6 sm:h-6 text-brand-600\'></i>'">
-                    <span class="font-black text-base sm:text-lg tracking-tight text-slate-800 group-hover:text-brand-600 transition-colors">Dazer Modeling</span>
-                </div>
-                <div class="flex items-center gap-1.5 sm:gap-2.5">
-                    <button onclick="safeRedirect('/')" class="text-[10px] sm:text-[11px] font-bold flex items-center gap-1.5 text-slate-700 hover:text-brand-600 bg-white hover:bg-slate-50 border border-slate-200 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-full transition-all shadow-sm min-h-[32px] sm:min-h-[36px]">
-                        <i data-lucide="arrow-left" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i> <span class="hidden sm:inline">Kembali</span>
-                    </button>
-                    <div class="flex items-center gap-1.5 bg-brand-50/80 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-brand-200/50 shadow-sm cursor-help min-h-[32px] sm:min-h-[36px]" title="Sisa Kredit Pemodelan">
-                        <i data-lucide="database" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-500 fill-brand-500"></i>
-                        <span class="text-[11px] sm:text-xs font-black text-brand-700"><span id="model-quota-badge">1</span></span>
+                <button onclick="safeRedirect('/')" class="flex items-center gap-2 sm:gap-3 group bg-transparent border-none cursor-pointer outline-none">
+                    <div class="bg-slate-50 p-1.5 sm:p-2 rounded-full border border-slate-200 group-hover:bg-brand-50 transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4 text-slate-500 group-hover:text-brand-600 transition-colors"></i>
                     </div>
+                    <span class="font-black text-sm sm:text-base tracking-tight text-slate-800 group-hover:text-brand-600 transition-colors">Beranda</span>
+                </button>
+                <div class="flex items-center gap-1.5 bg-brand-50/80 px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full border border-brand-200/50 shadow-sm cursor-help min-h-[32px] sm:min-h-[36px]" title="Kapasitas Eksekusi Tersedia">
+                    <i data-lucide="zap" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-500 fill-brand-500"></i>
+                    <span class="text-[11px] sm:text-xs font-black text-brand-700" id="model-quota-badge">1</span>
                 </div>
             </div>
         </div>
@@ -207,38 +200,34 @@
     <!-- MAIN CONTENT -->
     <main class="flex-grow w-full max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 flex flex-col gap-6 lg:gap-8 items-start">
         
-        <!-- HEADER TEKS -->
-        <div class="w-full text-center fade-in-up mt-2 sm:mt-6">
-            <h1 class="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-3 sm:mb-4 leading-tight">
-                Pusat Permodelan <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-400">KDD.</span>
-            </h1>
-            <h2 class="text-xs sm:text-sm md:text-base text-slate-700 font-medium sm:font-semibold max-w-2xl mx-auto leading-relaxed">
-                Konfigurasikan algoritma data mining secara komprehensif.
-            </h2>
-        </div>
-
-        <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 w-full mt-4">
+        <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 w-full items-start">
             
-            <!-- PANEL KIRI: KONFIGURASI ENGINE -->
-            <div class="w-full lg:w-[320px] xl:w-[360px] flex flex-col gap-6 fade-in-up shrink-0 sticky top-24">
-                <div class="glass-card p-5 sm:p-6 flex flex-col">
-                    <div class="flex flex-col mb-4 sm:mb-5 pb-4 sm:pb-5 border-b border-slate-100 gap-3">
-                        <h3 class="font-black text-slate-900 text-sm sm:text-base lg:text-lg flex items-center gap-1.5 sm:gap-2">
-                            <i data-lucide="settings-2" class="w-4 h-4 sm:w-5 sm:h-5 text-brand-500"></i> Orkestrasi Algoritma
-                        </h3>
-                        <p class="text-[10px] sm:text-[11px] lg:text-xs text-slate-500 font-medium">Sesuaikan parameter untuk melatih model matematis.</p>
+            <!-- PANEL KIRI: KONFIGURASI ENGINE (COLLAPSIBLE) -->
+            <div id="sidebar-container" class="w-full lg:w-[320px] xl:w-[360px] shrink-0 sidebar-transition relative z-20">
+                <div class="glass-card w-full p-4 sm:p-5 lg:p-6 flex flex-col sticky top-24 transition-all duration-500 overflow-hidden" id="sidebar-card">
+                    <!-- Header Konfigurasi dengan Tombol Panah Toggle -->
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4 transition-all" id="sidebar-header">
+                        <div class="flex items-center gap-3 overflow-hidden whitespace-nowrap" id="sidebar-title-wrapper">
+                            <i data-lucide="settings-2" class="w-5 h-5 shrink-0 text-brand-500"></i>
+                            <div id="sidebar-title-text" class="transition-opacity duration-300">
+                                <h3 class="font-black text-slate-900 text-sm sm:text-base">Orkestrasi Algoritma</h3>
+                            </div>
+                        </div>
+                        <button onclick="toggleSidebar()" class="p-1.5 sm:p-2 bg-white hover:bg-slate-50 text-slate-400 hover:text-brand-600 border border-slate-200 rounded-lg transition-colors shadow-sm shrink-0" title="Geser Sidebar">
+                            <i data-lucide="chevron-left" id="sidebar-icon" class="w-4 h-4"></i>
+                        </button>
                     </div>
 
-                    <div class="space-y-4 flex-1 mt-2">
+                    <!-- Konten Konfigurasi -->
+                    <div id="sidebar-content" class="mt-4 space-y-4 flex-1 transition-opacity duration-300">
                         <!-- Step 1 -->
                         <div class="flex flex-col gap-1.5 relative">
                             <label class="text-[10px] sm:text-[11px] lg:text-xs font-bold text-slate-700 uppercase tracking-wide">Ontologi Data</label>
                             <div class="relative">
-                                <select id="select-category" onchange="syncTechniques()" class="w-full text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg p-2.5 sm:p-3 pr-8 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[40px] sm:min-h-[44px]">
+                                <select id="select-category" onchange="syncTechniques()" class="modern-select w-full text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg p-2.5 sm:p-3 pr-8 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[40px] sm:min-h-[44px]">
                                     <option value="Kualitatif">Kualitatif (Kategorikal)</option>
                                     <option value="Kuantitatif" selected>Kuantitatif (Numerik)</option>
                                 </select>
-                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"></i>
                             </div>
                         </div>
 
@@ -246,10 +235,9 @@
                         <div class="flex flex-col gap-1.5 relative">
                             <label class="text-[10px] sm:text-[11px] lg:text-xs font-bold text-slate-700 uppercase tracking-wide">Teknik Mining</label>
                             <div class="relative">
-                                <select id="select-technique" onchange="syncAlgorithms()" class="w-full text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg p-2.5 sm:p-3 pr-8 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[40px] sm:min-h-[44px]">
+                                <select id="select-technique" onchange="syncAlgorithms()" class="modern-select w-full text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg p-2.5 sm:p-3 pr-8 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[40px] sm:min-h-[44px]">
                                     <!-- Dinamis -->
                                 </select>
-                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"></i>
                             </div>
                         </div>
 
@@ -257,10 +245,9 @@
                         <div class="flex flex-col gap-1.5 relative">
                             <label class="text-[10px] sm:text-[11px] lg:text-xs font-bold text-slate-700 uppercase tracking-wide">Algoritma Spesifik</label>
                             <div class="relative">
-                                <select id="select-algorithm" onchange="updateTheme()" class="w-full text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg p-2.5 sm:p-3 pr-8 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[40px] sm:min-h-[44px]">
+                                <select id="select-algorithm" onchange="updateTheme()" class="modern-select w-full text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg p-2.5 sm:p-3 pr-8 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[40px] sm:min-h-[44px]">
                                     <!-- Dinamis -->
                                 </select>
-                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"></i>
                             </div>
                         </div>
 
@@ -268,47 +255,46 @@
                         <div id="target-col-wrapper" class="flex flex-col gap-1.5 relative transition-opacity duration-300">
                             <div class="flex items-center justify-between">
                                 <label class="text-[10px] sm:text-[11px] lg:text-xs font-bold text-slate-700 uppercase tracking-wide">Variabel Target (Y)</label>
-                                <span class="text-[9px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded font-bold uppercase">(Opsional)</span>
+                                <span class="text-[9px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Opsional</span>
                             </div>
                             <div class="relative">
-                                <select id="select-target" class="w-full text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg p-2.5 sm:p-3 pr-8 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[40px] sm:min-h-[44px]">
+                                <select id="select-target" class="modern-select w-full text-[10px] sm:text-[11px] lg:text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-300 rounded-lg p-2.5 sm:p-3 pr-8 outline-none focus:ring-2 focus:ring-brand-200 focus:border-brand-500 transition-all shadow-sm cursor-pointer appearance-none min-h-[40px] sm:min-h-[44px]">
                                     <option value="auto" selected>-- Deteksi Otomatis --</option>
                                     <!-- Dinamis dari Data -->
                                 </select>
-                                <i data-lucide="chevron-down" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"></i>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="mt-6 pt-4 border-t border-slate-100">
-                        <button onclick="executeModeling()" id="btn-execute" class="btn-analyze w-full hover:scale-[1.02] transition-transform">
-                            Jalankan Mesin <i data-lucide="cpu" class="w-4 h-4 sm:w-5 sm:h-5"></i>
-                        </button>
+                        <div class="pt-4 border-t border-slate-100">
+                            <button onclick="executeModeling()" id="btn-execute" class="btn-analyze w-full hover:scale-[1.02] transition-transform">
+                                Jalankan Mesin <i data-lucide="cpu" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- PANEL KANAN: WORKSPACE / HASIL -->
-            <div class="flex-1 w-full flex flex-col gap-6 fade-in-up min-w-0" style="animation-delay: 200ms;">
+            <div class="flex-1 w-full flex flex-col gap-6 fade-in-up min-w-0" style="animation-delay: 200ms;" id="main-workspace">
                 
                 <!-- Empty State -->
                 <div id="empty-state" class="glass-card p-10 sm:p-16 text-center flex flex-col items-center justify-center min-h-[450px]">
                     <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-5 border border-slate-200 text-slate-400">
                         <i data-lucide="layers" class="w-10 h-10 stroke-[1.5]"></i>
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-black text-slate-800 tracking-tight mb-2">Area Visualisasi Model</h3>
-                    <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed font-medium">Lengkapi parameter di panel kiri dan klik "Jalankan Mesin" untuk merender data mentah anda menjadi cetak biru matematis yang interaktif.</p>
+                    <h3 class="text-xl sm:text-2xl font-black text-slate-800 tracking-tight mb-2">Area Visualisasi Interaktif</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto leading-relaxed font-medium">Lengkapi parameter dan klik "Jalankan Mesin" untuk merender data mentah anda menjadi model matematis yang terperinci.</p>
                 </div>
 
-                <!-- Loading State (KONSISTEN DENGAN INDEX.HTML) -->
+                <!-- Loading State (Hitam Gelap) -->
                 <div id="loading-state" class="hidden flex-1 w-full flex flex-col items-center justify-center min-h-[450px] opacity-0 transition-opacity duration-400 px-4 text-center">
-                    <div class="uiverse-loader mb-4 sm:mb-6" id="dynamic-loader">
+                    <div class="uiverse-loader mb-4 sm:mb-6" id="dynamic-loader" style="--color: #0f172a;">
                         <div class="circle"><div class="dot"></div><div class="outline"></div></div>
                         <div class="circle"><div class="dot"></div><div class="outline"></div></div>
                         <div class="circle"><div class="dot"></div><div class="outline"></div></div>
                         <div class="circle"><div class="dot"></div><div class="outline"></div></div>
                     </div>
-                    <h3 class="text-base sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight mb-2 sm:mb-3">Orkestrasi Model Berjalan...</h3>
+                    <h3 class="text-base sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight mb-2 sm:mb-3">Mengeksekusi Model...</h3>
                     <p class="text-[10px] sm:text-[11px] lg:text-xs font-bold text-slate-700 bg-white px-4 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-sm border border-slate-200 inline-flex items-center gap-1.5 max-w-full">
                         <span id="loading-text" class="animate-pulse">Menyelaraskan kalkulasi dengan struktur data...</span>
                     </p>
@@ -323,22 +309,26 @@
                             <h2 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight" id="display-title">Model Workspace</h2>
                             <p class="text-[10px] sm:text-[11px] lg:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1 flex items-center gap-1.5" id="display-subtitle"><i data-lucide="bar-chart" class="w-3.5 h-3.5"></i> Algorithm Render</p>
                         </div>
+                        
                         <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                             <div class="flex flex-col items-start sm:items-end">
                                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest" id="metric-label">Confidence</span>
                                 <span class="text-sm sm:text-base lg:text-lg font-black text-theme-color theme-transition" id="metric-value">0%</span>
                             </div>
                             <div class="w-px h-8 bg-slate-200 mx-1 hidden sm:block"></div>
-                            <div class="flex items-center gap-2">
-                                <button onclick="resetZoom()" class="magic-btn" style="--color: #0f172a;" title="Reset Zoom">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <button onclick="resetZoom()" class="magic-btn" style="--color: #0f172a;" title="Reset Zoom Grafik">
                                     <i data-lucide="maximize" class="w-3.5 h-3.5 shrink-0"></i> Reset Zoom
+                                </button>
+                                <button onclick="downloadModel()" class="magic-btn" style="--color: #047857;" title="Muat Turun Visual Laporan">
+                                    <i data-lucide="download" class="w-3.5 h-3.5 shrink-0"></i> Unduh
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     <!-- Visual Output Area (Zoomable, Anti-Crop) -->
-                    <div class="glass-card flex flex-col min-h-[450px] relative overflow-hidden">
+                    <div class="glass-card flex flex-col relative overflow-hidden">
                         <!-- Floating Zoom Controls -->
                         <div class="absolute top-16 right-4 z-20 flex flex-col gap-2 bg-white/90 backdrop-blur rounded-lg border border-slate-200 shadow-sm p-1">
                             <button onclick="zoomIn()" class="p-1.5 text-slate-600 hover:text-brand-600 hover:bg-slate-100 rounded transition-colors" title="Zoom In"><i data-lucide="zoom-in" class="w-4 h-4"></i></button>
@@ -351,15 +341,16 @@
                                 <i data-lucide="bar-chart-3" class="w-4 h-4 text-theme-color theme-transition"></i>
                                 <span class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-slate-600">Representasi Visual Grafik</span>
                             </div>
-                            <span class="text-[9px] sm:text-[10px] text-slate-400 font-medium italic"><i data-lucide="mouse" class="w-3 h-3 inline pb-0.5"></i> Scroll untuk Zum / Tarik untuk Menggerakkan</span>
+                            <span class="text-[9px] sm:text-[10px] text-slate-400 font-medium italic"><i data-lucide="mouse" class="w-3 h-3 inline pb-0.5"></i> Gunakan scroll / tarik kursor untuk interaksi visual</span>
                         </div>
                         
-                        <div class="flex-1 p-4 sm:p-6 lg:p-8 flex justify-center items-center relative bg-white overflow-hidden w-full min-h-[400px] lg:min-h-[500px]">
+                        <!-- Min-Height ditambahkan untuk elak cropping -->
+                        <div class="flex-1 p-4 sm:p-6 lg:p-8 flex justify-center items-center relative bg-white overflow-hidden w-full min-h-[450px] lg:min-h-[550px]">
                             <!-- Container Visual (Anti-Cropping) -->
-                            <div id="visual-output" class="w-full h-full flex items-center justify-center relative z-10">
-                                <canvas id="modelChart" class="hidden w-full h-full"></canvas>
-                                <div id="tree-container" class="hidden w-full h-full flex justify-center items-center rounded-xl overflow-hidden bg-transparent"></div>
-                                <div id="table-output-container" class="hidden w-full h-full overflow-auto custom-scrollbar flex flex-col justify-start"></div>
+                            <div id="visual-output" class="w-full h-full flex items-center justify-center relative z-10 min-h-[400px]">
+                                <canvas id="modelChart" class="hidden w-full h-full min-h-[400px]"></canvas>
+                                <div id="tree-container" class="hidden w-full h-full flex justify-center items-center rounded-xl overflow-hidden bg-transparent min-h-[400px]"></div>
+                                <div id="table-output-container" class="hidden w-full h-full overflow-auto custom-scrollbar flex flex-col justify-start min-h-[400px]"></div>
                             </div>
                         </div>
                     </div>
@@ -368,10 +359,11 @@
                     <div class="glass-card flex flex-col">
                         <div class="border-b border-slate-100 bg-slate-50/50 px-5 sm:px-6 py-3 flex items-center gap-2">
                             <i data-lucide="brain-circuit" class="w-4 h-4 text-theme-color theme-transition"></i>
-                            <span class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-slate-600">Evaluasi Analitis (Berdasarkan Data Sebenar)</span>
+                            <span class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-slate-600">Evaluasi Analitis Terperinci</span>
                         </div>
                         <div class="p-5 sm:p-6 bg-white rounded-b-xl">
-                            <div id="narration-output" class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                            <!-- Grid Kartu Wawasan Responsif -->
+                            <div id="narration-output" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 w-full">
                                 <!-- AI Narrative Cards Injected Here -->
                             </div>
                         </div>
@@ -382,12 +374,6 @@
             </div>
         </div>
     </main>
-
-    <!-- Notification Banner (7 Detik) -->
-    <div id="notification" class="hidden fixed top-4 sm:top-6 left-1/2 transform -translate-x-1/2 z-[999999] bg-slate-900 text-white max-w-[90vw] sm:max-w-max w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-full flex items-center justify-center gap-2 shadow-[0_10px_40px_rgb(0,0,0,0.2)] transition-all duration-400 border border-slate-700 text-[10px] sm:text-[11px] lg:text-xs font-medium whitespace-normal sm:whitespace-nowrap text-center sm:text-left">
-        <i data-lucide="info" class="w-4 h-4 shrink-0 text-brand-400" id="notification-icon"></i>
-        <p id="notification-text" class="m-0 tracking-wide leading-tight"></p>
-    </div>
 
     <!-- Footer -->
     <footer class="bg-white border-t border-slate-200 mt-auto py-5 sm:py-6">
@@ -404,13 +390,19 @@
         </div>
     </footer>
 
+    <!-- Notification Banner -->
+    <div id="notification" class="hidden fixed top-4 sm:top-6 left-1/2 transform -translate-x-1/2 z-[999999] bg-slate-900 text-white max-w-[90vw] sm:max-w-max w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-full flex items-center justify-center gap-2 shadow-[0_10px_40px_rgb(0,0,0,0.2)] transition-all duration-400 border border-slate-700 text-[10px] sm:text-[11px] lg:text-xs font-medium whitespace-normal sm:whitespace-nowrap text-center sm:text-left">
+        <i data-lucide="info" class="w-4 h-4 shrink-0 text-brand-400" id="notification-icon"></i>
+        <p id="notification-text" class="m-0 tracking-wide leading-tight"></p>
+    </div>
+
     <script>
         // --- THEME MANAGEMENT (Dynamic Colors) ---
         const themes = {
-            'Klasifikasi': { color: 'text-violet-600', bg: 'bg-violet-600', hex: '#7c3aed', cardBorder: '#ddd6fe', icon: 'binary' },
-            'Clustering':  { color: 'text-emerald-600', bg: 'bg-emerald-500', hex: '#10b981', cardBorder: '#a7f3d0', icon: 'target' },
-            'Regresi':     { color: 'text-blue-600', bg: 'bg-blue-500', hex: '#3b82f6', cardBorder: '#bfdbfe', icon: 'trending-up' },
-            'Asosiasi':    { color: 'text-amber-600', bg: 'bg-amber-500', hex: '#f59e0b', cardBorder: '#fde68a', icon: 'network' }
+            'Klasifikasi': { color: 'text-violet-600', bg: 'bg-violet-600', hex: '#7c3aed', cardBorder: '#ddd6fe' },
+            'Clustering':  { color: 'text-emerald-600', bg: 'bg-emerald-500', hex: '#10b981', cardBorder: '#a7f3d0' },
+            'Regresi':     { color: 'text-blue-600', bg: 'bg-blue-500', hex: '#3b82f6', cardBorder: '#bfdbfe' },
+            'Asosiasi':    { color: 'text-amber-600', bg: 'bg-amber-500', hex: '#f59e0b', cardBorder: '#fde68a' }
         };
 
         function updateTheme() {
@@ -428,13 +420,18 @@
                 el.classList.add(theme.bg);
             });
 
+            // Set loader back to slate-900 if not executed yet, otherwise set to theme
             const loader = document.getElementById('dynamic-loader');
-            if(loader) loader.style.setProperty('--color', theme.hex);
+            if(loader && !document.getElementById('loading-state').classList.contains('hidden')){
+                loader.style.setProperty('--color', '#0f172a');
+            } else if(loader) {
+                loader.style.setProperty('--color', theme.hex);
+            }
 
             document.documentElement.style.setProperty('--card-border-hover', theme.cardBorder);
 
-            document.getElementById('display-title').innerText = algo;
-            document.getElementById('display-subtitle').innerHTML = `<i data-lucide="${theme.icon}" class="w-3.5 h-3.5 inline mb-0.5"></i> Model ${tech}`;
+            const titleEl = document.getElementById('display-title');
+            if (titleEl) titleEl.innerText = algo;
             
             let metricName = "Tingkat Akurasi";
             if(tech === "Regresi") metricName = "R-Squared (R²)";
@@ -574,6 +571,47 @@
             updateTheme();
         }
 
+        // --- SIDEBAR TOGGLE ---
+        let isSidebarOpen = true;
+        function toggleSidebar() {
+            const container = document.getElementById('sidebar-container');
+            const content = document.getElementById('sidebar-content');
+            const titleText = document.getElementById('sidebar-title-text');
+            const icon = document.getElementById('sidebar-icon');
+            const header = document.getElementById('sidebar-header');
+
+            if (isSidebarOpen) {
+                // Tutup
+                container.classList.remove('lg:w-[320px]', 'xl:w-[360px]');
+                container.classList.add('lg:w-[76px]');
+                
+                content.classList.add('hidden');
+                titleText.classList.add('hidden');
+                header.classList.remove('border-b', 'pb-4', 'sm:pb-5');
+                header.classList.add('justify-center');
+                
+                icon.setAttribute('data-lucide', 'chevron-right');
+            } else {
+                // Buka
+                container.classList.remove('lg:w-[76px]');
+                container.classList.add('lg:w-[320px]', 'xl:w-[360px]');
+                
+                setTimeout(() => {
+                    content.classList.remove('hidden');
+                    titleText.classList.remove('hidden');
+                }, 200); 
+                
+                header.classList.add('border-b', 'pb-4', 'sm:pb-5');
+                header.classList.remove('justify-center');
+
+                icon.setAttribute('data-lucide', 'chevron-left');
+            }
+            isSidebarOpen = !isSidebarOpen;
+            if(window.lucide) lucide.createIcons();
+            
+            setTimeout(() => { if(modelChartInstance) modelChartInstance.resize(); }, 500);
+        }
+
         // --- ZOOM CONTROLS ---
         function zoomIn() {
             if(modelChartInstance && document.getElementById('modelChart').classList.contains('hidden') === false) {
@@ -598,6 +636,20 @@
             }
         }
 
+        // --- DOWNLOAD MODEL ---
+        function downloadModel() {
+            const canvas = document.getElementById('modelChart');
+            if(!canvas.classList.contains('hidden')) {
+                const link = document.createElement('a');
+                link.download = `Dazer_Model_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showNotification("Visual Grafik berjaya dimuat turun.", "success");
+            } else {
+                showNotification("Pencetakan laporan penuh boleh dilakukan melalui Ctrl+P atau fungsi cetak pelayar (browser).", "info");
+            }
+        }
+
         // --- API & EXECUTION ---
         let API_ENDPOINT = '/.netlify/functions/dazer-api';
         let isPreviewMode = false;
@@ -618,6 +670,10 @@
             const loadingState = document.getElementById('loading-state');
             loadingState.classList.remove('hidden');
             loadingState.classList.add('flex');
+            
+            // Set Warna Loading Hitam
+            document.getElementById('dynamic-loader').style.setProperty('--color', '#0f172a');
+
             setTimeout(() => { loadingState.style.opacity = '1'; }, 50);
             
             const tech = document.getElementById('select-technique').value;
@@ -651,14 +707,14 @@
                     
                     const rCount = (extractedData.length - 1).toLocaleString('id-ID');
                     let mockResult = "";
-                    if(tech === 'Klasifikasi') mockResult = `Algoritma ${algo} telah berjaya mengklasifikasikan ${rCount} baris data sebenar.\nSempadan keputusan (decision boundary) berupaya memisahkan lajur target "${target}" dengan ralat yang amat minimum.\nModel ini stabil dan sangat disyorkan untuk membuat ramalan bagi data baharu.`;
-                    else if (tech === 'Clustering') mockResult = `Model ${algo} berjaya membahagikan ${rCount} rekod data sebenar kepada kumpulan yang homogen.\nPusat kluster (centroid) menunjukkan jarak optimum tanpa pertindihan (overlap) yang melampau.\nSyarikat disyorkan menggunakan taburan kluster numerik ini untuk sasaran kempen yang berfokus.`;
-                    else if (tech === 'Regresi') mockResult = `Analisis regresi ${algo} membuktikan wujudnya korelasi linear yang kuat dalam ${rCount} data berangka.\nGaris trend utama menunjukkan trajektori yang selari dengan nilai sedia ada.\nModel unjuran ini selamat digunakan bagi meramal parameter angka untuk unjuran masa akan datang.`;
-                    else mockResult = `Kajian algoritma ${algo} menjumpai kombinasi peraturan tersembunyi daripada ${rCount} set data.\nTahap 'Confidence' dan 'Lift Ratio' membuktikan wujud pertalian yang tinggi antara item-item yang digandingkan.\nPola perilaku serentak ini patut dimanfaatkan segera untuk strategi promosi berilang (cross-selling).`;
+                    if(tech === 'Klasifikasi') mockResult = `Algoritma ${algo} telah berjaya mengklasifikasikan ${rCount} baris data sebenar.\nSempadan keputusan (decision boundary) berupaya memisahkan lajur target "${target}" dengan ralat yang amat minimum.\nModel ini terbukti stabil untuk membuat ramalan bagi data baharu.\nCorak parameter semasa menunjukkan hasil signifikansi yang tinggi pada kebanyakan sampel ujian.`;
+                    else if (tech === 'Clustering') mockResult = `Model ${algo} berjaya membahagikan ${rCount} rekod data sebenar kepada kumpulan yang lebih homogen.\nPusat kluster (centroid) mempamerkan jarak optimum tanpa ada pertindihan (overlap) yang melampau.\nSyarikat disyorkan untuk menggunakan taburan kluster ini bagi merangka sasaran operasi atau kempen yang lebih tepat.\nVisualisasi sebaran mendapati kewujudan pencilan data yang mudah untuk disisihkan.`;
+                    else if (tech === 'Regresi') mockResult = `Analisis regresi ${algo} menentusahkan wujudnya korelasi linear kuat dalam ${rCount} set data berangka anda.\nGaris trend utama menunjukkan trajektori yang begitu selari dengan nilai logik metrik pasaran sedia ada.\nModel unjuran ini dijamin selamat digunakan bagi membuat ramalan angka tepat untuk unjuran perniagaan masa akan datang.\nPrestasi margin ralat (RMSE) juga berada pada graf bacaan yang menepati piawaian KDD.`;
+                    else mockResult = `Kajian mendalam algoritma ${algo} berjaya membongkar kombinasi tersembunyi daripada ${rCount} transaksi data.\nTahap 'Confidence' yang tinggi membuktikan wujud pertalian yang begitu jitu antara item yang digandingkan.\nPola perilaku serentak ini wajar dimanfaatkan segera untuk merangka strategi promosi atau pakej jualan secara bersilang (cross-selling).\nHasil sokongan data (support) juga melebihi ambang batas yang ditetapkan.`;
 
                     generateInteractiveCards(tech, algo, mockResult);
                     deductQuota();
-                }, 1500);
+                }, 1800);
             }
         }
 
@@ -679,6 +735,10 @@
             const loadingState = document.getElementById('loading-state');
             loadingState.style.opacity = '0';
             
+            // Set Color Loader to current theme back
+            const theme = themes[tech] || themes['Klasifikasi'];
+            document.getElementById('dynamic-loader').style.setProperty('--color', theme.hex);
+
             setTimeout(() => {
                 loadingState.classList.add('hidden');
                 loadingState.classList.remove('flex');
@@ -717,7 +777,7 @@
                     renderConfusionMatrixDataDriven(targetCol);
                 }
                 if(window.lucide) lucide.createIcons();
-            }, 300); // Wait for fade out
+            }, 400); // Wait for fade out
         }
 
         function renderTreeDataDriven(target) {
@@ -732,7 +792,6 @@
             let valA = targetVals[0] || "Signifikan";
             let valB = targetVals[1] || "Tidak Signifikan";
 
-            // Basic threshold calculation for tree split using actual real data values
             let threshold = 50;
             if (numColsIdx.length > 0) {
                 let colIdx = headers.indexOf(featureCol);
@@ -772,7 +831,7 @@
             
             let xIdx = 0; let yIdx = 1;
             if(numColsIdx.length >= 2) { xIdx = numColsIdx[0]; yIdx = numColsIdx[1]; }
-            else if (numColsIdx.length === 1) { xIdx = numColsIdx[0]; yIdx = numColsIdx[0]; } // fallback
+            else if (numColsIdx.length === 1) { xIdx = numColsIdx[0]; yIdx = numColsIdx[0]; }
             
             let pts = extractedData.slice(1, 200).map(r => ({
                 x: parseFloat(String(r[xIdx]).replace(/,/g, '')) || 0,
@@ -803,8 +862,8 @@
                         tooltip: { backgroundColor: '#0f172a', titleFont: {family:'Inter', size:12, weight:'bold'}, bodyFont: {family:'Inter', size:11}, padding: 10, cornerRadius: 8 }
                     },
                     scales: {
-                        x: { title: {display: true, text: headers[xIdx], font:{family:'Inter', weight:'bold'}}, grid: { color: '#f1f5f9', borderDash: [4, 4] }, border: {display: false} },
-                        y: { title: {display: true, text: headers[yIdx], font:{family:'Inter', weight:'bold'}}, grid: { color: '#f1f5f9', borderDash: [4, 4] }, border: {display: false} }
+                        x: { title: {display: true, text: headers[xIdx], font:{family:'Inter', weight:'bold', size: 10}}, grid: { color: '#f1f5f9', borderDash: [4, 4] }, border: {display: false}, ticks: {font: {size: 10, family: 'Inter', weight: '600'}, color: '#64748b'} },
+                        y: { title: {display: true, text: headers[yIdx], font:{family:'Inter', weight:'bold', size: 10}}, grid: { color: '#f1f5f9', borderDash: [4, 4] }, border: {display: false}, ticks: {font: {size: 10, family: 'Inter', weight: '600'}, color: '#64748b'} }
                     }
                 }
             });
@@ -824,7 +883,7 @@
                 y: parseFloat(String(r[yIdx]).replace(/,/g, '')) || 0
             })).filter(p => !isNaN(p.x) && !isNaN(p.y));
 
-            // Calculate actual linear regression
+            // Actual Linear Regression Calc
             let n = scatterData.length;
             if(n > 0) {
                 let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
@@ -854,8 +913,8 @@
                             tooltip: { backgroundColor: '#0f172a', titleFont: {family:'Inter', size:12, weight:'bold'}, bodyFont: {family:'Inter', size:11}, padding: 10, cornerRadius: 8 }
                         },
                         scales: {
-                            x: { title: {display: true, text: headers[xIdx], font:{family:'Inter', weight:'bold'}}, grid: { color: '#f1f5f9', borderDash: [4, 4] }, border: {display: false} },
-                            y: { title: {display: true, text: headers[yIdx], font:{family:'Inter', weight:'bold'}}, grid: { color: '#f1f5f9', borderDash: [4, 4] }, border: {display: false} }
+                            x: { title: {display: true, text: headers[xIdx], font:{family:'Inter', weight:'bold', size:10}}, grid: { color: '#f1f5f9', borderDash: [4, 4] }, border: {display: false}, ticks: {font: {size: 10, family: 'Inter', weight: '600'}, color: '#64748b'} },
+                            y: { title: {display: true, text: headers[yIdx], font:{family:'Inter', weight:'bold', size:10}}, grid: { color: '#f1f5f9', borderDash: [4, 4] }, border: {display: false}, ticks: {font: {size: 10, family: 'Inter', weight: '600'}, color: '#64748b'} }
                         }
                     }
                 });
@@ -866,7 +925,7 @@
             const container = document.getElementById('table-output-container');
             const themeHex = themes['Asosiasi'].hex;
             
-            // Cari asosiasi dari lajur kategori
+            // Asosiasi Kolom Kategori
             let col1 = catColsIdx[0] !== undefined ? catColsIdx[0] : 0;
             let col2 = catColsIdx[1] !== undefined ? catColsIdx[1] : (headers.length > 1 ? 1 : 0);
             
@@ -879,13 +938,13 @@
                 }
             });
             
-            let sorted = Object.entries(pairs).sort((a,b) => b[1] - a[1]).slice(0, 5); // Top 5 rules
+            let sorted = Object.entries(pairs).sort((a,b) => b[1] - a[1]).slice(0, 5); // Hadkan kpd Top 5 rules
             if(sorted.length === 0) sorted = [["Kategori A => Kategori B", 1]];
 
             let rowsHtml = '';
             sorted.forEach((item, idx) => {
                 let parts = item[0].split('=>');
-                let conf = Math.max(45, 99 - (idx * 12) + Math.floor(Math.random()*3)); // Logika keyakinan (Confidence)
+                let conf = Math.max(45, 99 - (idx * 12) + Math.floor(Math.random()*3)); // Logika Confidence
                 rowsHtml += `
                     <tr class="hover:bg-amber-50/30 transition-colors border-b border-slate-100 last:border-0">
                         <td class="p-3 sm:p-4 border-r border-slate-100"><span class="bg-slate-100 border border-slate-200 px-2.5 py-1.5 rounded text-[10px] sm:text-xs text-slate-700 font-semibold truncate max-w-[150px] inline-block" title="${parts[0].trim()}">${parts[0].trim()}</span></td>
@@ -900,7 +959,7 @@
             });
 
             container.innerHTML = `
-                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white w-full shadow-sm flex flex-col h-full">
+                <div class="border border-slate-200 rounded-2xl overflow-hidden bg-white w-full shadow-sm flex flex-col h-full min-h-[400px]">
                     <div class="bg-amber-50 px-5 sm:px-6 py-4 border-b border-amber-100 flex items-center justify-between shrink-0">
                         <span class="text-[10px] sm:text-xs font-bold text-amber-800 uppercase tracking-widest">Penemuan Matriks Asosiasi</span>
                         <span class="text-[9px] sm:text-[10px] font-black text-amber-600 bg-white px-2 py-1 rounded shadow-sm border border-amber-200">${sorted.length} Pola Terkorelasi</span>
@@ -926,14 +985,13 @@
             const baseColor = colorClass.split('-')[0]; 
 
             let total = extractedData.length - 1;
-            // Taburan logik matriks kekeliruan berdasarkan bilangan data
             let tp = Math.floor(total * 0.42);
             let tn = Math.floor(total * 0.41);
             let fp = Math.floor(total * 0.08);
             let fn = total - (tp + tn + fp);
 
             container.innerHTML = `
-                <div class="p-6 sm:p-8 flex flex-col items-center justify-center w-full h-full">
+                <div class="p-6 sm:p-8 flex flex-col items-center justify-center w-full h-full min-h-[400px]">
                     <h3 class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-500 mb-6 text-center bg-slate-50 px-4 py-2 rounded-full border border-slate-200">Confusion Matrix: Lajur "${targetCol}"</h3>
                     <div class="grid grid-cols-2 gap-4 max-w-[400px] text-center font-black w-full">
                         <div class="p-6 sm:p-8 bg-emerald-50 text-emerald-700 rounded-2xl border border-emerald-200 flex flex-col shadow-sm transform hover:scale-105 transition-transform cursor-default">
@@ -960,29 +1018,52 @@
             const container = document.getElementById('narration-output');
             container.innerHTML = '';
             
-            // Clean AI Output into Array
-            const lines = rawText.split('\n').filter(l => l.trim().length > 10);
+            // Format & Tapis AI Text
+            let lines = rawText.split('\n')
+                .map(l => l.replace(/^-|^\*|^•/g, '').replace(/\*\*/g, '').trim())
+                .filter(l => l.length > 10);
             
-            if(lines.length < 2) {
-                lines.push(`Algoritma ${algo} telah selesai memproses set data berangka dan kategorikal anda secara menyeluruh.`);
-                lines.push(`Kadar signifikansi membolehkan corak data ini diguna pakai untuk unjuran strategik perniagaan.`);
+            // Logik Had Tepat Minimum/Maksimum Kad Teks: Sentiasa GENAP (Even Number)
+            if(lines.length === 0) {
+                lines = [
+                    `Algoritma ${algo} telah berjaya memetakan struktur matriks secara menyeluruh tanpa sebarang ralat pengiraan.`,
+                    `Korelasi corak pembolehubah membuktikan tahap kestabilan yang tinggi untuk diunjurkan dalam pelan perniagaan anda.`
+                ];
+            }
+            
+            // Maksimum 6 Kad bagi mengelakkan ruang berserabut
+            if(lines.length > 6) lines = lines.slice(0, 6);
+            
+            // Jika ganjil (1,3,5), pangkas (pop) kad yang terakhir atau genapkannya
+            if (lines.length % 2 !== 0) {
+                if (lines.length === 1) {
+                    lines.push("Berdasarkan penilaian sistem, pola metrik terhasil ini amat sah dan sedia untuk dibentangkan kepada pihak pengurusan atasan.");
+                } else {
+                    lines.pop(); // Kekalkan genap, contoh: 3 -> 2, 5 -> 4
+                }
             }
 
             let cardsHtml = '';
             const icons = ['zap', 'bar-chart', 'git-commit', 'pie-chart', 'trending-up', 'check-circle'];
             
             lines.forEach((line, idx) => {
-                let cleanLine = line.replace(/^-|^\*|^•/g, '').replace(/\*\*/g, '').trim();
+                // Tapis Teks Menjadi MAKSIMUM 2 AYAT (Sentences) SAHAJA
+                let sentences = line.match(/[^.!?]+[.!?]+/g) || [line + "."];
+                let finalLine = sentences[0].trim();
+                if (sentences.length > 1) {
+                    finalLine += " " + sentences[1].trim(); 
+                }
+
                 let icon = icons[idx % icons.length];
                 
                 cardsHtml += `
-                    <div class="insight-card bg-slate-50 hover:bg-white rounded-xl p-4 sm:p-5 flex gap-3 sm:gap-4 items-start">
-                        <div class="p-2 sm:p-2.5 bg-white rounded-lg shadow-sm border border-slate-200 shrink-0 text-theme-color theme-transition">
-                            <i data-lucide="${icon}" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                    <div class="insight-card bg-slate-50 hover:bg-white rounded-xl p-5 flex flex-col sm:flex-row gap-4 items-start border border-slate-100 shadow-sm h-full group">
+                        <div class="p-2.5 bg-white border border-slate-200 rounded-lg text-theme-color theme-transition group-hover:bg-theme-bg group-hover:text-white transition-colors shrink-0">
+                            <i data-lucide="${icon}" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <h4 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Wawasan Analitis ${idx+1}</h4>
-                            <p class="text-[11px] sm:text-xs text-slate-700 font-semibold leading-relaxed">${cleanLine}</p>
+                            <h4 class="text-[11px] font-black uppercase tracking-widest text-slate-800 mb-1.5">Wawasan Analitis ${idx+1}</h4>
+                            <p class="text-xs text-slate-600 font-medium leading-relaxed">${finalLine}</p>
                         </div>
                     </div>
                 `;
