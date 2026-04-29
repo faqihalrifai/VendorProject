@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V26 - Ultra Strict Prompting & Accurate Telemetry)
+// dazer-api.js - Backend KDD (V27 - Natural Human-Like AI & Ultra-Accurate Telemetry)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -217,26 +217,31 @@ exports.handler = async (event, context) => {
         // ACTION 3: ANALISA DASHBOARD (EXECUTIVE INTELLIGENCE)
         // ============================================================
         if (action === 'analyze_data') {
-            const systemPrompt = `Role: Senior Data Analyst. Wajib output dalam JSON murni tanpa markdown apapun.
+            const systemPrompt = `Role: Senior Data Analyst & Ahli Komunikasi Eksekutif. Wajib output dalam JSON murni tanpa markdown apapun.
+ATURAN GAYA BAHASA (SANGAT PENTING):
+- JANGAN gunakan format kalimat template yang kaku atau seperti robot.
+- Gunakan bahasa manusia yang natural, luwes, elegan, namun SANGAT MUDAH dipahami oleh berbagai peran (dari staf hingga CEO).
+- Analisis harus MURNI berdasarkan data yang diberikan, bukan tebakan atau basa-basi kosong.
+
 ATURAN KETAT PANJANG TEKS:
 1. "insights": WAJIB terdiri dari TEPAT 5 elemen dalam array.
-2. SETIAP elemen di dalam "insights" WAJIB terdiri dari TEPAT 2 kalimat. Tidak boleh 1 kalimat, tidak boleh 3 kalimat. Gunakan 1 titik di akhir kalimat pertama, dan 1 titik di akhir kalimat kedua.
-3. SETIAP elemen di dalam "cards" (metric, segment, correlation, volatility) WAJIB terdiri dari 1 hingga 2 kalimat singkat yang sangat padat.
+2. SETIAP elemen di dalam "insights" WAJIB terdiri dari TEPAT 2 kalimat singkat. Gunakan 1 titik di akhir kalimat pertama, dan 1 titik di akhir kalimat kedua. Tidak boleh kurang atau lebih.
+3. SETIAP elemen di dalam "cards" WAJIB terdiri dari 1 hingga 2 kalimat yang natural dan padat.
 
 Format JSON yang Wajib:
 {
   "insights": [
-    "Kalimat penemuan pertama tentang data. Kalimat implikasi dari penemuan tersebut.",
-    "Kalimat penemuan kedua tentang data. Kalimat implikasi dari penemuan tersebut.",
-    "Kalimat penemuan ketiga tentang data. Kalimat implikasi dari penemuan tersebut.",
-    "Kalimat penemuan keempat tentang data. Kalimat implikasi dari penemuan tersebut.",
-    "Kalimat penemuan kelima tentang data. Kalimat rekomendasi dari penemuan tersebut."
+    "Fakta menarik pertama dari data. Penjelasan mengapa ini penting atau solusinya.",
+    "Fakta menarik kedua dari data. Penjelasan mengapa ini penting atau solusinya.",
+    "Fakta menarik ketiga dari data. Penjelasan mengapa ini penting atau solusinya.",
+    "Fakta menarik keempat dari data. Penjelasan mengapa ini penting atau solusinya.",
+    "Fakta menarik kelima dari data. Rekomendasi strategis dari penemuan tersebut."
   ],
   "cards": {
-    "metric": "Satu kalimat penjelasan metrik utama. Satu kalimat pendukung tambahan opsional.",
-    "segment": "Satu kalimat penjelasan profil segmen terbesar. Satu kalimat pendukung tambahan opsional.",
-    "correlation": "Satu kalimat korelasi antar fitur. Satu kalimat pendukung tambahan opsional.",
-    "volatility": "Satu kalimat ukuran variansi atau volatilitas. Satu kalimat pendukung tambahan opsional."
+    "metric": "Satu atau dua kalimat natural yang menjelaskan metrik utama secara jelas.",
+    "segment": "Satu atau dua kalimat natural tentang kelompok data yang paling menonjol.",
+    "correlation": "Satu atau dua kalimat natural tentang hubungan antar faktor yang paling kuat.",
+    "volatility": "Satu atau dua kalimat natural tentang stabilitas atau pergerakan data."
   }
 }`;
             const safeData = smartDataTruncate(data, 4000);
@@ -249,8 +254,8 @@ Format JSON yang Wajib:
                     headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         model: 'llama3.1-70b', 
-                        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Analisis Data Berikut:\n${safeData}` }], 
-                        temperature: 0.1, // Dikecilkan agar lebih kaku mengikuti prompt panjang kalimat
+                        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural data berikut:\n${safeData}` }], 
+                        temperature: 0.2, // Sedikit dinaikkan untuk bahasa natural, tapi tetap stabil
                         max_tokens: 1500 
                     })
                 });
@@ -266,8 +271,8 @@ Format JSON yang Wajib:
                         headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
                             model: 'llama-3.3-70b-versatile', 
-                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Analisis Data Berikut:\n${safeData}` }], 
-                            temperature: 0.1, 
+                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural data berikut:\n${safeData}` }], 
+                            temperature: 0.2, 
                             response_format: { type: "json_object" }, 
                             max_tokens: 1500 
                         })
@@ -281,35 +286,35 @@ Format JSON yang Wajib:
                 }
             }
 
-            // Fallback Data
+            // Fallback Data (Dibuat lebih natural seperti pesan manusia)
             let parsed = { 
                 insights: [
-                    "Sistem sedang memproses beban data yang tinggi. Pastikan koneksi API tidak terputus.", 
-                    "Pengaturan batas token mungkin menghalangi hasil penuh. Kurangi ukuran sampel jika perlu.",
-                    "Periksa kembali batas ukuran pengiriman data sampel. Gunakan fitur penyederhanaan data.",
-                    "Sistem akan memulihkan layanan secara otomatis dalam beberapa menit. Silakan ditunggu.",
-                    "Hubungi Administrator jika kendala berlanjut lebih dari 15 menit. Lampirkan log akses Anda."
+                    "Sistem kami saat ini sedang memproses antrean data yang cukup padat. Hal ini membuat analisis penuh belum dapat ditampilkan secara langsung.", 
+                    "Pembatasan ukuran data dari server mungkin menyebabkan pembacaan terpotong. Cobalah untuk menyederhanakan ukuran sampel yang Anda unggah.",
+                    "Pastikan tidak ada karakter khusus atau baris yang rusak di dalam file Anda. Data yang rapi dan bersih akan sangat mempercepat proses pemodelan.",
+                    "Koneksi ke mesin analisis cerdas kami sedang dipulihkan secara otomatis. Silakan tunggu beberapa saat lagi untuk memuat ulang data.",
+                    "Jika kendala ini terus berlanjut, jangan ragu untuk menghubungi tim dukungan. Kami selalu siap membantu memastikan pekerjaan Anda tetap lancar."
                 ], 
                 cards: { 
-                    metric: "Data tidak tersedia untuk metrik utama. Cek konfigurasi.", 
-                    segment: "Data tidak tersedia untuk profil segmen. Cek konfigurasi.", 
-                    correlation: "Data tidak tersedia untuk korelasi. Cek konfigurasi.", 
-                    volatility: "Data tidak tersedia untuk volatilitas. Cek konfigurasi." 
+                    metric: "Nilai metrik utama saat ini belum dapat dikalkulasi secara penuh. Kami sedang mencoba menyusun ulang data Anda.", 
+                    segment: "Pemetaan profil data tertunda sementara karena tingginya lalu lintas pemrosesan di server.", 
+                    correlation: "Analisis kecenderungan hubungan antar variabel sedang dalam antrean. Silakan periksa kembali beberapa saat lagi.", 
+                    volatility: "Tingkat persebaran data akan segera kami tampilkan begitu jalur koneksi kembali stabil." 
                 } 
             };
 
             if (rawText) {
                 try { 
                     parsed = extractJSON(rawText);
-                    // Pastikan array insight memiliki tepat 5 buah, dan card ada string-nya
+                    // Pastikan array insight memiliki tepat 5 buah
                     if (!parsed.insights || !Array.isArray(parsed.insights)) parsed.insights = [];
                     
                     const defaultInsights = [
-                        "Analisis AI dijalankan namun format tidak sempurna. Data mentah tidak sepenuhnya terbaca.",
-                        "Terdapat indikasi deviasi minor pada pemrosesan teks JSON. AI gagal merespon sesuai format.",
-                        "Algoritma tetap memproses struktur data secara parsial. Hasil prediksi mungkin tidak akurat.",
-                        "Performa prediksi disesuaikan berdasarkan token yang valid. Sebagian analisis dipangkas otomatis.",
-                        "Coba lakukan refresh untuk mengulangi kalkulasi model. Pastikan data tidak mengandung karakter aneh."
+                        "Kami berhasil membaca data Anda namun menemukan format yang sedikit di luar standar. Pemrosesan dilakukan berdasarkan garis besarnya saja.",
+                        "Ada beberapa nilai yang sulit diterjemahkan secara langsung oleh sistem. Hal ini dapat membuat hasil analisis menjadi kurang komprehensif.",
+                        "Mesin kami tetap menyaring informasi utama yang bisa diekstrak dari tabel Anda. Silakan lihat metrik yang tersedia untuk gambaran awal.",
+                        "Daya analisis disesuaikan agar tetap bisa memberikan wawasan meskipun sebagian data diabaikan. Keakuratan mungkin tidak maksimal.",
+                        "Coba lakukan refresh atau unggah ulang file dengan format yang lebih konsisten. Kami sangat menyarankan penggunaan file CSV standar."
                     ];
                     
                     if (parsed.insights.length < 5) {
@@ -320,7 +325,7 @@ Format JSON yang Wajib:
 
                     if (!parsed.cards) parsed.cards = { metric: "-", segment: "-", correlation: "-", volatility: "-" };
                 } catch (parseError) {
-                    parsed.insights[0] = "Mesin AI mengembalikan data dalam format yang tidak dapat dibaca oleh antarmuka. Proses terhenti.";
+                    parsed.insights[0] = "Kami mengalami kesulitan menerjemahkan struktur balasan dari server AI. Silakan coba kembali dalam beberapa menit.";
                 }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsed) };
@@ -353,8 +358,8 @@ Format JSON yang Wajib:
                     body: JSON.stringify({ 
                         model: 'llama-3.3-70b-versatile', 
                         messages: [
-                            { role: 'system', content: "Kamu adalah Dazer AI Analyst. Berikan jawaban yang komprehensif, logis, dan rapi dalam Bahasa Indonesia." }, 
-                            { role: 'user', content: `Context User: ${userContext}\n${webInfo}\nPertanyaan: ${message}` }
+                            { role: 'system', content: "Kamu adalah Dazer AI Analyst. Jawablah dengan MURNI, natural, seolah kamu manusia yang mengerti data. Jelaskan secara profesional namun mudah dipahami dalam Bahasa Indonesia." }, 
+                            { role: 'user', content: `Konteks User saat ini: ${userContext}\n${webInfo}\n\nUser bertanya: ${message}` }
                         ], 
                         temperature: 0.6, 
                         max_tokens: 800 
@@ -363,10 +368,10 @@ Format JSON yang Wajib:
                 
                 if (!res.ok) throw new Error("Groq Error");
                 const d = await res.json();
-                const replyText = d?.choices?.[0]?.message?.content || "Sistem chat tidak merespons.";
+                const replyText = d?.choices?.[0]?.message?.content || "Mohon maaf, sistem chat kami sedang lambat merespons.";
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: cleanMarkdown(replyText) }) };
             } catch(e) {
-                return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Layanan chat AI sedang offline atau konfigurasi API belum disetel." }) };
+                return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Layanan asisten cerdas sedang offline atau belum diatur sepenuhnya." }) };
             }
         }
 
@@ -384,7 +389,9 @@ Format JSON yang Wajib:
 
             const promptModel = `Task: Data Mining & KDD Evaluation. Method: ${modelType} | Algo: ${algorithm} | MathRef: ${wInfo}
 Data Sample: ${smartDataTruncate(data, 5000)}
-Berikan narasi evaluasi model yang profesional (Sebutkan Pola yang ditemukan, Confidence Level, Akurasi/Silhoutte Score bayangan, dan Rekomendasi). Format dalam Bahasa Indonesia yang rapi tanpa markdown rumit.`;
+Tugas: Berikan narasi evaluasi model yang MURNI, NATURAL, dan BUKAN TEMPLATE KAKU. Gunakan bahasa yang sangat mudah dipahami oleh semua kalangan namun tetap elegan dan profesional.
+Wajib sebutkan: Pola utama yang Anda temukan, tingkat keyakinan (Confidence Level / Akurasi bayangan), dan rekomendasi tindak lanjut strategis. 
+Format jawaban dalam Bahasa Indonesia (1-3 paragraf padat) tanpa menggunakan markdown yang berlebihan.`;
 
             let finalRes = "";
             try {
@@ -411,16 +418,16 @@ Berikan narasi evaluasi model yang profesional (Sebutkan Pola yang ditemukan, Co
                     const oData = await oRes.json();
                     finalRes = oData.choices[0].message.content;
                 } catch(fallbackE) {
-                    finalRes = "Evaluasi model terhenti karena gangguan koneksi API atau API Key belum disetel di Netlify. Mohon periksa kembali.";
+                    finalRes = "Proses evaluasi model terhenti karena gangguan pada sistem inti kami. Silakan coba jalankan proses kembali dalam beberapa saat.";
                 }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(finalRes) }) };
         }
 
-        return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ reply: "Aksi tidak dikenali oleh sistem API." }) };
+        return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ reply: "Sistem menerima perintah yang tidak terdaftar." }) };
 
     } catch (err) {
         console.error("Critical System Error (Dazer API):", err);
-        return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Interupsi sistem server.", error: err.message }) };
+        return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Terjadi interupsi pada server pemrosesan kami.", error: err.message }) };
     }
 };
