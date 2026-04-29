@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V24 - Expanded Mailer & Dynamic Action Subject)
+// dazer-api.js - Backend KDD (V26 - Ultra Strict Prompting & Accurate Telemetry)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -11,7 +11,7 @@ function cleanMarkdown(text) {
 }
 
 /**
- * Pembersih khusus untuk memastikan string bisa di-parse menjadi JSON.
+ * Pembersih khusus untuk memastikan string bisa di-parse menjadi JSON secara paksa.
  */
 function extractJSON(text) {
     try {
@@ -24,7 +24,7 @@ function extractJSON(text) {
 }
 
 /**
- * Token-Saver Logic: Memotong data jika melebihi batas (Mencegah Error 413/400).
+ * Token-Saver Logic: Memotong data jika melebihi batas.
  */
 function smartDataTruncate(dataStr, limit = 4000) {
     if (!dataStr) return "";
@@ -70,16 +70,15 @@ exports.handler = async (event, context) => {
         const body = JSON.parse(event.body);
         let { action, message, context: userContext, data, modelType, algorithm, email, name, metadata } = body;
         
-        // Menangkap Notifikasi Upload dari index.html yang kehilangan key "action"
-        if (!action && body.fileName) {
-            action = 'notify_upload';
-            name = name || 'Sesi Anonim';
-            email = email || 'Guest User';
-        }
-
-        // Memastikan metadata ada agar tidak undefined
+        // Memastikan metadata merupakan object valid
         metadata = metadata || {};
-        metadata.ip = metadata.ip || clientIp;
+        
+        // Menangkap Notifikasi Upload jika parameter action tidak dikirim dari index.html
+        if (!action && (body.fileName || metadata.fileName)) {
+            action = 'notify_upload';
+            name = name || body.name || metadata.name || 'Sesi Anonim';
+            email = email || body.email || metadata.email || 'Guest User';
+        }
 
         // Environment Variables
         const groqKey = process.env.GROQ_API_KEY;
@@ -91,7 +90,7 @@ exports.handler = async (event, context) => {
         const wolframId = process.env.WOLFRAM_APP_ID;
 
         // ============================================================
-        // ACTION 1: LOG AKTIVITAS (DENGAN DETAIL EKSTENSIF)
+        // ACTION 1: LOG AKTIVITAS (DENGAN DETAIL EKSTENSIF & AKURAT)
         // ============================================================
         if (action === 'notify_register' || action === 'notify_upload' || action === 'notify_login') {
             if (emailPass) {
@@ -101,7 +100,7 @@ exports.handler = async (event, context) => {
                         auth: { user: 'dazer.help@gmail.com', pass: emailPass } 
                     });
                     
-                    // Menentukan Label Aksi Berdasarkan Request
+                    // Label Aksi Berdasarkan Request
                     let subjectPrefix = "Dazer-Guest";
                     let colorLabel = "#64748b"; // Slate for Guest/Upload
                     
@@ -113,8 +112,12 @@ exports.handler = async (event, context) => {
                         colorLabel = "#3b82f6"; // Blue
                     }
 
-                    const localTime = metadata.localTime || new Date().toLocaleString('id-ID');
+                    // Ekstraksi Data Berlapis (Prioritas: Body Langsung -> Metadata -> Fallback)
+                    const extract = (key) => body[key] || metadata[key] || 'Tidak terdeteksi';
                     
+                    const localTime = extract('localTime') !== 'Tidak terdeteksi' ? extract('localTime') : new Date().toLocaleString('id-ID');
+                    const ipAddress = metadata.ip || body.ip || clientIp || 'Tidak terdeteksi';
+
                     const htmlLog = `
                         <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
                             <div style="background-color: ${colorLabel}; padding: 25px 20px; color: white;">
@@ -126,30 +129,35 @@ exports.handler = async (event, context) => {
                                     <tbody>
                                         <!-- IDENTITAS & SESI -->
                                         <tr style="background-color: #f8fafc;"><td colspan="2" style="padding: 10px 20px; font-weight: bold; color: #475569; border-bottom: 2px solid #e2e8f0;">Informasi Pengguna & Sesi</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; width: 40%; color: #64748b;">Nama & Email</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-weight: 600;">${name || 'Anonim'} (${email || 'Guest'})</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">ID Sesi</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.sessionId || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Durasi Tahan</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.sessionDuration || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; width: 40%; color: #64748b;">Nama & Email</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-weight: 600;">${name || extract('name')} (${email || extract('email')})</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">ID Sesi</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-family: monospace;">${extract('sessionId')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Durasi Tahan</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('sessionDuration')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Waktu Lokal</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${localTime}</td></tr>
                                         
-                                        <!-- DETAIL FILE & KDD (Muncul jika ada) -->
+                                        <!-- DETAIL FILE & KDD -->
                                         <tr style="background-color: #f8fafc;"><td colspan="2" style="padding: 10px 20px; font-weight: bold; color: #475569; border-bottom: 2px solid #e2e8f0;">Data & Pemodelan KDD</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Nama File</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${body.fileName || metadata.fileName || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Ukuran File</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${body.fileSize || metadata.fileSize || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">File Hash</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.fileHash || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Kategori Data</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.dataCategory || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Dimensi Data</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.dataDimension || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Teknik KDD</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.kddTechnique || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Daftar Kolom</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-size: 12px;">${metadata.columns || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Nama File</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: #3b82f6;">${extract('fileName')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Ukuran File</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('fileSize')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">File Hash</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-family: monospace; font-size: 12px;">${extract('fileHash')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Kategori Data</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('dataCategory')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Dimensi Data</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('dataDimension')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Teknik KDD</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('kddTechnique')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Daftar Kolom</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-size: 12px; line-height: 1.5;">${extract('columns')}</td></tr>
                                         
                                         <!-- TELEMETRI LINGKUNGAN -->
                                         <tr style="background-color: #f8fafc;"><td colspan="2" style="padding: 10px 20px; font-weight: bold; color: #475569; border-bottom: 2px solid #e2e8f0;">Telemetri Jaringan & Perangkat</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Perangkat</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.device || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Resolusi Layar</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.resolution || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Status Baterai</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.battery || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Alamat IP</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-family: monospace;">${metadata.ip}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Lokasi / ISP</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.location || 'Unknown'} / ${metadata.isp || '-'}</td></tr>
-                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Tipe Koneksi</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.connectionType || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Perangkat</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('device')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Resolusi Layar</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('resolution')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Status Baterai</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('battery')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Alamat IP</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-family: monospace;">${ipAddress}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Lokasi / Geo</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('location')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">ISP / Provider</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('isp')}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Tipe Koneksi</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('connectionType')}</td></tr>
                                     </tbody>
                                 </table>
+                            </div>
+                            <div style="background-color: #f1f5f9; padding: 15px 20px; text-align: center; font-size: 12px; color: #64748b;">
+                                Dihasilkan secara otomatis oleh Dazer Intelligence Engine
                             </div>
                         </div>
                     `;
@@ -157,7 +165,7 @@ exports.handler = async (event, context) => {
                     await transporter.sendMail({ 
                         from: '"Dazer Audit" <dazer.help@gmail.com>', 
                         to: "dazer.help@gmail.com", 
-                        subject: `[${subjectPrefix}] Info: ${name || email}`, 
+                        subject: `[${subjectPrefix}] Telemetri: ${name || email}`, 
                         html: htmlLog 
                     });
                     
@@ -166,7 +174,7 @@ exports.handler = async (event, context) => {
                     return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ status: 'error', error: e.message }) };
                 }
             } else {
-                return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ status: 'error', error: "Konfigurasi Email Server tidak lengkap." }) };
+                return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ status: 'error', error: "Konfigurasi SMTP hilang." }) };
             }
         }
 
@@ -209,20 +217,26 @@ exports.handler = async (event, context) => {
         // ACTION 3: ANALISA DASHBOARD (EXECUTIVE INTELLIGENCE)
         // ============================================================
         if (action === 'analyze_data') {
-            const systemPrompt = `Role: Senior Data Analyst. Output wajib TEPAT berformat JSON. JANGAN TULIS HAL LAIN SELAIN JSON.
-Gaya Bahasa: Eksekutif, lugas, profesional, dan padat.
-ATURAN PANJANG TEKS:
-1. Setiap poin di dalam array "insights" HARUS terdiri dari TEPAT 2 kalimat.
-2. Setiap value di dalam object "cards" HARUS terdiri dari 1 hingga 2 kalimat maksimal.
+            const systemPrompt = `Role: Senior Data Analyst. Wajib output dalam JSON murni tanpa markdown apapun.
+ATURAN KETAT PANJANG TEKS:
+1. "insights": WAJIB terdiri dari TEPAT 5 elemen dalam array.
+2. SETIAP elemen di dalam "insights" WAJIB terdiri dari TEPAT 2 kalimat. Tidak boleh 1 kalimat, tidak boleh 3 kalimat. Gunakan 1 titik di akhir kalimat pertama, dan 1 titik di akhir kalimat kedua.
+3. SETIAP elemen di dalam "cards" (metric, segment, correlation, volatility) WAJIB terdiri dari 1 hingga 2 kalimat singkat yang sangat padat.
 
 Format JSON yang Wajib:
 {
-  "insights": ["Point 1.", "Point 2.", "Point 3.", "Point 4."],
+  "insights": [
+    "Kalimat penemuan pertama tentang data. Kalimat implikasi dari penemuan tersebut.",
+    "Kalimat penemuan kedua tentang data. Kalimat implikasi dari penemuan tersebut.",
+    "Kalimat penemuan ketiga tentang data. Kalimat implikasi dari penemuan tersebut.",
+    "Kalimat penemuan keempat tentang data. Kalimat implikasi dari penemuan tersebut.",
+    "Kalimat penemuan kelima tentang data. Kalimat rekomendasi dari penemuan tersebut."
+  ],
   "cards": {
-    "metric": "1-2 kalimat.", 
-    "segment": "1-2 kalimat.", 
-    "correlation": "1-2 kalimat.", 
-    "volatility": "1-2 kalimat."
+    "metric": "Satu kalimat penjelasan metrik utama. Satu kalimat pendukung tambahan opsional.",
+    "segment": "Satu kalimat penjelasan profil segmen terbesar. Satu kalimat pendukung tambahan opsional.",
+    "correlation": "Satu kalimat korelasi antar fitur. Satu kalimat pendukung tambahan opsional.",
+    "volatility": "Satu kalimat ukuran variansi atau volatilitas. Satu kalimat pendukung tambahan opsional."
   }
 }`;
             const safeData = smartDataTruncate(data, 4000);
@@ -235,9 +249,9 @@ Format JSON yang Wajib:
                     headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         model: 'llama3.1-70b', 
-                        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Data:\n${safeData}` }], 
-                        temperature: 0.2, 
-                        max_tokens: 1024 
+                        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Analisis Data Berikut:\n${safeData}` }], 
+                        temperature: 0.1, // Dikecilkan agar lebih kaku mengikuti prompt panjang kalimat
+                        max_tokens: 1500 
                     })
                 });
                 
@@ -252,10 +266,10 @@ Format JSON yang Wajib:
                         headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
                             model: 'llama-3.3-70b-versatile', 
-                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Data:\n${safeData}` }], 
-                            temperature: 0.2, 
+                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Analisis Data Berikut:\n${safeData}` }], 
+                            temperature: 0.1, 
                             response_format: { type: "json_object" }, 
-                            max_tokens: 1024 
+                            max_tokens: 1500 
                         })
                     });
                     
@@ -263,22 +277,50 @@ Format JSON yang Wajib:
                     const response = await res.json();
                     rawText = response?.choices?.[0]?.message?.content || "";
                 } catch (fallbackErr) {
-                    console.error("AI Analysis Semua Endpoint Gagal:", fallbackErr.message);
+                    console.error("AI Analysis Gagal:", fallbackErr.message);
                 }
             }
 
+            // Fallback Data
             let parsed = { 
-                insights: ["Sistem sedang memproses beban data yang tinggi.", "Mohon kurangi ukuran sampel data atau pastikan konfigurasi API sudah tepat."], 
-                cards: { metric: "Data tidak tersedia.", segment: "Data tidak tersedia.", correlation: "Data tidak tersedia.", volatility: "Data tidak tersedia." } 
+                insights: [
+                    "Sistem sedang memproses beban data yang tinggi. Pastikan koneksi API tidak terputus.", 
+                    "Pengaturan batas token mungkin menghalangi hasil penuh. Kurangi ukuran sampel jika perlu.",
+                    "Periksa kembali batas ukuran pengiriman data sampel. Gunakan fitur penyederhanaan data.",
+                    "Sistem akan memulihkan layanan secara otomatis dalam beberapa menit. Silakan ditunggu.",
+                    "Hubungi Administrator jika kendala berlanjut lebih dari 15 menit. Lampirkan log akses Anda."
+                ], 
+                cards: { 
+                    metric: "Data tidak tersedia untuk metrik utama. Cek konfigurasi.", 
+                    segment: "Data tidak tersedia untuk profil segmen. Cek konfigurasi.", 
+                    correlation: "Data tidak tersedia untuk korelasi. Cek konfigurasi.", 
+                    volatility: "Data tidak tersedia untuk volatilitas. Cek konfigurasi." 
+                } 
             };
 
             if (rawText) {
                 try { 
                     parsed = extractJSON(rawText);
-                    if (!parsed.insights) parsed.insights = ["Analisis AI berhasil dijalankan namun format data tidak sesuai."];
+                    // Pastikan array insight memiliki tepat 5 buah, dan card ada string-nya
+                    if (!parsed.insights || !Array.isArray(parsed.insights)) parsed.insights = [];
+                    
+                    const defaultInsights = [
+                        "Analisis AI dijalankan namun format tidak sempurna. Data mentah tidak sepenuhnya terbaca.",
+                        "Terdapat indikasi deviasi minor pada pemrosesan teks JSON. AI gagal merespon sesuai format.",
+                        "Algoritma tetap memproses struktur data secara parsial. Hasil prediksi mungkin tidak akurat.",
+                        "Performa prediksi disesuaikan berdasarkan token yang valid. Sebagian analisis dipangkas otomatis.",
+                        "Coba lakukan refresh untuk mengulangi kalkulasi model. Pastikan data tidak mengandung karakter aneh."
+                    ];
+                    
+                    if (parsed.insights.length < 5) {
+                        parsed.insights = [...parsed.insights, ...defaultInsights].slice(0, 5);
+                    } else if (parsed.insights.length > 5) {
+                        parsed.insights = parsed.insights.slice(0, 5);
+                    }
+
                     if (!parsed.cards) parsed.cards = { metric: "-", segment: "-", correlation: "-", volatility: "-" };
                 } catch (parseError) {
-                    parsed.insights = ["Mesin AI mengembalikan data dalam format yang tidak dikenali sistem.", "Silakan coba ulangi proses analisa."];
+                    parsed.insights[0] = "Mesin AI mengembalikan data dalam format yang tidak dapat dibaca oleh antarmuka. Proses terhenti.";
                 }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsed) };
