@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V23 Stable - Gmail Service Fix & Robust AI Parser)
+// dazer-api.js - Backend KDD (V24 - Expanded Mailer & Dynamic Action Subject)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -15,7 +15,6 @@ function cleanMarkdown(text) {
  */
 function extractJSON(text) {
     try {
-        // Hapus bungkus markdown json jika AI memberikannya
         const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
         const match = cleaned.match(/\{[\s\S]*\}/);
         return match ? JSON.parse(match[0]) : JSON.parse(cleaned);
@@ -57,7 +56,7 @@ exports.handler = async (event, context) => {
     const currentTime = Date.now();
     const limitData = rateLimitMap.get(clientIp) || { count: 0, firstRequest: currentTime };
     
-    if (currentTime - limitData.firstRequest > 600000) { // Reset tiap 10 menit
+    if (currentTime - limitData.firstRequest > 600000) {
         limitData.count = 1; limitData.firstRequest = currentTime; 
     } else {
         limitData.count += 1;
@@ -76,13 +75,11 @@ exports.handler = async (event, context) => {
             action = 'notify_upload';
             name = name || 'Sesi Anonim';
             email = email || 'Guest User';
-            metadata = {
-                ip: body.ipAddress || clientIp,
-                location: body.location || 'Unknown',
-                device: body.device || 'Unknown',
-                isp: body.isp || 'Unknown'
-            };
         }
+
+        // Memastikan metadata ada agar tidak undefined
+        metadata = metadata || {};
+        metadata.ip = metadata.ip || clientIp;
 
         // Environment Variables
         const groqKey = process.env.GROQ_API_KEY;
@@ -94,37 +91,64 @@ exports.handler = async (event, context) => {
         const wolframId = process.env.WOLFRAM_APP_ID;
 
         // ============================================================
-        // ACTION 1: LOG AKTIVITAS (ADMIN NOTIFIER - HTML VER.)
+        // ACTION 1: LOG AKTIVITAS (DENGAN DETAIL EKSTENSIF)
         // ============================================================
-        if (action === 'notify_register' || action === 'notify_upload') {
+        if (action === 'notify_register' || action === 'notify_upload' || action === 'notify_login') {
             if (emailPass) {
                 try {
-                    // FIX: Gunakan konfigurasi 'service' bawaan nodemailer yang lebih stabil untuk Gmail
                     let transporter = nodemailer.createTransport({ 
                         service: 'gmail',
-                        auth: { 
-                            user: 'dazer.help@gmail.com', 
-                            pass: emailPass 
-                        } 
+                        auth: { user: 'dazer.help@gmail.com', pass: emailPass } 
                     });
                     
-                    const actionLabel = action === 'notify_register' ? 'Pendaftaran Pengguna Baru' : 'File Baru Diunggah';
-                    const colorLabel = action === 'notify_register' ? '#10b981' : '#3b82f6'; 
+                    // Menentukan Label Aksi Berdasarkan Request
+                    let subjectPrefix = "Dazer-Guest";
+                    let colorLabel = "#64748b"; // Slate for Guest/Upload
+                    
+                    if (action === 'notify_register') {
+                        subjectPrefix = "Dazer-Regist";
+                        colorLabel = "#10b981"; // Emerald
+                    } else if (action === 'notify_login') {
+                        subjectPrefix = "Dazer-Login";
+                        colorLabel = "#3b82f6"; // Blue
+                    }
+
+                    const localTime = metadata.localTime || new Date().toLocaleString('id-ID');
                     
                     const htmlLog = `
-                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-                            <div style="background-color: ${colorLabel}; padding: 20px; color: white;">
-                                <h2 style="margin: 0;">Audit Log Dazer: ${actionLabel}</h2>
-                                <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 14px;">${new Date().toLocaleString('id-ID')}</p>
+                        <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                            <div style="background-color: ${colorLabel}; padding: 25px 20px; color: white;">
+                                <h2 style="margin: 0; font-size: 20px;">Dazer Audit Log: ${subjectPrefix}</h2>
+                                <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 13px;">Waktu Akses: ${localTime}</p>
                             </div>
-                            <div style="padding: 20px; background-color: #f8fafc;">
-                                <table style="width: 100%; border-collapse: collapse;">
-                                    <tr><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><b>Pengguna</b></td><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${name || 'User'} (${email || 'Auth'})</td></tr>
-                                    <tr><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><b>Tindakan</b></td><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${action.toUpperCase()}</td></tr>
-                                    <tr><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><b>Perangkat</b></td><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${metadata?.device || 'N/A'}</td></tr>
-                                    <tr><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><b>Lokasi / ISP</b></td><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${metadata?.location || 'Unknown'} / ${metadata?.isp || 'N/A'}</td></tr>
-                                    <tr><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0;"><b>Alamat IP</b></td><td style="padding: 8px 0; border-bottom: 1px solid #e2e8f0; text-align: right;">${metadata?.ip || clientIp}</td></tr>
-                                    ${action === 'notify_upload' ? `<tr><td style="padding: 8px 0;"><b>File Detail</b></td><td style="padding: 8px 0; text-align: right;">${body.fileName || '-'} (${body.size || '-'})</td></tr>` : ''}
+                            <div style="padding: 0; background-color: #ffffff;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                                    <tbody>
+                                        <!-- IDENTITAS & SESI -->
+                                        <tr style="background-color: #f8fafc;"><td colspan="2" style="padding: 10px 20px; font-weight: bold; color: #475569; border-bottom: 2px solid #e2e8f0;">Informasi Pengguna & Sesi</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; width: 40%; color: #64748b;">Nama & Email</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-weight: 600;">${name || 'Anonim'} (${email || 'Guest'})</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">ID Sesi</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.sessionId || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Durasi Tahan</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.sessionDuration || '-'}</td></tr>
+                                        
+                                        <!-- DETAIL FILE & KDD (Muncul jika ada) -->
+                                        <tr style="background-color: #f8fafc;"><td colspan="2" style="padding: 10px 20px; font-weight: bold; color: #475569; border-bottom: 2px solid #e2e8f0;">Data & Pemodelan KDD</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Nama File</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${body.fileName || metadata.fileName || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Ukuran File</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${body.fileSize || metadata.fileSize || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">File Hash</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.fileHash || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Kategori Data</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.dataCategory || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Dimensi Data</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.dataDimension || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Teknik KDD</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.kddTechnique || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Daftar Kolom</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-size: 12px;">${metadata.columns || '-'}</td></tr>
+                                        
+                                        <!-- TELEMETRI LINGKUNGAN -->
+                                        <tr style="background-color: #f8fafc;"><td colspan="2" style="padding: 10px 20px; font-weight: bold; color: #475569; border-bottom: 2px solid #e2e8f0;">Telemetri Jaringan & Perangkat</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Perangkat</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.device || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Resolusi Layar</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.resolution || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Status Baterai</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.battery || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Alamat IP</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-family: monospace;">${metadata.ip}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Lokasi / ISP</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.location || 'Unknown'} / ${metadata.isp || '-'}</td></tr>
+                                        <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Tipe Koneksi</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${metadata.connectionType || '-'}</td></tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -133,17 +157,15 @@ exports.handler = async (event, context) => {
                     await transporter.sendMail({ 
                         from: '"Dazer Audit" <dazer.help@gmail.com>', 
                         to: "dazer.help@gmail.com", 
-                        subject: `[${action.toUpperCase()}] Notifikasi: ${name || email}`, 
+                        subject: `[${subjectPrefix}] Info: ${name || email}`, 
                         html: htmlLog 
                     });
                     
                     return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'success' }) };
                 } catch (e) {
-                    console.error("Gagal mengirim email notifikasi:", e);
                     return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ status: 'error', error: e.message }) };
                 }
             } else {
-                console.error("NODEMAILER_PASS tidak ditemukan di environment variables.");
                 return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ status: 'error', error: "Konfigurasi Email Server tidak lengkap." }) };
             }
         }
@@ -172,16 +194,11 @@ exports.handler = async (event, context) => {
                                 <h1 style="font-size:24px; font-weight:800; color:#0f172a; margin-bottom:16px;">Pulihkan Akun</h1>
                                 <p style="font-size:15px; line-height:1.6; color:#64748b; margin-bottom:32px;">Klik tombol di bawah untuk mengatur ulang kata sandi Anda. Tautan ini akan segera membawa Anda ke halaman pemulihan aman.</p>
                                 <a href="${link}" style="display:inline-block; background-color:#0ea5e9; color:#ffffff; padding:14px 28px; border-radius:12px; font-weight:700; text-decoration:none; font-size:14px;">Atur Ulang Kata Sandi</a>
-                                <p style="font-size:12px; color:#94a3b8; margin-top:40px; border-top:1px solid #f1f5f9; padding-top:20px;">
-                                    Abaikan jika Anda tidak meminta ini.<br/>
-                                    Diterbitkan oleh Dazer Analytics untuk <b>${email}</b>
-                                </p>
                             </div>
                         `
                     });
                     return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ message: "Tautan pemulihan telah dikirim ke email." }) };
                 } catch (e) { 
-                    console.error("Gagal mengirim reset password:", e);
                     return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ error: "Gagal mengirim email pemulihan." }) }; 
                 }
             }
@@ -213,7 +230,6 @@ Format JSON yang Wajib:
 
             try {
                 if (!cerebrasKey) throw new Error("Cerebras Key missing");
-                // Prioritas 1: Cerebras
                 const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
@@ -229,8 +245,6 @@ Format JSON yang Wajib:
                 const response = await res.json();
                 rawText = response?.choices?.[0]?.message?.content || "";
             } catch (err) {
-                console.warn("Cerebras gagal, beralih ke Groq. Error:", err.message);
-                // Prioritas 2: Groq
                 try {
                     if (!groqKey) throw new Error("Groq Key missing");
                     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -253,7 +267,6 @@ Format JSON yang Wajib:
                 }
             }
 
-            // Ekstraksi & Validasi JSON
             let parsed = { 
                 insights: ["Sistem sedang memproses beban data yang tinggi.", "Mohon kurangi ukuran sampel data atau pastikan konfigurasi API sudah tepat."], 
                 cards: { metric: "Data tidak tersedia.", segment: "Data tidak tersedia.", correlation: "Data tidak tersedia.", volatility: "Data tidak tersedia." } 
@@ -262,11 +275,9 @@ Format JSON yang Wajib:
             if (rawText) {
                 try { 
                     parsed = extractJSON(rawText);
-                    // Pastikan struktur JSON aman
                     if (!parsed.insights) parsed.insights = ["Analisis AI berhasil dijalankan namun format data tidak sesuai."];
                     if (!parsed.cards) parsed.cards = { metric: "-", segment: "-", correlation: "-", volatility: "-" };
                 } catch (parseError) {
-                    console.error("Gagal Parsing JSON dari AI:", rawText);
                     parsed.insights = ["Mesin AI mengembalikan data dalam format yang tidak dikenali sistem.", "Silakan coba ulangi proses analisa."];
                 }
             }
@@ -308,16 +319,11 @@ Format JSON yang Wajib:
                     })
                 });
                 
-                if (!res.ok) {
-                    const errObj = await res.json();
-                    throw new Error(errObj.error?.message || "Groq Error");
-                }
-                
+                if (!res.ok) throw new Error("Groq Error");
                 const d = await res.json();
                 const replyText = d?.choices?.[0]?.message?.content || "Sistem chat tidak merespons.";
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: cleanMarkdown(replyText) }) };
             } catch(e) {
-                console.error("Chat API Gagal:", e.message);
                 return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Layanan chat AI sedang offline atau konfigurasi API belum disetel." }) };
             }
         }
@@ -341,7 +347,6 @@ Berikan narasi evaluasi model yang profesional (Sebutkan Pola yang ditemukan, Co
             let finalRes = "";
             try {
                 if (!geminiKey) throw new Error("Gemini API Key hilang.");
-                // Prioritas 1: Native Gemini
                 const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
@@ -352,8 +357,6 @@ Berikan narasi evaluasi model yang profesional (Sebutkan Pola yang ditemukan, Co
                 const gData = await gRes.json();
                 finalRes = gData.candidates[0].content.parts[0].text;
             } catch (e) {
-                console.warn("Gemini gagal, beralih ke OpenRouter. Error:", e.message);
-                // Prioritas 2: OpenRouter
                 try {
                     if (!openRouterKey) throw new Error("OpenRouter Key hilang.");
                     const oRes = await fetch('https://openrouter.ai/api/v1/chat/completions', { 
@@ -366,7 +369,6 @@ Berikan narasi evaluasi model yang profesional (Sebutkan Pola yang ditemukan, Co
                     const oData = await oRes.json();
                     finalRes = oData.choices[0].message.content;
                 } catch(fallbackE) {
-                    console.error("Modeling Semua API Gagal:", fallbackE.message);
                     finalRes = "Evaluasi model terhenti karena gangguan koneksi API atau API Key belum disetel di Netlify. Mohon periksa kembali.";
                 }
             }
