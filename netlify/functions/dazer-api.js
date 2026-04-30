@@ -1,6 +1,23 @@
-// dazer-api.js - Backend KDD (V28 Final - Ultra Smart Prompting & Solid Telemetry)
+// dazer-api.js - Backend KDD (V30 Ultimate - Auto-Timeout, Zero Duplication & Solid Telemetry)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
+
+/**
+ * Fetch dengan Timeout (Super Canggih):
+ * Mencegah layar user loading selamanya jika server AI sedang down/lambat.
+ */
+const fetchWithTimeout = async (url, options, timeout = 8000) => {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+        const response = await fetch(url, { ...options, signal: controller.signal });
+        clearTimeout(id);
+        return response;
+    } catch (error) {
+        clearTimeout(id);
+        throw new Error(`Request Timeout atau Terputus: ${error.message}`);
+    }
+};
 
 /**
  * Membersihkan output markdown dari AI agar rapi saat ditampilkan di UI.
@@ -12,6 +29,7 @@ function cleanMarkdown(text) {
 
 /**
  * Pembersih khusus untuk memastikan string bisa di-parse menjadi JSON secara paksa.
+ * Diperkuat regex untuk menyelamatkan JSON yang cacat/terpotong.
  */
 function extractJSON(text) {
     try {
@@ -61,7 +79,7 @@ exports.handler = async (event, context) => {
     } else {
         limitData.count += 1;
         if (limitData.count > 100) {
-            return { statusCode: 429, headers: corsHeaders, body: JSON.stringify({ reply: "Sistem sibuk. Mohon tunggu beberapa saat." }) };
+            return { statusCode: 429, headers: corsHeaders, body: JSON.stringify({ reply: "Sistem sibuk. Mohon tunggu beberapa saat untuk melindungi kestabilan server." }) };
         }
     }
     rateLimitMap.set(clientIp, limitData);
@@ -70,7 +88,6 @@ exports.handler = async (event, context) => {
         const body = JSON.parse(event.body);
         let { action, message, context: userContext, data, modelType, algorithm, email, name, metadata } = body;
         
-        // Memastikan metadata merupakan object valid untuk ekstraksi telemetri
         metadata = metadata || {};
         
         // Menangkap Notifikasi Upload jika parameter action tidak dikirim eksplisit
@@ -80,7 +97,7 @@ exports.handler = async (event, context) => {
             email = email || body.email || metadata.email || 'Guest User';
         }
 
-        // Environment Variables (Diatur di Dasbor Netlify)
+        // Environment Variables
         const groqKey = process.env.GROQ_API_KEY;
         const cerebrasKey = process.env.CEREBRAS_API_KEY;
         const geminiKey = process.env.GEMINI_API_KEY;
@@ -100,19 +117,17 @@ exports.handler = async (event, context) => {
                         auth: { user: 'dazer.help@gmail.com', pass: emailPass } 
                     });
                     
-                    // Label Aksi Berdasarkan Request
                     let subjectPrefix = "Dazer-Guest";
-                    let colorLabel = "#64748b"; // Slate for Guest/Upload
+                    let colorLabel = "#64748b"; 
                     
                     if (action === 'notify_register') {
                         subjectPrefix = "Dazer-Regist";
-                        colorLabel = "#10b981"; // Emerald
+                        colorLabel = "#10b981"; 
                     } else if (action === 'notify_login') {
                         subjectPrefix = "Dazer-Login";
-                        colorLabel = "#3b82f6"; // Blue
+                        colorLabel = "#3b82f6"; 
                     }
 
-                    // Ekstraksi Data Berlapis (Prioritas: Metadata -> Body -> Fallback)
                     const extract = (key) => (metadata[key] !== undefined && metadata[key] !== null && metadata[key] !== "") ? metadata[key] : ((body[key] !== undefined && body[key] !== null && body[key] !== "") ? body[key] : 'Tidak terdeteksi');
                     
                     const localTime = extract('localTime') !== 'Tidak terdeteksi' ? extract('localTime') : new Date().toLocaleString('id-ID');
@@ -127,14 +142,12 @@ exports.handler = async (event, context) => {
                             <div style="padding: 0; background-color: #ffffff;">
                                 <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
                                     <tbody>
-                                        <!-- IDENTITAS & SESI -->
                                         <tr style="background-color: #f8fafc;"><td colspan="2" style="padding: 10px 20px; font-weight: bold; color: #475569; border-bottom: 2px solid #e2e8f0;">Informasi Pengguna & Sesi</td></tr>
                                         <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; width: 40%; color: #64748b;">Nama & Email</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-weight: 600;">${name || extract('name')} (${email || extract('email')})</td></tr>
                                         <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">ID Sesi</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-family: monospace;">${extract('sessionId')}</td></tr>
                                         <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Durasi Tahan</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('sessionDuration')}</td></tr>
                                         <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Waktu Lokal</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${localTime}</td></tr>
                                         
-                                        <!-- DETAIL FILE & KDD -->
                                         <tr style="background-color: #f8fafc;"><td colspan="2" style="padding: 10px 20px; font-weight: bold; color: #475569; border-bottom: 2px solid #e2e8f0;">Data & Pemodelan KDD</td></tr>
                                         <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Nama File</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: #3b82f6;">${extract('fileName')}</td></tr>
                                         <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Ukuran File</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('fileSize')}</td></tr>
@@ -144,7 +157,6 @@ exports.handler = async (event, context) => {
                                         <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Teknik KDD</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('kddTechnique')}</td></tr>
                                         <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Daftar Kolom</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; font-size: 12px; line-height: 1.5;">${extract('columns')}</td></tr>
                                         
-                                        <!-- TELEMETRI LINGKUNGAN -->
                                         <tr style="background-color: #f8fafc;"><td colspan="2" style="padding: 10px 20px; font-weight: bold; color: #475569; border-bottom: 2px solid #e2e8f0;">Telemetri Jaringan & Perangkat</td></tr>
                                         <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Perangkat</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('device')}</td></tr>
                                         <tr><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9; color: #64748b;">Resolusi Layar</td><td style="padding: 12px 20px; border-bottom: 1px solid #f1f5f9;">${extract('resolution')}</td></tr>
@@ -215,36 +227,37 @@ exports.handler = async (event, context) => {
         }
 
         // ============================================================
-        // ACTION 3: ANALISA DASHBOARD (PENGGUNAAN QWEN & LLAMA-4)
+        // ACTION 3: ANALISA DASHBOARD (MULTI-FALLBACK: QWEN -> LLAMA 17B -> CEREBRAS)
         // ============================================================
         if (action === 'analyze_data') {
             const systemPrompt = `Role: Senior Data Analyst & Ahli Komunikasi Eksekutif. 
 WAJIB OUTPUT DALAM BENTUK JSON MURNI TANPA MARKDOWN APAPUN (tanpa awalan \`\`\`json).
 
-ATURAN GAYA BAHASA (SANGAT PENTING):
-- Analisis MURNI berdasarkan nama variabel dan angka di dalam data yang diberikan. JANGAN gunakan frasa template basa-basi.
-- Gunakan bahasa yang natural, elegan, namun sangat mudah dipahami (langsung ke intinya).
+ATURAN GAYA BAHASA & ANTI-DUPLIKASI (SANGAT PENTING):
+- DILARANG KERAS MENGULANG INFORMASI. Setiap insight dan card harus membahas temuan yang 100% UNIK dan BERBEDA satu sama lain.
+- Analisis MURNI berdasarkan nama variabel dan angka riil di dalam data. JANGAN gunakan frasa template basa-basi.
+- Gunakan bahasa yang natural, elegan, dan langsung ke intinya (Executive Summary).
 - Sesuaikan narasi proyeksi/analisis dengan konteks industri dari data.
 
 ATURAN KETAT PANJANG TEKS & STRUKTUR:
 1. "insights": WAJIB array berisi TEPAT 5 string. Tidak boleh kurang, tidak boleh lebih.
-2. SETIAP string di dalam "insights" WAJIB terdiri dari TEPAT 2 kalimat. (Kalimat pertama fakta data. Kalimat kedua implikasi/solusi). Akhiri tiap kalimat dengan titik.
-3. "cards": Object dengan key "metric", "segment", "correlation", "volatility". SETIAP value WAJIB terdiri dari 1 hingga 2 kalimat yang padat (setara 1.5 kalimat).
+2. SETIAP string di dalam "insights" WAJIB terdiri dari TEPAT 2 kalimat. (Kalimat pertama fakta data unik. Kalimat kedua solusi taktis/implikasi). Akhiri tiap kalimat dengan titik.
+3. "cards": Object dengan key "metric", "segment", "correlation", "volatility". SETIAP value WAJIB terdiri dari 1 hingga 2 kalimat yang padat (setara 1.5 kalimat). Jangan mengulang teks dari array insights.
 
-Format JSON yang Wajib:
+Format JSON yang Wajib (Patuhi struktur keys ini):
 {
   "insights": [
-    "Fakta spesifik data pertama. Solusi atau implikasinya.",
-    "Fakta spesifik data kedua. Solusi atau implikasinya.",
-    "Fakta spesifik data ketiga. Solusi atau implikasinya.",
-    "Fakta spesifik data keempat. Solusi atau implikasinya.",
-    "Fakta spesifik data kelima. Rekomendasi tindakan."
+    "Fakta unik data pertama. Solusi atau implikasinya.",
+    "Fakta unik data kedua. Solusi atau implikasinya.",
+    "Fakta unik data ketiga. Solusi atau implikasinya.",
+    "Fakta unik data keempat. Solusi atau implikasinya.",
+    "Fakta unik data kelima. Rekomendasi tindakan taktis."
   ],
   "cards": {
-    "metric": "Teks 1-2 kalimat natural tentang performa.",
-    "segment": "Teks 1-2 kalimat natural tentang kelompok utama.",
-    "correlation": "Teks 1-2 kalimat natural tentang hubungan data.",
-    "volatility": "Teks 1-2 kalimat natural tentang variansi/risiko."
+    "metric": "Teks 1-2 kalimat natural tentang performa/angka puncak.",
+    "segment": "Teks 1-2 kalimat natural tentang kelompok utama/dominan.",
+    "correlation": "Teks 1-2 kalimat natural tentang hubungan data terkuat.",
+    "volatility": "Teks 1-2 kalimat natural tentang variansi, outlier, atau stabilitas."
   }
 }`;
             const safeData = smartDataTruncate(data, 4000);
@@ -253,78 +266,79 @@ Format JSON yang Wajib:
             try {
                 if (!groqKey) throw new Error("Groq Key missing");
                 
-                // --- MODEL UTAMA ANALISA: Qwen-3 32B ---
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                // --- MODEL UTAMA ANALISA DASBOR: Qwen-3 32B (Via Groq) ---
+                // Fetch with 8.5 detik timeout
+                const res = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        model: 'qwen/qwen3-32b', // Model spesifik dari request Anda
-                        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural & spesifik data berikut:\n${safeData}` }], 
-                        temperature: 0.3, // Optimal untuk analisis logis & bahasa natural
+                        model: 'qwen-2.5-32b', // Model spesifik 32B dari Groq
+                        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural, spesifik, dan BEBAS DUPLIKASI data berikut:\n${safeData}` }], 
+                        temperature: 0.2, // Rendah agar logis & stabil
                         response_format: { type: "json_object" }, 
                         max_tokens: 1500 
                     })
-                });
+                }, 8500);
                 
                 if (!res.ok) throw new Error(`Groq Qwen HTTP ${res.status}`);
                 const response = await res.json();
                 rawText = response?.choices?.[0]?.message?.content || "";
             } catch (err1) {
                 try {
-                    // --- FALLBACK 1: Llama-4 Scout 17B ---
-                    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    // --- FALLBACK 1: Llama-4 Scout 17B (Via Groq) ---
+                    // Fetch with 8.5 detik timeout
+                    const res = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
-                            model: 'meta-llama/llama-4-scout-17b-16e-instruct', // Model spesifik dari request Anda
-                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural & spesifik data berikut:\n${safeData}` }], 
-                            temperature: 0.3, 
+                            model: 'meta-llama/llama-4-scout-17b-16e-instruct', // Sesuai mapping yang Anda butuhkan
+                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural, spesifik, dan BEBAS DUPLIKASI data berikut:\n${safeData}` }], 
+                            temperature: 0.2, 
                             response_format: { type: "json_object" }, 
                             max_tokens: 1500 
                         })
-                    });
+                    }, 8500);
                     
                     if (!res.ok) throw new Error(`Groq Llama 4 HTTP ${res.status}`);
                     const response = await res.json();
                     rawText = response?.choices?.[0]?.message?.content || "";
                 } catch (err2) {
                     try {
-                        // --- FALLBACK TERAKHIR: Cerebras (Jaring Pengaman) ---
+                        // --- FALLBACK TERAKHIR: Cerebras Llama 3.1 70B (Jaring Pengaman) ---
                         if (!cerebrasKey) throw new Error("Cerebras Key missing");
-                        const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
+                        const res = await fetchWithTimeout('https://api.cerebras.ai/v1/chat/completions', {
                             method: 'POST',
                             headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
                                 model: 'llama3.1-70b', 
-                                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural & spesifik data berikut:\n${safeData}` }], 
-                                temperature: 0.3,
+                                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural, spesifik, dan BEBAS DUPLIKASI data berikut:\n${safeData}` }], 
+                                temperature: 0.2,
                                 max_tokens: 1500 
                             })
-                        });
+                        }, 10000); // Waktu toleransi lebih panjang untuk 70B
                         
                         if (!res.ok) throw new Error(`Cerebras HTTP ${res.status}`);
                         const response = await res.json();
                         rawText = response?.choices?.[0]?.message?.content || "";
                     } catch (err3) {
-                        console.error("Semua AI Endpoint Gagal:", err3.message);
+                        console.error("Semua AI Endpoint (Qwen, Llama4, Cerebras) Gagal/Timeout:", err3.message);
                     }
                 }
             }
 
-            // Fallback Data (Jika semua API terganggu / limit habis)
             let parsed = { 
                 insights: [
-                    "Sistem kami mendeteksi bahwa beban komputasi server saat ini sedang tinggi. Proses penarikan logika terhenti secara parsial.", 
-                    "Kapasitas atau bentuk baris data mungkin melampaui batasan karakter yang dapat dibaca. Kami merekomendasikan pemangkasan ukuran unggahan.",
-                    "Pastikan tidak ada entitas aneh atau kerusakan struktur tabel di dalam dokumen Anda. Konsistensi file amat penting untuk pemodelan.",
+                    "Sistem mendeteksi bahwa beban komputasi server sedang tinggi atau mengalami timeout. Proses penarikan logika terhenti parsial.", 
+                    "Kapasitas atau matriks baris data mungkin melampaui toleransi respons server. Kami merekomendasikan percobaan ulang.",
+                    "Pastikan tidak ada karakter tersembunyi yang merusak struktur pembacaan. Konsistensi file amat penting untuk pemodelan AI.",
                     "Sistem pemulihan otomatis Dazer sedang menstabilkan koneksi AI di belakang layar. Silakan tunggu jeda beberapa menit.",
-                    "Apabila interupsi ini tetap bertahan, hubungi dukungan teknis kami dengan menyertakan log sesi Anda. Kami memprioritaskan penyelesaian untuk Anda."
+                    "Apabila interupsi ini tetap bertahan, hubungi dukungan teknis kami dengan menyertakan log sesi. Kami memprioritaskan penyelesaian untuk Anda."
                 ], 
                 cards: { 
-                    metric: "Nilai indikator belum dapat dihitung secara mutlak akibat interupsi di sisi jaringan API.", 
-                    segment: "Pemetaan lapisan pengguna tertunda karena sistem gagal mengeksekusi algoritma pemilahan.", 
-                    correlation: "Matriks keterkaitan variabel gagal disintesis. Kami menyarankan pemuatan ulang data.", 
-                    volatility: "Tingkat persebaran angka tidak terbaca secara ideal. Pengecekan ulang tabel disarankan." 
+                    metric: "Nilai indikator tidak dapat dirender secara mutlak akibat interupsi timeout di sisi jaringan API.", 
+                    segment: "Pemetaan lapisan pengguna tertunda sementara waktu karena sistem gagal merespons algoritma secara instan.", 
+                    correlation: "Matriks keterkaitan variabel gagal disintesis dengan baik. Kami menyarankan pemuatan ulang dasbor.", 
+                    volatility: "Tingkat persebaran angka gagal divalidasi oleh AI. Pengecekan ulang tabel sangat disarankan." 
                 } 
             };
 
@@ -332,15 +346,14 @@ Format JSON yang Wajib:
                 try { 
                     parsed = extractJSON(rawText);
                     
-                    // GUARDRAIL: Pastikan insights berbentuk Array dan Tepat 5 buah
                     if (!parsed.insights || !Array.isArray(parsed.insights)) parsed.insights = [];
                     
                     const fallbackInsights = [
-                        "Model berhasil memilah data namun output balasan mengalami deviasi standar. Temuan ini didasarkan pada abstraksi parsial.",
-                        "Ada beberapa indikator nilai yang gagal diekstrak ke dalam bahasa eksekutif. Efektivitas wawasan ini mungkin tidak sepenuhnya spesifik.",
-                        "Mesin analitik tetap mengolah porsi utama dari tabel Anda untuk meminimalisir kegagalan fungsional. Perhatikan tren pada dasbor visual.",
-                        "Algoritma secara mandiri merangkum wawasan ini dari data mentah yang tersisa. Lakukan validasi manual untuk memastikan presisi.",
-                        "Muat ulang Dasbor atau unggah format CSV standar untuk memulihkan kapasitas baca. Format data yang rapi mempercepat kinerja AI."
+                        "Model berhasil merangkum matriks, namun struktur pengembalian data mengalami sedikit deviasi. Temuan didasarkan pada abstraksi parsial.",
+                        "Sebagian nilai terdeteksi gagal dikonversi ke dalam narasi bahasa eksekutif. Efektivitas wawasan ini mungkin tidak sepenuhnya spesifik.",
+                        "Mesin analitik tetap mengolah fondasi utama dari tabel Anda untuk meminimalisir kegagalan visual. Perhatikan tren grafik Dasbor.",
+                        "Lakukan validasi silang pada tabel pembersihan (Klinik Data) untuk memastikan presisi angka sebelum mengambil konklusi.",
+                        "Muat ulang Dasbor (Refresh) atau unggah format CSV murni untuk memulihkan kecepatan baca. Format data yang rapi mempercepat kinerja AI."
                     ];
                     
                     if (parsed.insights.length < 5) {
@@ -349,10 +362,9 @@ Format JSON yang Wajib:
                         parsed.insights = parsed.insights.slice(0, 5);
                     }
 
-                    // GUARDRAIL: Pastikan cards valid
                     if (!parsed.cards) parsed.cards = { metric: "-", segment: "-", correlation: "-", volatility: "-" };
                 } catch (parseError) {
-                    parsed.insights[0] = "Mesin kecerdasan buatan memberikan respons dengan format skema yang cacat. Hal ini menghalangi kami merender teks Anda.";
+                    parsed.insights[0] = "Mesin kecerdasan buatan memberikan respons dengan format skema JSON yang cacat. Hal ini menghalangi kami merender teks Anda.";
                 }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsed) };
@@ -363,54 +375,54 @@ Format JSON yang Wajib:
         // ============================================================
         if (action === 'chat') {
             let webInfo = "";
-            if (message.toLowerCase().match(/(berita|pasar|tren|terbaru|harga|2026|sekarang)/) && tvlyKey) {
+            if (message.toLowerCase().match(/(berita|pasar|tren|terbaru|harga|2026|sekarang|hari ini|saat ini)/) && tvlyKey) {
                 try {
-                    const tvRes = await fetch('https://api.tavily.com/search', { 
+                    const tvRes = await fetchWithTimeout('https://api.tavily.com/search', { 
                         method: 'POST', 
                         headers: { 'Content-Type': 'application/json' }, 
                         body: JSON.stringify({ api_key: tvlyKey, query: message, max_results: 1 }) 
-                    });
+                    }, 4000);
                     if (tvRes.ok) {
                         const tvData = await tvRes.json();
-                        if (tvData.results && tvData.results.length > 0) webInfo = `[Referensi Web Realtime: ${tvData.results[0].content.slice(0, 500)}]`;
+                        if (tvData.results && tvData.results.length > 0) webInfo = `[Referensi Web Realtime (Faktual): ${tvData.results[0].content.slice(0, 600)}]`;
                     }
-                } catch(e) { console.warn("Tavily search skipped."); }
+                } catch(e) { console.warn("Tavily search timeout/skipped."); }
             }
 
             try {
                 if (!groqKey) throw new Error("Groq API Key tidak ditemukan.");
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                const res = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        // Dazer AI Assistant EKSKLUSIF menggunakan Llama 70B sesuai pesanan
+                        // Dazer AI Assistant EKSKLUSIF menggunakan Llama 70B
                         model: 'llama-3.3-70b-versatile', 
                         messages: [
-                            { role: 'system', content: "Kamu adalah Dazer AI Assistant, pakar analitik data profesional. Jawablah secara MURNI, berbobot, dan natural layaknya manusia yang ahli membaca angka. Jelaskan dalam Bahasa Indonesia yang mudah dipahami namun berkelas." }, 
-                            { role: 'user', content: `Konteks File User saat ini: ${userContext}\n${webInfo}\n\nPertanyaan User: ${message}` }
+                            { role: 'system', content: "Kamu adalah Dazer AI Assistant, analis data korporat senior. Jawab dengan sangat rasional, tidak bertele-tele, hindari perulangan kata, dan gunakan Bahasa Indonesia tingkat profesional yang elegan." }, 
+                            { role: 'user', content: `Konteks Situasi: ${userContext}\n${webInfo}\n\nPermintaan Pengguna: ${message}` }
                         ], 
-                        temperature: 0.6, 
+                        temperature: 0.5, 
                         max_tokens: 1024 
                     })
-                });
+                }, 12000); // Chatbot diberi waktu lebih untuk berpikir mendalam
                 
-                if (!res.ok) throw new Error("Groq Error");
+                if (!res.ok) throw new Error("Groq Error / Timeout");
                 const d = await res.json();
-                const replyText = d?.choices?.[0]?.message?.content || "Mohon maaf, sistem asisten kami sedang terhambat oleh beban memori.";
+                const replyText = d?.choices?.[0]?.message?.content || "Sistem kami mendeteksi perlambatan jaringan. Mohon kirim ulang pesan Anda.";
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: cleanMarkdown(replyText) }) };
             } catch(e) {
-                return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Layanan asisten cerdas sedang terputus (API offline/limit)." }) };
+                return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Layanan asisten cerdas sedang terputus (Timeout / Limit)." }) };
             }
         }
 
         // ============================================================
-        // ACTION 5: MODELING LAB (GEMINI FLASH)
+        // ACTION 5: MODELING LAB (GEMINI FLASH -> OPENROUTER)
         // ============================================================
         if (action === 'run_model') {
             let wInfo = "";
             if (wolframId && modelType === 'Clustering') {
                 try {
-                    const wRes = await fetch(`http://api.wolframalpha.com/v1/result?appid=${wolframId}&i=kmeans+algorithm`);
+                    const wRes = await fetchWithTimeout(`http://api.wolframalpha.com/v1/result?appid=${wolframId}&i=kmeans+algorithm`, {}, 3000);
                     if (wRes.ok) wInfo = await wRes.text();
                 } catch(e) {}
             }
@@ -418,22 +430,22 @@ Format JSON yang Wajib:
             const promptModel = `Task: Data Mining & KDD Evaluation. Method: ${modelType} | Algo: ${algorithm} | MathRef: ${wInfo}
 Data Sample: ${smartDataTruncate(data, 5000)}
 
-Tugas: Berikan narasi evaluasi algoritma yang MURNI, NATURAL, dan BUKAN TEMPLATE KAKU. Gunakan bahasa yang mudah dicerna oleh kalangan eksekutif non-IT namun tetap akurat secara statistika.
+Tugas: Berikan narasi evaluasi algoritma yang MURNI, NATURAL, dan BUKAN TEMPLATE KAKU. Gunakan bahasa yang mudah dicerna oleh kalangan eksekutif non-IT namun tetap akurat secara statistika. Hindari duplikasi kalimat.
 Wajib sertakan: 
-1. Pola utama yang benar-benar Anda temukan dari sampel data di atas.
-2. Tingkat keyakinan (Confidence Level / Akurasi bayangan algoritma).
-3. Rekomendasi tindak lanjut strategis yang relevan.
+1. Pola utama yang benar-benar ditemukan dari sampel data di atas.
+2. Tingkat keyakinan (Confidence Level / Akurasi bayangan).
+3. Rekomendasi tindak lanjut strategis riil.
 
 Format jawaban dalam Bahasa Indonesia (1 hingga 3 paragraf padat) tanpa menggunakan markdown berlebihan.`;
 
             let finalRes = "";
             try {
                 if (!geminiKey) throw new Error("Gemini API Key hilang.");
-                const gRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, { 
+                const gRes = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: promptModel }] }] }) 
-                });
+                }, 12000);
                 
                 if (!gRes.ok) throw new Error(`Gemini Native fail: HTTP ${gRes.status}`);
                 const gData = await gRes.json();
@@ -441,26 +453,26 @@ Format jawaban dalam Bahasa Indonesia (1 hingga 3 paragraf padat) tanpa mengguna
             } catch (e) {
                 try {
                     if (!openRouterKey) throw new Error("OpenRouter Key hilang.");
-                    const oRes = await fetch('https://openrouter.ai/api/v1/chat/completions', { 
+                    const oRes = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', { 
                         method: 'POST', 
                         headers: { 'Authorization': `Bearer ${openRouterKey}`, 'Content-Type': 'application/json' }, 
                         body: JSON.stringify({ model: 'google/gemini-1.5-flash', messages: [{ role: 'user', content: promptModel }] }) 
-                    });
+                    }, 12000);
                     
                     if (!oRes.ok) throw new Error(`OpenRouter fail: HTTP ${oRes.status}`);
                     const oData = await oRes.json();
                     finalRes = oData.choices[0].message.content;
                 } catch(fallbackE) {
-                    finalRes = "Proses evaluasi model terhenti karena gangguan pada mesin pemrosesan Gemini. Silakan coba jalankan proses kembali dalam beberapa saat.";
+                    finalRes = "Evaluasi pemodelan dibatalkan oleh server. Ini terjadi karena jaringan API Gemini tidak merespons (Timeout). Silakan jalankan eksekusi ulang.";
                 }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(finalRes) }) };
         }
 
-        return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ reply: "Sistem menerima perintah aksi yang tidak terdaftar." }) };
+        return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ reply: "Perintah aksi (Action Parameter) tidak dikenali oleh sistem." }) };
 
     } catch (err) {
         console.error("Critical System Error (Dazer API):", err);
-        return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Terjadi interupsi internal pada server pemrosesan kami.", error: err.message }) };
+        return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Terjadi interupsi fatal pada memori server pemrosesan kami.", error: err.message }) };
     }
 };
