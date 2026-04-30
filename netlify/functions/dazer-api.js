@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V27 - Natural Human-Like AI & Ultra-Accurate Telemetry)
+// dazer-api.js - Backend KDD (V28 Final - Ultra Smart Prompting & Solid Telemetry)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -24,7 +24,7 @@ function extractJSON(text) {
 }
 
 /**
- * Token-Saver Logic: Memotong data jika melebihi batas.
+ * Token-Saver Logic: Memotong data jika melebihi batas (Mencegah Limit Error).
  */
 function smartDataTruncate(dataStr, limit = 4000) {
     if (!dataStr) return "";
@@ -51,12 +51,12 @@ exports.handler = async (event, context) => {
         return { statusCode: 405, headers: corsHeaders, body: JSON.stringify({ error: 'Method Not Allowed' }) };
     }
 
-    // 2. Rate Limiting (Mencegah Spam Request)
+    // 2. Rate Limiting (Mencegah Spam Request DDoS)
     const clientIp = event.headers['x-forwarded-for'] || event.headers['client-ip'] || 'unknown';
     const currentTime = Date.now();
     const limitData = rateLimitMap.get(clientIp) || { count: 0, firstRequest: currentTime };
     
-    if (currentTime - limitData.firstRequest > 600000) {
+    if (currentTime - limitData.firstRequest > 600000) { // Reset tiap 10 menit
         limitData.count = 1; limitData.firstRequest = currentTime; 
     } else {
         limitData.count += 1;
@@ -70,17 +70,17 @@ exports.handler = async (event, context) => {
         const body = JSON.parse(event.body);
         let { action, message, context: userContext, data, modelType, algorithm, email, name, metadata } = body;
         
-        // Memastikan metadata merupakan object valid
+        // Memastikan metadata merupakan object valid untuk ekstraksi telemetri
         metadata = metadata || {};
         
-        // Menangkap Notifikasi Upload jika parameter action tidak dikirim dari index.html
+        // Menangkap Notifikasi Upload jika parameter action tidak dikirim eksplisit
         if (!action && (body.fileName || metadata.fileName)) {
             action = 'notify_upload';
             name = name || body.name || metadata.name || 'Sesi Anonim';
             email = email || body.email || metadata.email || 'Guest User';
         }
 
-        // Environment Variables
+        // Environment Variables (Diatur di Dasbor Netlify)
         const groqKey = process.env.GROQ_API_KEY;
         const cerebrasKey = process.env.CEREBRAS_API_KEY;
         const geminiKey = process.env.GEMINI_API_KEY;
@@ -112,11 +112,11 @@ exports.handler = async (event, context) => {
                         colorLabel = "#3b82f6"; // Blue
                     }
 
-                    // Ekstraksi Data Berlapis (Prioritas: Body Langsung -> Metadata -> Fallback)
-                    const extract = (key) => body[key] || metadata[key] || 'Tidak terdeteksi';
+                    // Ekstraksi Data Berlapis (Prioritas: Metadata -> Body -> Fallback)
+                    const extract = (key) => (metadata[key] !== undefined && metadata[key] !== null && metadata[key] !== "") ? metadata[key] : ((body[key] !== undefined && body[key] !== null && body[key] !== "") ? body[key] : 'Tidak terdeteksi');
                     
                     const localTime = extract('localTime') !== 'Tidak terdeteksi' ? extract('localTime') : new Date().toLocaleString('id-ID');
-                    const ipAddress = metadata.ip || body.ip || clientIp || 'Tidak terdeteksi';
+                    const ipAddress = extract('ip') !== 'Tidak terdeteksi' ? extract('ip') : clientIp;
 
                     const htmlLog = `
                         <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
@@ -171,6 +171,7 @@ exports.handler = async (event, context) => {
                     
                     return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ status: 'success' }) };
                 } catch (e) {
+                    console.error("Mailer Error:", e);
                     return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ status: 'error', error: e.message }) };
                 }
             } else {
@@ -214,125 +215,151 @@ exports.handler = async (event, context) => {
         }
 
         // ============================================================
-        // ACTION 3: ANALISA DASHBOARD (EXECUTIVE INTELLIGENCE)
+        // ACTION 3: ANALISA DASHBOARD (PENGGUNAAN QWEN & LLAMA-4)
         // ============================================================
         if (action === 'analyze_data') {
-            const systemPrompt = `Role: Senior Data Analyst & Ahli Komunikasi Eksekutif. Wajib output dalam JSON murni tanpa markdown apapun.
-ATURAN GAYA BAHASA (SANGAT PENTING):
-- JANGAN gunakan format kalimat template yang kaku atau seperti robot.
-- Gunakan bahasa manusia yang natural, luwes, elegan, namun SANGAT MUDAH dipahami oleh berbagai peran (dari staf hingga CEO).
-- Analisis harus MURNI berdasarkan data yang diberikan, bukan tebakan atau basa-basi kosong.
+            const systemPrompt = `Role: Senior Data Analyst & Ahli Komunikasi Eksekutif. 
+WAJIB OUTPUT DALAM BENTUK JSON MURNI TANPA MARKDOWN APAPUN (tanpa awalan \`\`\`json).
 
-ATURAN KETAT PANJANG TEKS:
-1. "insights": WAJIB terdiri dari TEPAT 5 elemen dalam array.
-2. SETIAP elemen di dalam "insights" WAJIB terdiri dari TEPAT 2 kalimat singkat. Gunakan 1 titik di akhir kalimat pertama, dan 1 titik di akhir kalimat kedua. Tidak boleh kurang atau lebih.
-3. SETIAP elemen di dalam "cards" WAJIB terdiri dari 1 hingga 2 kalimat yang natural dan padat.
+ATURAN GAYA BAHASA (SANGAT PENTING):
+- Analisis MURNI berdasarkan nama variabel dan angka di dalam data yang diberikan. JANGAN gunakan frasa template basa-basi.
+- Gunakan bahasa yang natural, elegan, namun sangat mudah dipahami (langsung ke intinya).
+- Sesuaikan narasi proyeksi/analisis dengan konteks industri dari data.
+
+ATURAN KETAT PANJANG TEKS & STRUKTUR:
+1. "insights": WAJIB array berisi TEPAT 5 string. Tidak boleh kurang, tidak boleh lebih.
+2. SETIAP string di dalam "insights" WAJIB terdiri dari TEPAT 2 kalimat. (Kalimat pertama fakta data. Kalimat kedua implikasi/solusi). Akhiri tiap kalimat dengan titik.
+3. "cards": Object dengan key "metric", "segment", "correlation", "volatility". SETIAP value WAJIB terdiri dari 1 hingga 2 kalimat yang padat (setara 1.5 kalimat).
 
 Format JSON yang Wajib:
 {
   "insights": [
-    "Fakta menarik pertama dari data. Penjelasan mengapa ini penting atau solusinya.",
-    "Fakta menarik kedua dari data. Penjelasan mengapa ini penting atau solusinya.",
-    "Fakta menarik ketiga dari data. Penjelasan mengapa ini penting atau solusinya.",
-    "Fakta menarik keempat dari data. Penjelasan mengapa ini penting atau solusinya.",
-    "Fakta menarik kelima dari data. Rekomendasi strategis dari penemuan tersebut."
+    "Fakta spesifik data pertama. Solusi atau implikasinya.",
+    "Fakta spesifik data kedua. Solusi atau implikasinya.",
+    "Fakta spesifik data ketiga. Solusi atau implikasinya.",
+    "Fakta spesifik data keempat. Solusi atau implikasinya.",
+    "Fakta spesifik data kelima. Rekomendasi tindakan."
   ],
   "cards": {
-    "metric": "Satu atau dua kalimat natural yang menjelaskan metrik utama secara jelas.",
-    "segment": "Satu atau dua kalimat natural tentang kelompok data yang paling menonjol.",
-    "correlation": "Satu atau dua kalimat natural tentang hubungan antar faktor yang paling kuat.",
-    "volatility": "Satu atau dua kalimat natural tentang stabilitas atau pergerakan data."
+    "metric": "Teks 1-2 kalimat natural tentang performa.",
+    "segment": "Teks 1-2 kalimat natural tentang kelompok utama.",
+    "correlation": "Teks 1-2 kalimat natural tentang hubungan data.",
+    "volatility": "Teks 1-2 kalimat natural tentang variansi/risiko."
   }
 }`;
             const safeData = smartDataTruncate(data, 4000);
             let rawText = "";
 
             try {
-                if (!cerebrasKey) throw new Error("Cerebras Key missing");
-                const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
+                if (!groqKey) throw new Error("Groq Key missing");
+                
+                // --- MODEL UTAMA ANALISA: Qwen-3 32B ---
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
+                    headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        model: 'llama3.1-70b', 
-                        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural data berikut:\n${safeData}` }], 
-                        temperature: 0.2, // Sedikit dinaikkan untuk bahasa natural, tapi tetap stabil
+                        model: 'qwen/qwen3-32b', // Model spesifik dari request Anda
+                        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural & spesifik data berikut:\n${safeData}` }], 
+                        temperature: 0.3, // Optimal untuk analisis logis & bahasa natural
+                        response_format: { type: "json_object" }, 
                         max_tokens: 1500 
                     })
                 });
                 
-                if (!res.ok) throw new Error(`Cerebras HTTP ${res.status}`);
+                if (!res.ok) throw new Error(`Groq Qwen HTTP ${res.status}`);
                 const response = await res.json();
                 rawText = response?.choices?.[0]?.message?.content || "";
-            } catch (err) {
+            } catch (err1) {
                 try {
-                    if (!groqKey) throw new Error("Groq Key missing");
+                    // --- FALLBACK 1: Llama-4 Scout 17B ---
                     const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
-                            model: 'llama-3.3-70b-versatile', 
-                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural data berikut:\n${safeData}` }], 
-                            temperature: 0.2, 
+                            model: 'meta-llama/llama-4-scout-17b-16e-instruct', // Model spesifik dari request Anda
+                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural & spesifik data berikut:\n${safeData}` }], 
+                            temperature: 0.3, 
                             response_format: { type: "json_object" }, 
                             max_tokens: 1500 
                         })
                     });
                     
-                    if (!res.ok) throw new Error(`Groq HTTP ${res.status}`);
+                    if (!res.ok) throw new Error(`Groq Llama 4 HTTP ${res.status}`);
                     const response = await res.json();
                     rawText = response?.choices?.[0]?.message?.content || "";
-                } catch (fallbackErr) {
-                    console.error("AI Analysis Gagal:", fallbackErr.message);
+                } catch (err2) {
+                    try {
+                        // --- FALLBACK TERAKHIR: Cerebras (Jaring Pengaman) ---
+                        if (!cerebrasKey) throw new Error("Cerebras Key missing");
+                        const res = await fetch('https://api.cerebras.ai/v1/chat/completions', {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                model: 'llama3.1-70b', 
+                                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural & spesifik data berikut:\n${safeData}` }], 
+                                temperature: 0.3,
+                                max_tokens: 1500 
+                            })
+                        });
+                        
+                        if (!res.ok) throw new Error(`Cerebras HTTP ${res.status}`);
+                        const response = await res.json();
+                        rawText = response?.choices?.[0]?.message?.content || "";
+                    } catch (err3) {
+                        console.error("Semua AI Endpoint Gagal:", err3.message);
+                    }
                 }
             }
 
-            // Fallback Data (Dibuat lebih natural seperti pesan manusia)
+            // Fallback Data (Jika semua API terganggu / limit habis)
             let parsed = { 
                 insights: [
-                    "Sistem kami saat ini sedang memproses antrean data yang cukup padat. Hal ini membuat analisis penuh belum dapat ditampilkan secara langsung.", 
-                    "Pembatasan ukuran data dari server mungkin menyebabkan pembacaan terpotong. Cobalah untuk menyederhanakan ukuran sampel yang Anda unggah.",
-                    "Pastikan tidak ada karakter khusus atau baris yang rusak di dalam file Anda. Data yang rapi dan bersih akan sangat mempercepat proses pemodelan.",
-                    "Koneksi ke mesin analisis cerdas kami sedang dipulihkan secara otomatis. Silakan tunggu beberapa saat lagi untuk memuat ulang data.",
-                    "Jika kendala ini terus berlanjut, jangan ragu untuk menghubungi tim dukungan. Kami selalu siap membantu memastikan pekerjaan Anda tetap lancar."
+                    "Sistem kami mendeteksi bahwa beban komputasi server saat ini sedang tinggi. Proses penarikan logika terhenti secara parsial.", 
+                    "Kapasitas atau bentuk baris data mungkin melampaui batasan karakter yang dapat dibaca. Kami merekomendasikan pemangkasan ukuran unggahan.",
+                    "Pastikan tidak ada entitas aneh atau kerusakan struktur tabel di dalam dokumen Anda. Konsistensi file amat penting untuk pemodelan.",
+                    "Sistem pemulihan otomatis Dazer sedang menstabilkan koneksi AI di belakang layar. Silakan tunggu jeda beberapa menit.",
+                    "Apabila interupsi ini tetap bertahan, hubungi dukungan teknis kami dengan menyertakan log sesi Anda. Kami memprioritaskan penyelesaian untuk Anda."
                 ], 
                 cards: { 
-                    metric: "Nilai metrik utama saat ini belum dapat dikalkulasi secara penuh. Kami sedang mencoba menyusun ulang data Anda.", 
-                    segment: "Pemetaan profil data tertunda sementara karena tingginya lalu lintas pemrosesan di server.", 
-                    correlation: "Analisis kecenderungan hubungan antar variabel sedang dalam antrean. Silakan periksa kembali beberapa saat lagi.", 
-                    volatility: "Tingkat persebaran data akan segera kami tampilkan begitu jalur koneksi kembali stabil." 
+                    metric: "Nilai indikator belum dapat dihitung secara mutlak akibat interupsi di sisi jaringan API.", 
+                    segment: "Pemetaan lapisan pengguna tertunda karena sistem gagal mengeksekusi algoritma pemilahan.", 
+                    correlation: "Matriks keterkaitan variabel gagal disintesis. Kami menyarankan pemuatan ulang data.", 
+                    volatility: "Tingkat persebaran angka tidak terbaca secara ideal. Pengecekan ulang tabel disarankan." 
                 } 
             };
 
             if (rawText) {
                 try { 
                     parsed = extractJSON(rawText);
-                    // Pastikan array insight memiliki tepat 5 buah
+                    
+                    // GUARDRAIL: Pastikan insights berbentuk Array dan Tepat 5 buah
                     if (!parsed.insights || !Array.isArray(parsed.insights)) parsed.insights = [];
                     
-                    const defaultInsights = [
-                        "Kami berhasil membaca data Anda namun menemukan format yang sedikit di luar standar. Pemrosesan dilakukan berdasarkan garis besarnya saja.",
-                        "Ada beberapa nilai yang sulit diterjemahkan secara langsung oleh sistem. Hal ini dapat membuat hasil analisis menjadi kurang komprehensif.",
-                        "Mesin kami tetap menyaring informasi utama yang bisa diekstrak dari tabel Anda. Silakan lihat metrik yang tersedia untuk gambaran awal.",
-                        "Daya analisis disesuaikan agar tetap bisa memberikan wawasan meskipun sebagian data diabaikan. Keakuratan mungkin tidak maksimal.",
-                        "Coba lakukan refresh atau unggah ulang file dengan format yang lebih konsisten. Kami sangat menyarankan penggunaan file CSV standar."
+                    const fallbackInsights = [
+                        "Model berhasil memilah data namun output balasan mengalami deviasi standar. Temuan ini didasarkan pada abstraksi parsial.",
+                        "Ada beberapa indikator nilai yang gagal diekstrak ke dalam bahasa eksekutif. Efektivitas wawasan ini mungkin tidak sepenuhnya spesifik.",
+                        "Mesin analitik tetap mengolah porsi utama dari tabel Anda untuk meminimalisir kegagalan fungsional. Perhatikan tren pada dasbor visual.",
+                        "Algoritma secara mandiri merangkum wawasan ini dari data mentah yang tersisa. Lakukan validasi manual untuk memastikan presisi.",
+                        "Muat ulang Dasbor atau unggah format CSV standar untuk memulihkan kapasitas baca. Format data yang rapi mempercepat kinerja AI."
                     ];
                     
                     if (parsed.insights.length < 5) {
-                        parsed.insights = [...parsed.insights, ...defaultInsights].slice(0, 5);
+                        parsed.insights = [...parsed.insights, ...fallbackInsights].slice(0, 5);
                     } else if (parsed.insights.length > 5) {
                         parsed.insights = parsed.insights.slice(0, 5);
                     }
 
+                    // GUARDRAIL: Pastikan cards valid
                     if (!parsed.cards) parsed.cards = { metric: "-", segment: "-", correlation: "-", volatility: "-" };
                 } catch (parseError) {
-                    parsed.insights[0] = "Kami mengalami kesulitan menerjemahkan struktur balasan dari server AI. Silakan coba kembali dalam beberapa menit.";
+                    parsed.insights[0] = "Mesin kecerdasan buatan memberikan respons dengan format skema yang cacat. Hal ini menghalangi kami merender teks Anda.";
                 }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsed) };
         }
 
         // ============================================================
-        // ACTION 4: CHATBOT (TAVILY GROUNDING)
+        // ACTION 4: CHATBOT (EKSKLUSIF LLAMA 3.3 70B + TAVILY GROUNDING)
         // ============================================================
         if (action === 'chat') {
             let webInfo = "";
@@ -356,22 +383,23 @@ Format JSON yang Wajib:
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
+                        // Dazer AI Assistant EKSKLUSIF menggunakan Llama 70B sesuai pesanan
                         model: 'llama-3.3-70b-versatile', 
                         messages: [
-                            { role: 'system', content: "Kamu adalah Dazer AI Analyst. Jawablah dengan MURNI, natural, seolah kamu manusia yang mengerti data. Jelaskan secara profesional namun mudah dipahami dalam Bahasa Indonesia." }, 
-                            { role: 'user', content: `Konteks User saat ini: ${userContext}\n${webInfo}\n\nUser bertanya: ${message}` }
+                            { role: 'system', content: "Kamu adalah Dazer AI Assistant, pakar analitik data profesional. Jawablah secara MURNI, berbobot, dan natural layaknya manusia yang ahli membaca angka. Jelaskan dalam Bahasa Indonesia yang mudah dipahami namun berkelas." }, 
+                            { role: 'user', content: `Konteks File User saat ini: ${userContext}\n${webInfo}\n\nPertanyaan User: ${message}` }
                         ], 
                         temperature: 0.6, 
-                        max_tokens: 800 
+                        max_tokens: 1024 
                     })
                 });
                 
                 if (!res.ok) throw new Error("Groq Error");
                 const d = await res.json();
-                const replyText = d?.choices?.[0]?.message?.content || "Mohon maaf, sistem chat kami sedang lambat merespons.";
+                const replyText = d?.choices?.[0]?.message?.content || "Mohon maaf, sistem asisten kami sedang terhambat oleh beban memori.";
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: cleanMarkdown(replyText) }) };
             } catch(e) {
-                return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Layanan asisten cerdas sedang offline atau belum diatur sepenuhnya." }) };
+                return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Layanan asisten cerdas sedang terputus (API offline/limit)." }) };
             }
         }
 
@@ -389,9 +417,14 @@ Format JSON yang Wajib:
 
             const promptModel = `Task: Data Mining & KDD Evaluation. Method: ${modelType} | Algo: ${algorithm} | MathRef: ${wInfo}
 Data Sample: ${smartDataTruncate(data, 5000)}
-Tugas: Berikan narasi evaluasi model yang MURNI, NATURAL, dan BUKAN TEMPLATE KAKU. Gunakan bahasa yang sangat mudah dipahami oleh semua kalangan namun tetap elegan dan profesional.
-Wajib sebutkan: Pola utama yang Anda temukan, tingkat keyakinan (Confidence Level / Akurasi bayangan), dan rekomendasi tindak lanjut strategis. 
-Format jawaban dalam Bahasa Indonesia (1-3 paragraf padat) tanpa menggunakan markdown yang berlebihan.`;
+
+Tugas: Berikan narasi evaluasi algoritma yang MURNI, NATURAL, dan BUKAN TEMPLATE KAKU. Gunakan bahasa yang mudah dicerna oleh kalangan eksekutif non-IT namun tetap akurat secara statistika.
+Wajib sertakan: 
+1. Pola utama yang benar-benar Anda temukan dari sampel data di atas.
+2. Tingkat keyakinan (Confidence Level / Akurasi bayangan algoritma).
+3. Rekomendasi tindak lanjut strategis yang relevan.
+
+Format jawaban dalam Bahasa Indonesia (1 hingga 3 paragraf padat) tanpa menggunakan markdown berlebihan.`;
 
             let finalRes = "";
             try {
@@ -418,16 +451,16 @@ Format jawaban dalam Bahasa Indonesia (1-3 paragraf padat) tanpa menggunakan mar
                     const oData = await oRes.json();
                     finalRes = oData.choices[0].message.content;
                 } catch(fallbackE) {
-                    finalRes = "Proses evaluasi model terhenti karena gangguan pada sistem inti kami. Silakan coba jalankan proses kembali dalam beberapa saat.";
+                    finalRes = "Proses evaluasi model terhenti karena gangguan pada mesin pemrosesan Gemini. Silakan coba jalankan proses kembali dalam beberapa saat.";
                 }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(finalRes) }) };
         }
 
-        return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ reply: "Sistem menerima perintah yang tidak terdaftar." }) };
+        return { statusCode: 400, headers: corsHeaders, body: JSON.stringify({ reply: "Sistem menerima perintah aksi yang tidak terdaftar." }) };
 
     } catch (err) {
         console.error("Critical System Error (Dazer API):", err);
-        return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Terjadi interupsi pada server pemrosesan kami.", error: err.message }) };
+        return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Terjadi interupsi internal pada server pemrosesan kami.", error: err.message }) };
     }
 };
