@@ -219,16 +219,40 @@
         </div>
     </main>
 
-    <!-- Notifications -->
-    <div id="notification" class="hidden fixed top-6 left-1/2 -translate-x-1/2 z-[9999] bg-slate-900 text-white px-5 py-2.5 rounded-full flex items-center gap-2.5 shadow-2xl transition-all duration-300 text-xs font-bold border border-slate-700">
-        <i data-lucide="info" class="w-4 h-4 text-brand-400" id="notification-icon"></i>
-        <p id="notification-text"></p>
+    <!-- Notification Banner -->
+    <div id="notification" class="hidden fixed top-4 sm:top-6 left-1/2 transform -translate-x-1/2 z-[999999] bg-slate-900 text-white max-w-[90vw] sm:max-w-max w-auto px-4 sm:px-5 py-2.5 sm:py-3 rounded-full items-center justify-center gap-2 shadow-[0_10px_40px_rgb(0,0,0,0.2)] transition-all duration-400 border border-slate-700 text-[10px] sm:text-[11px] lg:text-xs font-medium whitespace-normal sm:whitespace-nowrap text-center sm:text-left opacity-0 -translate-y-2">
+        <i data-lucide="info" class="w-4 h-4 shrink-0 text-brand-400" id="notification-icon"></i>
+        <p id="notification-text" class="m-0 tracking-wide leading-tight"></p>
     </div>
 
     <script>
-        lucide.createIcons();
         const GOOGLE_CLIENT_ID = "403594078276-ukuks77pis0bclh9i3ab0j5d1m1tsmmv.apps.googleusercontent.com";
-        const API_URL = "/.netlify/functions/dazer-api";
+        
+        // Pemanfaatan API URL yang konsisten dengan Index.html
+        let API_URL = '/.netlify/functions/dazer-api';
+        try {
+            if (window.location.protocol === 'blob:' || window.location.protocol === 'file:' || window.location.origin === 'null') {
+                API_URL = 'https://dazer-premium.netlify.app/.netlify/functions/dazer-api'; 
+            } else {
+                API_URL = new URL('/.netlify/functions/dazer-api', window.location.origin).href;
+            }
+        } catch(e) {
+            API_URL = 'https://dazer-premium.netlify.app/.netlify/functions/dazer-api';
+        }
+
+        // Fetch dengan Timeout (Pencegah Loading Macet)
+        const fetchWithTimeout = async (url, options, timeout = 8000) => {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            try {
+                const response = await fetch(url, { ...options, signal: controller.signal });
+                clearTimeout(id);
+                return response;
+            } catch (error) {
+                clearTimeout(id);
+                throw new Error("Request Timeout");
+            }
+        };
 
         // ANTI-SPAM LOCK & SECURITY SANITIZER
         let isProcessing = false;
@@ -247,6 +271,10 @@
         }
 
         window.onload = () => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
             const urlParams = new URLSearchParams(window.location.search);
             const isResetRequest = sanitizeHTML(urlParams.get('reset')) === 'true';
             const emailTarget = sanitizeHTML(urlParams.get('email'));
@@ -263,7 +291,6 @@
                     if(Date.now() - payload.issuedAt < 2592000000) {
                         document.getElementById('auth-card').classList.add('hidden');
                         document.getElementById('auto-login-overlay').classList.remove('hidden');
-                        // PENGALIHAN URL BERSIH
                         setTimeout(() => window.location.href = '/', 1200);
                         return;
                     }
@@ -302,7 +329,7 @@
                 input.type = 'password';
                 icon.setAttribute('data-lucide', 'eye');
             }
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         async function handleResetPassword(e) {
@@ -327,7 +354,6 @@
             localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
             
             showNotification("Sandi diperbarui! Masuk ke Dasbor...", "success");
-            // PENGALIHAN URL BERSIH
             setTimeout(() => window.location.href = "/?auth=success", 1200);
         }
 
@@ -343,7 +369,6 @@
                 const userData = { name: sanitizeHTML(payload.name), email: sanitizeHTML(payload.email), picture: sanitizeHTML(payload.picture), tier: 'registered', analysisQuota: 2, chatQuota: 5, modelQuota: 1, issuedAt: Date.now() };
                 localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
                 await notifyServer('notify_register', userData);
-                // PENGALIHAN URL BERSIH
                 setTimeout(() => window.location.href = "/?auth=success", 800);
             } catch (e) {
                 isProcessing = false;
@@ -366,15 +391,15 @@
                 title.innerText = "Buat Akun Baru";
                 sub.innerText = "Dapatkan kuota profesional gratis.";
             }
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         async function notifyServer(action, user) {
             try {
-                const geoRes = await fetch('https://get.geojs.io/v1/ip/geo.json');
+                const geoRes = await fetchWithTimeout('https://get.geojs.io/v1/ip/geo.json', {}, 5000);
                 const geo = geoRes.ok ? await geoRes.json() : {};
                 const metadata = { ip: sanitizeHTML(geo.ip) || "Unknown", location: `${sanitizeHTML(geo.city) || ''}, ${sanitizeHTML(geo.country) || ''}`, device: navigator.userAgent, isp: sanitizeHTML(geo.organization) || "Unknown", time: new Date().toLocaleString('id-ID') };
-                await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, name: user.name, email: user.email, metadata }) });
+                await fetchWithTimeout(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, name: user.name, email: user.email, metadata }) }, 10000);
             } catch(e) {}
         }
 
@@ -385,7 +410,6 @@
 
             const btn = document.getElementById(type === 'login' ? 'btn-login' : 'btn-register');
             
-            // Sanitasi ketat untuk mencegah XSS
             const email = sanitizeHTML(document.getElementById(type === 'login' ? 'login-email' : 'reg-email').value);
             const name = type === 'register' ? sanitizeHTML(document.getElementById('reg-name').value) : "User Dazer";
             
@@ -396,9 +420,9 @@
             localStorage.setItem('Dazer_Secure_JWT', generateLocalJWT(userData));
             
             if(type === 'register') await notifyServer('notify_register', userData);
+            else await notifyServer('notify_login', userData);
             
             showNotification("Berhasil! Mengalihkan...", "success");
-            // PENGALIHAN URL BERSIH
             setTimeout(() => window.location.href = "/?auth=success", 1000);
         }
 
@@ -412,14 +436,15 @@
             showNotification("Mengirim instruksi...", "info");
             
             try {
-                const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'forgot_password', email }) });
+                const res = await fetchWithTimeout(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'forgot_password', email }) }, 10000);
+                if (!res.ok) throw new Error("Terputus");
                 const data = await res.json();
                 if(data.message) showNotification(data.message, "success");
                 else showNotification("Gagal memproses email.", "error");
             } catch(e) { 
-                showNotification("Terjadi kendala server.", "error"); 
+                showNotification("Terjadi kendala server atau jaringan (Timeout).", "error"); 
             } finally {
-                setTimeout(() => { isProcessing = false; }, 3000); // Cooldown perlindungan Anti-Spam
+                setTimeout(() => { isProcessing = false; }, 3000); 
             }
         }
 
@@ -428,20 +453,47 @@
         }
 
         function showNotification(msg, type='info') {
-            const n = document.getElementById('notification'), t = document.getElementById('notification-text'), i = document.getElementById('notification-icon');
-            if(!n) return;
+            const n = document.getElementById('notification');
+            const t = document.getElementById('notification-text');
+            const i = document.getElementById('notification-icon');
+            if(!n || !t) return;
+            
             t.innerText = msg;
-            i.className = `w-4 h-4 ${type === 'error' ? 'text-rose-400' : (type === 'success' ? 'text-emerald-400' : 'text-brand-400')}`;
-            i.setAttribute('data-lucide', type === 'error' ? 'alert-circle' : 'info');
-            n.classList.remove('hidden', 'opacity-0'); n.classList.add('flex', 'opacity-100');
-            lucide.createIcons();
+            
+            if(type === 'error') {
+                i.setAttribute('data-lucide', 'alert-circle');
+                i.className = 'w-4 h-4 shrink-0 text-rose-400';
+            } else if (type === 'success') {
+                i.setAttribute('data-lucide', 'check-circle');
+                i.className = 'w-4 h-4 shrink-0 text-emerald-400';
+            } else if (type === 'warning') {
+                i.setAttribute('data-lucide', 'alert-triangle');
+                i.className = 'w-4 h-4 shrink-0 text-amber-400';
+            } else {
+                i.setAttribute('data-lucide', 'info');
+                i.className = 'w-4 h-4 shrink-0 text-brand-400';
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            
+            n.classList.remove('hidden');
+            n.classList.add('flex');
             
             setTimeout(() => {
-                if (n) {
-                    n.classList.replace('opacity-100', 'opacity-0');
-                    setTimeout(() => n.classList.add('hidden'), 300);
-                }
-            }, 7000);
+                n.classList.remove('opacity-0', '-translate-y-2');
+                n.classList.add('opacity-100', 'translate-y-0');
+            }, 10);
+            
+            if(window.notifTimeout) clearTimeout(window.notifTimeout);
+            if(window.notifHideTimeout) clearTimeout(window.notifHideTimeout);
+
+            window.notifTimeout = setTimeout(() => { 
+                n.classList.remove('opacity-100', 'translate-y-0');
+                n.classList.add('opacity-0', '-translate-y-2'); 
+                window.notifHideTimeout = setTimeout(() => {
+                    n.classList.remove('flex');
+                    n.classList.add('hidden');
+                }, 400); 
+            }, 5000);
         }
     </script>
 </body>
