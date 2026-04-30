@@ -1,4 +1,4 @@
-// dazer-api.js - Backend KDD (V30 Ultimate - Auto-Timeout, Zero Duplication & Solid Telemetry)
+// dazer-api.js - Backend KDD (V31 Ultimate - Actionable Storytelling & Consultant Mode)
 const nodemailer = require('nodemailer');
 const rateLimitMap = new Map();
 
@@ -227,37 +227,38 @@ exports.handler = async (event, context) => {
         }
 
         // ============================================================
-        // ACTION 3: ANALISA DASHBOARD (MULTI-FALLBACK: QWEN -> LLAMA 17B -> CEREBRAS)
+        // ACTION 3: ANALISA DASHBOARD (MULTI-FALLBACK & STORYTELLING)
         // ============================================================
         if (action === 'analyze_data') {
-            const systemPrompt = `Role: Senior Data Analyst & Ahli Komunikasi Eksekutif. 
+            const systemPrompt = `Role: Senior Business Consultant & Ahli Strategi Eksekutif. 
 WAJIB OUTPUT DALAM BENTUK JSON MURNI TANPA MARKDOWN APAPUN (tanpa awalan \`\`\`json).
 
-ATURAN GAYA BAHASA & ANTI-DUPLIKASI (SANGAT PENTING):
-- DILARANG KERAS MENGULANG INFORMASI. Setiap insight dan card harus membahas temuan yang 100% UNIK dan BERBEDA satu sama lain.
-- Analisis MURNI berdasarkan nama variabel dan angka riil di dalam data. JANGAN gunakan frasa template basa-basi.
-- Gunakan bahasa yang natural, elegan, dan langsung ke intinya (Executive Summary).
-- Sesuaikan narasi proyeksi/analisis dengan konteks industri dari data.
+ATURAN GAYA BAHASA & ACTIONABLE STORYTELLING (SANGAT PENTING):
+- DILARANG KERAS menggunakan istilah teknis IT/Statistik seperti "baris data", "kolom", "dataset", "outlier", "korelasi", "p-value", "anomali".
+- Gunakan bahasa manajemen/bisnis yang murni, elegan, natural, dan langsung ke inti masalah (Executive Summary).
+- Terapkan pendekatan "The Why" (Mengapa tren ini terjadi berdasarkan data) dan "The What-Next" (Apa solusi taktis bisnisnya).
+- Fokus utama Anda adalah merumuskan saran yang relevan dengan "Tujuan Utama Analisis" yang diminta oleh pengguna di dalam konteks.
+- DILARANG KERAS MENGULANG INFORMASI. Setiap insight dan card harus membahas skenario atau temuan spesifik yang 100% UNIK dan BERBEDA.
 
 ATURAN KETAT PANJANG TEKS & STRUKTUR:
-1. "insights": WAJIB array berisi TEPAT 5 string. Tidak boleh kurang, tidak boleh lebih.
-2. SETIAP string di dalam "insights" WAJIB terdiri dari TEPAT 2 kalimat. (Kalimat pertama fakta data unik. Kalimat kedua solusi taktis/implikasi). Akhiri tiap kalimat dengan titik.
-3. "cards": Object dengan key "metric", "segment", "correlation", "volatility". SETIAP value WAJIB terdiri dari 1 hingga 2 kalimat yang padat (setara 1.5 kalimat). Jangan mengulang teks dari array insights.
+1. "insights": WAJIB array berisi TEPAT 5 string.
+2. SETIAP string di dalam "insights" WAJIB terdiri dari TEPAT 2 kalimat. (Kalimat pertama: Akar masalah/Pola tersembunyi. Kalimat kedua: Saran taktis strategis). Akhiri tiap kalimat dengan titik.
+3. "cards": Object dengan key "metric", "segment", "correlation", "volatility". SETIAP value WAJIB terdiri dari 1-2 kalimat padat yang menjabarkan poin spesifik tanpa mengulang isi "insights".
 
 Format JSON yang Wajib (Patuhi struktur keys ini):
 {
   "insights": [
-    "Fakta unik data pertama. Solusi atau implikasinya.",
-    "Fakta unik data kedua. Solusi atau implikasinya.",
-    "Fakta unik data ketiga. Solusi atau implikasinya.",
-    "Fakta unik data keempat. Solusi atau implikasinya.",
-    "Fakta unik data kelima. Rekomendasi tindakan taktis."
+    "Akar masalah unik pertama dari data. Solusi bisnis taktis untuk ini.",
+    "Pola tersembunyi unik kedua. Tindakan spesifik yang harus dilakukan.",
+    "Fakta operasional unik ketiga. Penyesuaian sumber daya yang diperlukan.",
+    "Kendala/peluang unik keempat. Strategi mitigasi atau eskalasi.",
+    "Temuan penting unik kelima. Rekomendasi arah bisnis ke depan."
   ],
   "cards": {
-    "metric": "Teks 1-2 kalimat natural tentang performa/angka puncak.",
-    "segment": "Teks 1-2 kalimat natural tentang kelompok utama/dominan.",
-    "correlation": "Teks 1-2 kalimat natural tentang hubungan data terkuat.",
-    "volatility": "Teks 1-2 kalimat natural tentang variansi, outlier, atau stabilitas."
+    "metric": "1-2 kalimat natural tentang kinerja utama atau pencapaian angka dominan.",
+    "segment": "1-2 kalimat natural tentang target audiens atau peluang kategori yang paling menonjol.",
+    "correlation": "1-2 kalimat natural tentang hubungan sebab-akibat (Misal: Jika A naik, B turun).",
+    "volatility": "1-2 kalimat natural tentang deteksi risiko bisnis atau saran penghematan."
   }
 }`;
             const safeData = smartDataTruncate(data, 4000);
@@ -267,13 +268,12 @@ Format JSON yang Wajib (Patuhi struktur keys ini):
                 if (!groqKey) throw new Error("Groq Key missing");
                 
                 // --- MODEL UTAMA ANALISA DASBOR: Qwen-3 32B (Via Groq) ---
-                // Fetch with 8.5 detik timeout
                 const res = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        model: 'qwen-2.5-32b', // Model spesifik 32B dari Groq
-                        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural, spesifik, dan BEBAS DUPLIKASI data berikut:\n${safeData}` }], 
+                        model: 'qwen-2.5-32b', 
+                        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Konteks User: ${userContext}\n\nTolong analisis secara natural, jadilah konsultan cerdas dan jawab tujuan utama saya berdasarkan data ini:\n${safeData}` }], 
                         temperature: 0.2, // Rendah agar logis & stabil
                         response_format: { type: "json_object" }, 
                         max_tokens: 1500 
@@ -286,13 +286,12 @@ Format JSON yang Wajib (Patuhi struktur keys ini):
             } catch (err1) {
                 try {
                     // --- FALLBACK 1: Llama-4 Scout 17B (Via Groq) ---
-                    // Fetch with 8.5 detik timeout
                     const res = await fetchWithTimeout('https://api.groq.com/openai/v1/chat/completions', {
                         method: 'POST',
                         headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
-                            model: 'meta-llama/llama-4-scout-17b-16e-instruct', // Sesuai mapping yang Anda butuhkan
-                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural, spesifik, dan BEBAS DUPLIKASI data berikut:\n${safeData}` }], 
+                            model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+                            messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Konteks User: ${userContext}\n\nTolong analisis secara natural, jadilah konsultan cerdas dan jawab tujuan utama saya berdasarkan data ini:\n${safeData}` }], 
                             temperature: 0.2, 
                             response_format: { type: "json_object" }, 
                             max_tokens: 1500 
@@ -311,11 +310,11 @@ Format JSON yang Wajib (Patuhi struktur keys ini):
                             headers: { 'Authorization': `Bearer ${cerebrasKey}`, 'Content-Type': 'application/json' },
                             body: JSON.stringify({ 
                                 model: 'llama3.1-70b', 
-                                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Tolong analisis secara natural, spesifik, dan BEBAS DUPLIKASI data berikut:\n${safeData}` }], 
+                                messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: `Konteks User: ${userContext}\n\nTolong analisis secara natural, jadilah konsultan cerdas dan jawab tujuan utama saya berdasarkan data ini:\n${safeData}` }], 
                                 temperature: 0.2,
                                 max_tokens: 1500 
                             })
-                        }, 10000); // Waktu toleransi lebih panjang untuk 70B
+                        }, 10000); 
                         
                         if (!res.ok) throw new Error(`Cerebras HTTP ${res.status}`);
                         const response = await res.json();
@@ -326,19 +325,20 @@ Format JSON yang Wajib (Patuhi struktur keys ini):
                 }
             }
 
+            // Fallback Data (Jika semua API terganggu) dibuat natural layaknya Konsultan Bisnis
             let parsed = { 
                 insights: [
-                    "Sistem mendeteksi bahwa beban komputasi server sedang tinggi atau mengalami timeout. Proses penarikan logika terhenti parsial.", 
-                    "Kapasitas atau matriks baris data mungkin melampaui toleransi respons server. Kami merekomendasikan percobaan ulang.",
-                    "Pastikan tidak ada karakter tersembunyi yang merusak struktur pembacaan. Konsistensi file amat penting untuk pemodelan AI.",
-                    "Sistem pemulihan otomatis Dazer sedang menstabilkan koneksi AI di belakang layar. Silakan tunggu jeda beberapa menit.",
-                    "Apabila interupsi ini tetap bertahan, hubungi dukungan teknis kami dengan menyertakan log sesi. Kami memprioritaskan penyelesaian untuk Anda."
+                    "Kami sedang meninjau strategi data Anda secara mendalam, namun antrean server saat ini menyebabkan sedikit penundaan. Proses perumusan kebijakan bisnis Anda akan segera dilanjutkan.", 
+                    "Kepadatan matriks informasi yang Anda unggah mungkin sedang melampaui toleransi pemrosesan kami. Kami merekomendasikan peninjauan ulang pada volume laporan.",
+                    "Pastikan elemen operasional di dalam dokumen Anda telah terstruktur dengan konsisten. Konsistensi informasi sangat esensial untuk memetakan arah perusahaan.",
+                    "Sistem penasihat virtual Dazer sedang menstabilkan koneksinya. Tim konsultan AI kami akan kembali memberikan rekomendasi operasional dalam beberapa menit.",
+                    "Apabila interupsi ini menghambat proses pengambilan keputusan Anda, silakan hubungi tim dukungan kami. Kami memprioritaskan pemulihan wawasan eksekutif Anda."
                 ], 
                 cards: { 
-                    metric: "Nilai indikator tidak dapat dirender secara mutlak akibat interupsi timeout di sisi jaringan API.", 
-                    segment: "Pemetaan lapisan pengguna tertunda sementara waktu karena sistem gagal merespons algoritma secara instan.", 
-                    correlation: "Matriks keterkaitan variabel gagal disintesis dengan baik. Kami menyarankan pemuatan ulang dasbor.", 
-                    volatility: "Tingkat persebaran angka gagal divalidasi oleh AI. Pengecekan ulang tabel sangat disarankan." 
+                    metric: "Angka kinerja utama sedang dikalkulasi ulang untuk memastikan keakuratan strategi bisnis Anda di sektor ini.", 
+                    segment: "Pemetaan peluang profil pelanggan atau operasional tertunda sementara karena sistem sedang menyinkronkan data.", 
+                    correlation: "Sebab-akibat atas kondisi bisnis Anda gagal disintesis dengan optimal. Kami menyarankan pemuatan ulang dasbor.", 
+                    volatility: "Indikasi risiko bisnis saat ini belum bisa divalidasi. Peninjauan ulang laporan sangat kami sarankan demi kehati-hatian." 
                 } 
             };
 
@@ -349,11 +349,11 @@ Format JSON yang Wajib (Patuhi struktur keys ini):
                     if (!parsed.insights || !Array.isArray(parsed.insights)) parsed.insights = [];
                     
                     const fallbackInsights = [
-                        "Model berhasil merangkum matriks, namun struktur pengembalian data mengalami sedikit deviasi. Temuan didasarkan pada abstraksi parsial.",
-                        "Sebagian nilai terdeteksi gagal dikonversi ke dalam narasi bahasa eksekutif. Efektivitas wawasan ini mungkin tidak sepenuhnya spesifik.",
-                        "Mesin analitik tetap mengolah fondasi utama dari tabel Anda untuk meminimalisir kegagalan visual. Perhatikan tren grafik Dasbor.",
-                        "Lakukan validasi silang pada tabel pembersihan (Klinik Data) untuk memastikan presisi angka sebelum mengambil konklusi.",
-                        "Muat ulang Dasbor (Refresh) atau unggah format CSV murni untuk memulihkan kecepatan baca. Format data yang rapi mempercepat kinerja AI."
+                        "Model berhasil mengekstrak esensi bisnis Anda, namun respons struktural sedikit mengalami deviasi. Wawasan berikut ditarik secara parsial.",
+                        "Sebagian indikator angka gagal kami konversi menjadi strategi eksekutif penuh. Rekomendasi di bawah mungkin membutuhkan peninjauan manual.",
+                        "Fokus utama kami saat ini adalah menyajikan gambaran dasar performa agar arah operasional Anda tetap berjalan. Perhatikan tren visual di atas.",
+                        "Lakukan konfirmasi ulang terhadap elemen strategis sebelum mengeksekusinya di lapangan. Beberapa saran dihasilkan dari mitigasi otomatis.",
+                        "Untuk memastikan ketajaman analisis konsultan kami, kami menyarankan Anda menggunakan struktur laporan standar (CSV) di sesi berikutnya."
                     ];
                     
                     if (parsed.insights.length < 5) {
@@ -364,7 +364,7 @@ Format JSON yang Wajib (Patuhi struktur keys ini):
 
                     if (!parsed.cards) parsed.cards = { metric: "-", segment: "-", correlation: "-", volatility: "-" };
                 } catch (parseError) {
-                    parsed.insights[0] = "Mesin kecerdasan buatan memberikan respons dengan format skema JSON yang cacat. Hal ini menghalangi kami merender teks Anda.";
+                    parsed.insights[0] = "Sistem konsultan kami memberikan format jawaban yang cacat secara teknis. Hal ini mencegah kami menjabarkan saran strategis untuk Anda.";
                 }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(parsed) };
@@ -395,23 +395,22 @@ Format JSON yang Wajib (Patuhi struktur keys ini):
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${groqKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        // Dazer AI Assistant EKSKLUSIF menggunakan Llama 70B
                         model: 'llama-3.3-70b-versatile', 
                         messages: [
-                            { role: 'system', content: "Kamu adalah Dazer AI Assistant, analis data korporat senior. Jawab dengan sangat rasional, tidak bertele-tele, hindari perulangan kata, dan gunakan Bahasa Indonesia tingkat profesional yang elegan." }, 
-                            { role: 'user', content: `Konteks Situasi: ${userContext}\n${webInfo}\n\nPermintaan Pengguna: ${message}` }
+                            { role: 'system', content: "Kamu adalah Dazer AI Assistant, konsultan strategi bisnis senior. Jawab dengan sangat rasional, fokus pada solusi (actionable), DILARANG bahas hal teknis IT (seperti array, row, kolom, JSON). Gunakan Bahasa Indonesia tingkat profesional yang elegan." }, 
+                            { role: 'user', content: `Konteks Bisnis: ${userContext}\n${webInfo}\n\nPermintaan Klien: ${message}` }
                         ], 
                         temperature: 0.5, 
                         max_tokens: 1024 
                     })
-                }, 12000); // Chatbot diberi waktu lebih untuk berpikir mendalam
+                }, 12000); 
                 
                 if (!res.ok) throw new Error("Groq Error / Timeout");
                 const d = await res.json();
                 const replyText = d?.choices?.[0]?.message?.content || "Sistem kami mendeteksi perlambatan jaringan. Mohon kirim ulang pesan Anda.";
                 return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ reply: cleanMarkdown(replyText) }) };
             } catch(e) {
-                return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Layanan asisten cerdas sedang terputus (Timeout / Limit)." }) };
+                return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ reply: "Layanan konsultan cerdas sedang terputus (Timeout / Limit)." }) };
             }
         }
 
@@ -430,11 +429,11 @@ Format JSON yang Wajib (Patuhi struktur keys ini):
             const promptModel = `Task: Data Mining & KDD Evaluation. Method: ${modelType} | Algo: ${algorithm} | MathRef: ${wInfo}
 Data Sample: ${smartDataTruncate(data, 5000)}
 
-Tugas: Berikan narasi evaluasi algoritma yang MURNI, NATURAL, dan BUKAN TEMPLATE KAKU. Gunakan bahasa yang mudah dicerna oleh kalangan eksekutif non-IT namun tetap akurat secara statistika. Hindari duplikasi kalimat.
+Tugas: Anda adalah Konsultan Bisnis. Berikan narasi hasil evaluasi algoritma di atas secara MURNI, NATURAL, dan BUKAN TEMPLATE KAKU. Gunakan bahasa manajemen yang mudah dicerna oleh kalangan eksekutif non-IT (jangan sebut node, array, atau variabel teknis rumit). 
 Wajib sertakan: 
-1. Pola utama yang benar-benar ditemukan dari sampel data di atas.
-2. Tingkat keyakinan (Confidence Level / Akurasi bayangan).
-3. Rekomendasi tindak lanjut strategis riil.
+1. Pola perilaku bisnis yang paling menonjol dari data.
+2. Tingkat keyakinan (Seberapa akurat penemuan ini jika diterapkan di dunia nyata).
+3. Rekomendasi tindak lanjut strategis riil untuk meningkatkan efisiensi atau profit.
 
 Format jawaban dalam Bahasa Indonesia (1 hingga 3 paragraf padat) tanpa menggunakan markdown berlebihan.`;
 
@@ -463,7 +462,7 @@ Format jawaban dalam Bahasa Indonesia (1 hingga 3 paragraf padat) tanpa mengguna
                     const oData = await oRes.json();
                     finalRes = oData.choices[0].message.content;
                 } catch(fallbackE) {
-                    finalRes = "Evaluasi pemodelan dibatalkan oleh server. Ini terjadi karena jaringan API Gemini tidak merespons (Timeout). Silakan jalankan eksekusi ulang.";
+                    finalRes = "Evaluasi pemodelan bisnis dibatalkan oleh server. Ini terjadi karena jaringan API analisis tidak merespons (Timeout). Silakan jalankan eksekusi ulang untuk menarik data pola tersebut.";
                 }
             }
             return { statusCode: 200, headers: corsHeaders, body: JSON.stringify({ result: cleanMarkdown(finalRes) }) };
