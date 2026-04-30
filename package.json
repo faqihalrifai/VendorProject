@@ -1,7 +1,7 @@
 {
   "name": "dazer-analytics",
-  "version": "4.0.0",
-  "description": "Backend dependencies untuk Netlify Functions Dazer Analytics (100% Pure Groq Llama 3 Architecture)",
+  "version": "5.0.0",
+  "description": "Backend dependencies untuk Netlify Functions Dazer Analytics (V30 Ultimate: Multi-Fallback AI, Qwen, Llama-4, Cerebras & Gemini)",
   "main": "index.html",
   "engines": {
     "node": ">=18.0.0"
@@ -17,7 +17,12 @@
     "olah data",
     "kdd",
     "groq",
-    "llama3"
+    "llama3",
+    "llama4",
+    "qwen",
+    "cerebras",
+    "gemini",
+    "tavily"
   ],
   "author": "Faqih Al Rifai",
   "license": "ISC",
